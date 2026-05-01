@@ -9,21 +9,19 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const [deck] = await db
-      .select()
-      .from(decks)
-      .where(eq(decks.id, Number(id)));
+    const deckId = Number(id);
 
+    const [deckResult, cardsResult] = await Promise.all([
+      db.select().from(decks).where(eq(decks.id, deckId)),
+      db.select().from(cards).where(eq(cards.deckId, deckId)),
+    ]);
+
+    const deck = deckResult[0];
     if (!deck) {
       return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
-    const deckCards = await db
-      .select()
-      .from(cards)
-      .where(eq(cards.deckId, Number(id)));
-
-    return NextResponse.json({ ...deck, cards: deckCards });
+    return NextResponse.json({ ...deck, cards: cardsResult });
   } catch {
     return NextResponse.json({ error: "Failed to fetch deck" }, { status: 500 });
   }

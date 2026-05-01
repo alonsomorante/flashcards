@@ -10,9 +10,6 @@ interface Card {
   front: string;
   back: string;
   notes?: string | null;
-  repetitions?: number | null;
-  interval?: number | null;
-  nextReview?: string | null;
 }
 
 export default function StudyPage() {
@@ -25,7 +22,6 @@ export default function StudyPage() {
   const [loading, setLoading] = useState(true);
   const [finished, setFinished] = useState(false);
   const [deckName, setDeckName] = useState("");
-  const [studyAll, setStudyAll] = useState(false);
 
   const fetchCards = useCallback(
     (forceAll: boolean) => {
@@ -35,6 +31,8 @@ export default function StudyPage() {
         .then((res) => res.json())
         .then((data: Card[]) => {
           setCards(data);
+          setCurrentIndex(0);
+          setFinished(false);
           setLoading(false);
         })
         .catch(() => setLoading(false));
@@ -51,6 +49,10 @@ export default function StudyPage() {
       .catch(() => {});
   }, [deckId, fetchCards]);
 
+  useEffect(() => {
+    setFlipped(false);
+  }, [currentIndex]);
+
   const currentCard = cards[currentIndex];
 
   const rateCard = useCallback(
@@ -63,10 +65,8 @@ export default function StudyPage() {
         body: JSON.stringify({ cardId: currentCard.id, quality }),
       });
 
-      setFlipped(false);
-
       if (currentIndex + 1 < cards.length) {
-        setTimeout(() => setCurrentIndex(currentIndex + 1), 150);
+        setCurrentIndex((prev) => prev + 1);
       } else {
         setFinished(true);
       }
@@ -75,8 +75,8 @@ export default function StudyPage() {
   );
 
   const handleFlip = useCallback(() => {
-    setFlipped(!flipped);
-  }, [flipped]);
+    setFlipped((prev) => !prev);
+  }, []);
 
   const handleRestart = useCallback(() => {
     setCards((prev) => [...prev].sort(() => Math.random() - 0.5));
@@ -86,7 +86,6 @@ export default function StudyPage() {
   }, []);
 
   const handleStudyAll = useCallback(() => {
-    setStudyAll(true);
     fetchCards(true);
   }, [fetchCards]);
 
@@ -181,30 +180,30 @@ export default function StudyPage() {
           {flipped ? currentCard?.back : currentCard?.front}
         </p>
 
-        {flipped && currentCard?.notes && (
+        {flipped && currentCard?.notes ? (
           <div className="mx-auto mt-6 max-w-md border-t border-zinc-200 pt-4 dark:border-zinc-700">
-            <p className="text-sm leading-relaxed text-zinc-400 dark:text-zinc-500 whitespace-pre-wrap">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-400 dark:text-zinc-500">
               {currentCard.notes}
             </p>
           </div>
-        )}
+        ) : null}
 
-        {!flipped && (
+        {!flipped ? (
           <p className="mt-4 text-xs text-zinc-300 dark:text-zinc-700">
             Tap to reveal
           </p>
-        )}
+        ) : null}
       </button>
 
-      {!flipped && (
+      {!flipped ? (
         <div className="flex justify-center">
           <Button variant="ghost" size="sm" onClick={handleFlip}>
             Show Answer
           </Button>
         </div>
-      )}
+      ) : null}
 
-      {flipped && (
+      {flipped ? (
         <div className="flex justify-center gap-2">
           <Button
             variant="secondary"
@@ -230,7 +229,7 @@ export default function StudyPage() {
             Easy
           </Button>
         </div>
-      )}
+      ) : null}
 
       <div className="mt-6 text-center">
         <button

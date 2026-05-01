@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { Layers } from "lucide-react";
-import { db } from "@/db";
-import { decks } from "@/db/schema";
-import { desc } from "drizzle-orm";
+import { getDecks } from "@/lib/data";
 import { LinkButton } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
-
-async function getDecks() {
-  return db.select().from(decks).orderBy(desc(decks.updatedAt));
-}
 
 export default async function Home() {
   const allDecks = await getDecks();
@@ -18,11 +12,11 @@ export default async function Home() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">Decks</h1>
-        {allDecks.length > 0 && (
+        {allDecks.length > 0 ? (
           <LinkButton href="/decks/new" size="sm" variant="secondary">
             + New
           </LinkButton>
-        )}
+        ) : null}
       </div>
 
       {allDecks.length === 0 ? (
@@ -50,11 +44,11 @@ export default async function Home() {
               <h2 className="font-medium text-zinc-900 dark:text-zinc-100">
                 {deck.name}
               </h2>
-              {deck.description && (
+              {deck.description ? (
                 <p className="mt-1 line-clamp-2 text-sm text-zinc-400 dark:text-zinc-500">
                   {deck.description}
                 </p>
-              )}
+              ) : null}
             </Link>
           ))}
         </div>

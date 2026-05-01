@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
@@ -9,27 +9,21 @@ import { CardItem } from "./card-item";
 
 interface CardData {
   id: number;
-  deckId: number;
   front: string;
   back: string;
   notes?: string | null;
-  repetitions?: number | null;
-  interval?: number | null;
-  easeFactor?: number | null;
   nextReview?: string | null;
-  createdAt: string;
-  updatedAt: string;
+}
+
+interface DeckData {
+  id: number;
+  name: string;
+  description: string | null;
+  cards: CardData[];
 }
 
 interface Props {
-  deck: {
-    id: number;
-    name: string;
-    description: string | null;
-    createdAt: string;
-    updatedAt: string;
-    cards: CardData[];
-  };
+  deck: DeckData;
 }
 
 type CardPartial = {
@@ -49,27 +43,34 @@ export function DeckDetailClient({ deck }: Props) {
     back: string;
     notes?: string | null;
   } | null>(null);
+  const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
+
+  const dueCount = useMemo(
+    () =>
+      cards.filter(
+        (c) => !c.nextReview || new Date(c.nextReview) <= new Date()
+      ).length,
+    [cards]
+  );
 
   const handleCardCreated = useCallback((card: CardPartial) => {
-    setCards((prev) => [card as CardData, ...prev]);
+    setCards((prev) => [
+      { ...card, nextReview: null } as CardData,
+      ...prev,
+    ]);
     setShowCardForm(false);
   }, []);
 
   const handleCardUpdated = useCallback((card: CardPartial) => {
     setCards((prev) =>
-      prev.map((c) =>
-        c.id === card.id ? { ...c, ...card } : c
-      )
+      prev.map((c) => (c.id === card.id ? { ...c, ...card } : c))
     );
     setEditingCard(null);
   }, []);
 
-  const handleCardDeleted = useCallback(
-    (cardId: number) => {
-      setCards((prev) => prev.filter((c) => c.id !== cardId));
-    },
-    []
-  );
+  const handleCardDeleted = useCallback((cardId: number) => {
+    setCards((prev) => prev.filter((c) => c.id !== cardId));
+  }, []);
 
   const handleDeleteDeck = useCallback(async () => {
     if (!confirm("Delete this deck and all its cards?")) return;
@@ -79,9 +80,17 @@ export function DeckDetailClient({ deck }: Props) {
     router.refresh();
   }, [deck.id, router]);
 
-  const dueCount = cards.filter(
-    (c) => !c.nextReview || new Date(c.nextReview) <= new Date()
-  ).length;
+  const toggleNotes = useCallback((cardId: number) => {
+    setExpandedNotes((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardId)) {
+        next.delete(cardId);
+      } else {
+        next.add(cardId);
+      }
+      return next;
+    });
+  }, []);
 
   return (
     <div>
@@ -97,14 +106,14 @@ export function DeckDetailClient({ deck }: Props) {
           <h1 className="text-xl font-semibold tracking-tight">
             {deck.name}
           </h1>
-          {deck.description && (
+          {deck.description ? (
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {deck.description}
             </p>
-          )}
+          ) : null}
           <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
             {cards.length} {cards.length === 1 ? "card" : "cards"}
-            {cards.length > 0 && ` · ${dueCount} due`}
+            {cards.length > 0 ? ` · ${dueCount} due` : null}
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -128,7 +137,7 @@ export function DeckDetailClient({ deck }: Props) {
         <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
           Cards
         </h2>
-        {!showCardForm && (
+        {showCardForm ? null : (
           <Button
             variant="secondary"
             size="sm"
@@ -139,31 +148,31 @@ export function DeckDetailClient({ deck }: Props) {
         )}
       </div>
 
-      {editingCard && (
+      {editingCard ? (
         <CardForm
           deckId={deck.id}
           card={editingCard}
           onSaved={handleCardUpdated}
           onCancel={() => setEditingCard(null)}
         />
-      )}
+      ) : null}
 
-      {showCardForm && (
+      {showCardForm ? (
         <CardForm
           deckId={deck.id}
           onSaved={handleCardCreated}
           onCancel={() => setShowCardForm(false)}
         />
-      )}
+      ) : null}
 
       <div className="space-y-2">
-        {cards.length === 0 && !showCardForm && (
+        {cards.length === 0 && !showCardForm ? (
           <div className="py-16 text-center">
             <p className="text-sm text-zinc-400 dark:text-zinc-500">
               No cards yet. Add one to get started.
             </p>
           </div>
-        )}
+        ) : null}
 
         {cards.map((card) => (
           <CardItem
@@ -179,6 +188,8 @@ export function DeckDetailClient({ deck }: Props) {
             }
             onDelete={() => handleCardDeleted(card.id)}
             deckId={deck.id}
+            showNotes={expandedNotes.has(card.id)}
+            onToggleNotes={() => toggleNotes(card.id)}
           />
         ))}
       </div>

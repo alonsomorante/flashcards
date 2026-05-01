@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Pencil, Trash2, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
+import { memo, useMemo } from "react";
+import { Pencil, Trash2, ChevronUp, StickyNote } from "lucide-react";
 
 interface CardItemProps {
   card: {
@@ -9,17 +9,22 @@ interface CardItemProps {
     front: string;
     back: string;
     notes?: string | null;
-    repetitions?: number | null;
-    nextReview?: string | null;
   };
   deckId: number;
   onEdit: () => void;
   onDelete: () => void;
+  showNotes: boolean;
+  onToggleNotes: () => void;
 }
 
-export function CardItem({ card, deckId, onEdit, onDelete }: CardItemProps) {
-  const [showNotes, setShowNotes] = useState(false);
-
+export const CardItem = memo(function CardItem({
+  card,
+  deckId,
+  onEdit,
+  onDelete,
+  showNotes,
+  onToggleNotes,
+}: CardItemProps) {
   const handleDelete = async () => {
     if (!confirm("Delete this card?")) return;
 
@@ -30,8 +35,10 @@ export function CardItem({ card, deckId, onEdit, onDelete }: CardItemProps) {
     onDelete();
   };
 
-  const hasNotes = !!(card.notes && card.notes.trim().length > 0);
-  const isDue = !card.nextReview || new Date(card.nextReview) <= new Date();
+  const hasNotes = useMemo(
+    () => !!(card.notes && card.notes.trim().length > 0),
+    [card.notes]
+  );
 
   return (
     <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -45,9 +52,9 @@ export function CardItem({ card, deckId, onEdit, onDelete }: CardItemProps) {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          {hasNotes && (
+          {hasNotes ? (
             <button
-              onClick={() => setShowNotes(!showNotes)}
+              onClick={onToggleNotes}
               className="rounded-md p-1.5 text-zinc-300 hover:text-zinc-500 dark:text-zinc-700 dark:hover:text-zinc-400"
               title="Toggle notes"
             >
@@ -57,7 +64,7 @@ export function CardItem({ card, deckId, onEdit, onDelete }: CardItemProps) {
                 <StickyNote size={14} />
               )}
             </button>
-          )}
+          ) : null}
           <button
             onClick={onEdit}
             className="rounded-md p-1.5 text-zinc-300 hover:bg-zinc-100 hover:text-zinc-600 dark:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
@@ -73,13 +80,13 @@ export function CardItem({ card, deckId, onEdit, onDelete }: CardItemProps) {
         </div>
       </div>
 
-      {hasNotes && showNotes && (
+      {hasNotes && showNotes ? (
         <div className="border-t border-zinc-100 px-4 py-3 dark:border-zinc-800">
-          <p className="text-xs text-zinc-400 dark:text-zinc-500 whitespace-pre-wrap">
+          <p className="whitespace-pre-wrap text-xs text-zinc-400 dark:text-zinc-500">
             {card.notes}
           </p>
         </div>
-      )}
+      ) : null}
     </div>
   );
-}
+});
