@@ -34,13 +34,55 @@ export const cards = sqliteTable("cards", {
     .default(sql`(datetime('now'))`),
 });
 
+export const tags = sqliteTable("tags", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  deckId: integer("deck_id")
+    .notNull()
+    .references(() => decks.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`(datetime('now'))`),
+});
+
+export const cardTags = sqliteTable("card_tags", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  cardId: integer("card_id")
+    .notNull()
+    .references(() => cards.id, { onDelete: "cascade" }),
+  tagId: integer("tag_id")
+    .notNull()
+    .references(() => tags.id, { onDelete: "cascade" }),
+});
+
 export const decksRelations = relations(decks, ({ many }) => ({
   cards: many(cards),
+  tags: many(tags),
 }));
 
-export const cardsRelations = relations(cards, ({ one }) => ({
+export const cardsRelations = relations(cards, ({ one, many }) => ({
   deck: one(decks, {
     fields: [cards.deckId],
     references: [decks.id],
+  }),
+  cardTags: many(cardTags),
+}));
+
+export const tagsRelations = relations(tags, ({ one, many }) => ({
+  deck: one(decks, {
+    fields: [tags.deckId],
+    references: [decks.id],
+  }),
+  cardTags: many(cardTags),
+}));
+
+export const cardTagsRelations = relations(cardTags, ({ one }) => ({
+  card: one(cards, {
+    fields: [cardTags.cardId],
+    references: [cards.id],
+  }),
+  tag: one(tags, {
+    fields: [cardTags.tagId],
+    references: [tags.id],
   }),
 }));

@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { VoiceInput } from "@/components/ui/voice-input";
 import { GrammarCheck } from "@/components/ui/grammar-check";
+
+interface Tag {
+  id: number;
+  name: string;
+}
 
 interface CardFormProps {
   deckId: number;
@@ -23,8 +28,30 @@ export function CardForm({ deckId, card, onSaved, onCancel }: CardFormProps) {
   const [notes, setNotes] = useState(card?.notes ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set());
+  const [newTagName, setNewTagName] = useState("");
 
   const isEditing = !!card;
+
+  useEffect(() => {
+    fetch(`/api/decks/${deckId}/tags`)
+      .then((res) => res.json())
+      .then((data: Tag[]) => setTags(data))
+      .catch(() => {});
+  }, [deckId]);
+
+  useEffect(() => {
+    if (card?.id) {
+      fetch(`/api/decks/${deckId}/cards/${card.id}/tags`)
+        .then((res) => res.json())
+        .then((data: { tagId: number; tagName: string }[]) => {
+          setSelectedTags(new Set(data.map((t) => t.tagId)));
+        })
+        .catch(() => {});
+    }
+  }, [card?.id, deckId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,12 +83,73 @@ export function CardForm({ deckId, card, onSaved, onCancel }: CardFormProps) {
       if (!res.ok) throw new Error("Failed to save card");
 
       const saved = await res.json();
+      
+      // Save tag assignments
+      if (isEditing && card?.id) {
+        // Remove unselected tags
+        const currentTagsRes = await fetch(`/api/decks/${deckId}/cards/${card.id}/tags`);
+        const currentTags = await currentTagsRes.json();
+        const currentTagIds = new Set<number>(currentTags.map((t: { tagId: number }) => t.tagId));
+        
+        for (const tagId of currentTagIds) {
+          if (!selectedTags.has(tagId)) {
+            await fetch(`/api/decks/${deckId}/cards/${card.id}/tags?tagId=${tagId}`, {
+              method: "DELETE",
+            });
+          }
+        }
+        
+        // Add new tags
+        for (const tagId of selectedTags) {
+          if (!currentTagIds.has(tagId)) {
+            await fetch(`/api/decks/${deckId}/cards/${card.id}/tags`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ tagId }),
+            });
+          }
+        }
+      }
+      
       onSaved(saved);
     } catch {
       setError("Failed to save card");
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleCreateTag = async () => {
+    if (!newTagName.trim()) return;
+    
+    try {
+      const res = await fetch(`/api/decks/${deckId}/tags`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newTagName.trim() }),
+      });
+      
+      if (res.ok) {
+        const newTag = await res.json();
+        setTags((prev) => [...prev, newTag]);
+        setSelectedTags((prev) => new Set(prev).add(newTag.id));
+        setNewTagName("");
+      }
+    } catch {
+      // silently fail
+    }
+  };
+
+  const toggleTag = (tagId: number) => {
+    setSelectedTags((prev) => {
+      const next = new Set(prev);
+      if (next.has(tagId)) {
+        next.delete(tagId);
+      } else {
+        next.add(tagId);
+      }
+      return next;
+    });
   };
 
   return (
@@ -136,6 +224,51 @@ export function CardForm({ deckId, card, onSaved, onCancel }: CardFormProps) {
           rows={2}
           className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-600 placeholder:text-zinc-300 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-400 dark:placeholder:text-zinc-700 dark:focus:border-zinc-600 dark:focus:ring-zinc-600"
         />
+      </div>
+
+      {/* Tags Section */}
+      <div className="mt-4">
+        <label className="text-sm font-medium text-zinc-400 dark:text-zinc-500">
+          Tags
+        </label>
+        
+        {tags.length > 0 ? (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {tags.map((tag) => (
+              <button
+                key={tag.id}
+                type="button"
+                onClick={() => toggleTag(tag.id)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  selectedTags.has(tag.id)
+                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
+                    : "border border-zinc-200 text-zinc-500 hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700"
+                }`}
+              >
+                {tag.name}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        
+        <div className="mt-2 flex gap-2">
+          <input
+            type="text"
+            value={newTagName}
+            onChange={(e) => setNewTagName(e.target.value)}
+            placeholder="New tag..."
+            className="h-8 flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-600 dark:focus:ring-zinc-600"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleCreateTag();
+              }
+            }}
+          />
+          <Button type="button" size="sm" variant="secondary" onClick={handleCreateTag}>
+            Add
+          </Button>
+        </div>
       </div>
 
       {error && <p className="mt-2 text-sm text-red-500">{error}</p>}

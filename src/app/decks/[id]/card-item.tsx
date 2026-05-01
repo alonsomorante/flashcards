@@ -1,7 +1,12 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Pencil, Trash2, ChevronUp, StickyNote } from "lucide-react";
+import { Pencil, Trash2, ChevronUp, StickyNote, Tag } from "lucide-react";
+
+interface Tag {
+  id: number;
+  name: string;
+}
 
 interface CardItemProps {
   card: {
@@ -9,6 +14,7 @@ interface CardItemProps {
     front: string;
     back: string;
     notes?: string | null;
+    tags?: Tag[];
   };
   deckId: number;
   onEdit: () => void;
@@ -40,6 +46,8 @@ export const CardItem = memo(function CardItem({
     [card.notes]
   );
 
+  const hasTags = card.tags && card.tags.length > 0;
+
   return (
     <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex items-center gap-4 p-4">
@@ -50,6 +58,20 @@ export const CardItem = memo(function CardItem({
           <p className="mt-0.5 text-sm text-zinc-400 dark:text-zinc-500">
             {card.back}
           </p>
+          
+          {hasTags ? (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {card.tags?.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="inline-flex items-center gap-0.5 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                >
+                  <Tag size={8} />
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {hasNotes ? (
