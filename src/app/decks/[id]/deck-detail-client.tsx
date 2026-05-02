@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Trash2, Tag, X } from "lucide-react";
+import { ArrowLeft, Trash2, Tag, X, Sparkles } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { CardForm } from "./card-form";
 import { CardItem } from "./card-item";
+import { GenerateCardsModal } from "./generate-cards-modal";
 
 interface Tag {
   id: number;
@@ -44,6 +45,7 @@ export function DeckDetailClient({ deck }: Props) {
   const [cards, setCards] = useState<CardData[]>(deck.cards);
   const [tags, setTags] = useState<Tag[]>([]);
   const [showCardForm, setShowCardForm] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingCard, setEditingCard] = useState<{
     id: number;
     front: string;
@@ -103,6 +105,13 @@ export function DeckDetailClient({ deck }: Props) {
       ...prev,
     ]);
     setShowCardForm(false);
+  }, []);
+
+  const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string }>) => {
+    setCards((prev) => [
+      ...newCards.map((card) => ({ ...card, nextReview: null, tags: [] } as CardData)),
+      ...prev,
+    ]);
   }, []);
 
   const handleCardUpdated = useCallback((card: CardPartial) => {
@@ -293,13 +302,23 @@ export function DeckDetailClient({ deck }: Props) {
           Cards {selectedTagFilter ? `· ${filteredCards.length} shown` : null}
         </h2>
         {showCardForm ? null : (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setShowCardForm(true)}
-          >
-            + Add Card
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowGenerateModal(true)}
+            >
+              <Sparkles size={14} />
+              Generate
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowCardForm(true)}
+            >
+              + Add Card
+            </Button>
+          </div>
         )}
       </div>
 
@@ -350,6 +369,13 @@ export function DeckDetailClient({ deck }: Props) {
           />
         ))}
       </div>
+
+      <GenerateCardsModal
+        open={showGenerateModal}
+        onClose={() => setShowGenerateModal(false)}
+        deckId={deck.id}
+        onCardsCreated={handleCardsGenerated}
+      />
     </div>
   );
 }
