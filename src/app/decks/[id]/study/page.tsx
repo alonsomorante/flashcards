@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, RotateCcw, ThumbsDown, ThumbsUp, Zap } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 
@@ -12,42 +13,61 @@ interface Card {
   notes?: string | null;
 }
 
+async function fetchStudyCards(deckId: string, all: boolean = false): Promise<Card[]> {
+  const url = `/api/study/${deckId}${all ? "?all=true" : ""}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch cards");
+  return res.json();
+}
+
+async function fetchDeckName(deckId: string): Promise<string> {
+  const res = await fetch(`/api/decks/${deckId}`);
+  if (!res.ok) throw new Error("Failed to fetch deck");
+  const data = await res.json();
+  return data.name;
+}
+
 export default function StudyPage() {
   const params = useParams();
   const deckId = params.id as string;
+  const queryClient = useQueryClient();
 
-  const [cards, setCards] = useState<Card[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [finished, setFinished] = useState(false);
-  const [deckName, setDeckName] = useState("");
+  const [studyAll, setStudyAll] = useState(false);
+  const [shuffledOrder, setShuffledOrder] = useState<number[]>([]);
 
-  const fetchCards = useCallback(
-    (forceAll: boolean) => {
-      setLoading(true);
-      const url = `/api/study/${deckId}${forceAll ? "?all=true" : ""}`;
-      fetch(url)
-        .then((res) => res.json())
-        .then((data: Card[]) => {
-          setCards(data);
-          setCurrentIndex(0);
-          setFinished(false);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
+  const { data: fetchedCards = [], isLoading } = useQuery({
+    queryKey: ["study-cards", deckId, studyAll],
+    queryFn: () => fetchStudyCards(deckId, studyAll),
+  });
+
+  const cards = useMemo(() => {
+    if (shuffledOrder.length === fetchedCards.length) {
+      return shuffledOrder.map((i) => fetchedCards[i]);
+    }
+    return fetchedCards;
+  }, [fetchedCards, shuffledOrder]);
+
+  const { data: deckName = "" } = useQuery({
+    queryKey: ["deck-name", deckId],
+    queryFn: () => fetchDeckName(deckId),
+  });
+
+  const rateCardMutation = useMutation({
+    mutationFn: async ({ cardId, quality }: { cardId: number; quality: number }) => {
+      await fetch(`/api/study/${deckId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cardId, quality }),
+      });
     },
-    [deckId]
-  );
-
-  useEffect(() => {
-    fetchCards(false);
-
-    fetch(`/api/decks/${deckId}`)
-      .then((res) => res.json())
-      .then((data) => setDeckName(data.name))
-      .catch(() => {});
-  }, [deckId, fetchCards]);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+      queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", Number(deckId)] });
+    },
+  });
 
   useEffect(() => {
     setFlipped(false);
@@ -59,11 +79,7 @@ export default function StudyPage() {
     async (quality: number) => {
       if (!currentCard) return;
 
-      await fetch(`/api/study/${deckId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId: currentCard.id, quality }),
-      });
+      rateCardMutation.mutate({ cardId: currentCard.id, quality });
 
       if (currentIndex + 1 < cards.length) {
         setCurrentIndex((prev) => prev + 1);
@@ -71,7 +87,7 @@ export default function StudyPage() {
         setFinished(true);
       }
     },
-    [currentCard, currentIndex, cards.length, deckId]
+    [currentCard, currentIndex, cards.length, rateCardMutation]
   );
 
   const handleFlip = useCallback(() => {
@@ -79,17 +95,23 @@ export default function StudyPage() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    setCards((prev) => [...prev].sort(() => Math.random() - 0.5));
+    setShuffledOrder((prev) => {
+      const order = prev.length > 0 ? [...prev] : cards.map((_, i) => i);
+      return order.sort(() => Math.random() - 0.5);
+    });
+    setCurrentIndex(0);
+    setFlipped(false);
+    setFinished(false);
+  }, [cards]);
+
+  const handleStudyAll = useCallback(() => {
+    setStudyAll(true);
     setCurrentIndex(0);
     setFlipped(false);
     setFinished(false);
   }, []);
 
-  const handleStudyAll = useCallback(() => {
-    fetchCards(true);
-  }, [fetchCards]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <p className="text-sm text-zinc-400">Loading...</p>
@@ -242,7 +264,7 @@ export default function StudyPage() {
       </div>
 
       <div className="mt-8 flex justify-center gap-1.5">
-        {cards.map((_, i) => (
+        {cards.map((_card: Card, i: number) => (
           <div
             key={i}
             className={`h-1.5 w-1.5 rounded-full transition-colors ${

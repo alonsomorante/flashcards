@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { DeckDetailClient } from "./deck-detail-client";
@@ -18,34 +18,23 @@ interface DeckData {
   }>;
 }
 
+async function fetchDeck(id: string): Promise<DeckData> {
+  const res = await fetch(`/api/decks/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch deck");
+  return res.json();
+}
+
 export default function DeckPage() {
   const params = useParams();
   const id = params.id as string;
-  
-  const [deck, setDeck] = useState<DeckData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(false);
-    
-    fetch(`/api/decks/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch deck");
-        return res.json();
-      })
-      .then((data: DeckData) => {
-        setDeck(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
-  }, [id]);
+  const { data: deck, isLoading, error } = useQuery({
+    queryKey: ["deck", id],
+    queryFn: () => fetchDeck(id),
+    enabled: !!id,
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={20} className="animate-spin text-zinc-400" />

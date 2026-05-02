@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { Layers, Loader2 } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
@@ -11,21 +11,19 @@ interface Deck {
   description: string | null;
 }
 
+async function fetchDecks(): Promise<Deck[]> {
+  const res = await fetch("/api/decks");
+  if (!res.ok) throw new Error("Failed to fetch decks");
+  return res.json();
+}
+
 export default function Home() {
-  const [decks, setDecks] = useState<Deck[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: decks = [], isLoading } = useQuery({
+    queryKey: ["decks"],
+    queryFn: fetchDecks,
+  });
 
-  useEffect(() => {
-    fetch("/api/decks")
-      .then((res) => res.json())
-      .then((data: Deck[]) => {
-        setDecks(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 size={20} className="animate-spin text-zinc-400" />

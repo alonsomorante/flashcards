@@ -1,36 +1,66 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+interface Deck {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
+async function fetchDeck(id: string): Promise<Deck> {
+  const res = await fetch(`/api/decks/${id}`);
+  if (!res.ok) throw new Error("Failed to fetch deck");
+  return res.json();
+}
+
 export default function EditDeckPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const queryClient = useQueryClient();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [loading, setLoading] = useState(true);
+  const { data: deck, isLoading } = useQuery({
+    queryKey: ["deck", id],
+    queryFn: () => fetchDeck(id),
+    enabled: !!id,
+  });
+
+  const [name, setName] = useState(deck?.name ?? "");
+  const [description, setDescription] = useState(deck?.description ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetch(`/api/decks/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setName(data.name);
-        setDescription(data.description ?? "");
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("Failed to load deck");
-        setLoading(false);
+  // Update local state when deck loads
+  useState(() => {
+    if (deck) {
+      setName(deck.name);
+      setDescription(deck.description ?? "");
+    }
+  });
+
+  const updateDeckMutation = useMutation({
+    mutationFn: async ({ name, description }: { name: string; description: string }) => {
+      const res = await fetch(`/api/decks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
       });
-  }, [id]);
+      if (!res.ok) throw new Error("Failed to update deck");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["decks"] });
+      queryClient.invalidateQueries({ queryKey: ["deck", id] });
+      router.push(`/decks/${id}`);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,26 +71,10 @@ export default function EditDeckPage() {
       return;
     }
 
-    setSaving(true);
-    try {
-      const res = await fetch(`/api/decks/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
-      });
-
-      if (!res.ok) throw new Error("Failed to update deck");
-
-      router.push(`/decks/${id}`);
-      router.refresh();
-    } catch {
-      setError("Failed to update deck. Please try again.");
-    } finally {
-      setSaving(false);
-    }
+    updateDeckMutation.mutate({ name, description });
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <p className="text-zinc-400">Loading...</p>
@@ -97,10 +111,13 @@ export default function EditDeckPage() {
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
+          {updateDeckMutation.isError && (
+            <p className="text-sm text-red-500">Failed to update deck</p>
+          )}
 
           <div className="flex gap-3">
-            <Button type="submit" disabled={saving}>
-              {saving ? "Saving..." : "Save Changes"}
+            <Button type="submit" disabled={saving || updateDeckMutation.isPending}>
+              {updateDeckMutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
             <Button
               type="button"

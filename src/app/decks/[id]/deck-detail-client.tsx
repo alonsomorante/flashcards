@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Trash2, Tag, X, Sparkles } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Trash2, Tag, X } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { CardForm } from "./card-form";
 import { CardItem } from "./card-item";
@@ -40,10 +41,23 @@ type CardPartial = {
   notes?: string;
 };
 
+async function fetchTags(deckId: number): Promise<Tag[]> {
+  const res = await fetch(`/api/decks/${deckId}/tags`);
+  if (!res.ok) throw new Error("Failed to fetch tags");
+  return res.json();
+}
+
+async function fetchCardTags(deckId: number, cardId: number): Promise<{ tagId: number; tagName: string }[]> {
+  const res = await fetch(`/api/decks/${deckId}/cards/${cardId}/tags`);
+  if (!res.ok) throw new Error("Failed to fetch card tags");
+  return res.json();
+}
+
 export function DeckDetailClient({ deck }: Props) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  
   const [cards, setCards] = useState<CardData[]>(deck.cards);
-  const [tags, setTags] = useState<Tag[]>([]);
   const [showCardForm, setShowCardForm] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingCard, setEditingCard] = useState<{
@@ -56,33 +70,34 @@ export function DeckDetailClient({ deck }: Props) {
   const [selectedTagFilter, setSelectedTagFilter] = useState<number | null>(null);
   const [newTagName, setNewTagName] = useState("");
 
-  // Load tags
-  useEffect(() => {
-    fetch(`/api/decks/${deck.id}/tags`)
-      .then((res) => res.json())
-      .then((data: Tag[]) => setTags(data))
-      .catch(() => {});
-  }, [deck.id]);
+  // Query for tags
+  const { data: tags = [] } = useQuery({
+    queryKey: ["deck-tags", deck.id],
+    queryFn: () => fetchTags(deck.id),
+  });
 
-  // Load card tags
-  useEffect(() => {
-    const loadCardTags = async () => {
+  // Load card tags using React Query
+  useQuery({
+    queryKey: ["deck-cards-with-tags", deck.id],
+    queryFn: async () => {
       const cardsWithTags = await Promise.all(
         deck.cards.map(async (card) => {
           try {
-            const res = await fetch(`/api/decks/${deck.id}/cards/${card.id}/tags`);
-            const cardTags = await res.json();
-            return { ...card, tags: cardTags.map((t: { tagId: number; tagName: string }) => ({ id: t.tagId, name: t.tagName })) };
+            const cardTags = await fetchCardTags(deck.id, card.id);
+            return { 
+              ...card, 
+              tags: cardTags.map((t) => ({ id: t.tagId, name: t.tagName })) 
+            };
           } catch {
             return card;
           }
         })
       );
       setCards(cardsWithTags);
-    };
-    
-    loadCardTags();
-  }, [deck.id, deck.cards.length]);
+      return cardsWithTags;
+    },
+    enabled: deck.cards.length > 0,
+  });
 
   const dueCount = useMemo(
     () =>
@@ -99,39 +114,80 @@ export function DeckDetailClient({ deck }: Props) {
     );
   }, [cards, selectedTagFilter]);
 
+  // Mutations
+  const createTagMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch(`/api/decks/${deck.id}/tags`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim() }),
+      });
+      if (!res.ok) throw new Error("Failed to create tag");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deck-tags", deck.id] });
+    },
+  });
+
+  const deleteTagMutation = useMutation({
+    mutationFn: async (tagId: number) => {
+      await fetch(`/api/decks/${deck.id}/tags/${tagId}`, { method: "DELETE" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deck-tags", deck.id] });
+      queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+    },
+  });
+
+  const deleteDeckMutation = useMutation({
+    mutationFn: async () => {
+      await fetch(`/api/decks/${deck.id}`, { method: "DELETE" });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["decks"] });
+      router.push("/");
+    },
+  });
+
   const handleCardCreated = useCallback((card: CardPartial) => {
     setCards((prev) => [
       { ...card, nextReview: null, tags: [] } as CardData,
       ...prev,
     ]);
     setShowCardForm(false);
-  }, []);
-
-  const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string }>) => {
-    setCards((prev) => [
-      ...newCards.map((card) => ({ ...card, nextReview: null, tags: [] } as CardData)),
-      ...prev,
-    ]);
-  }, []);
+    queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
+    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+  }, [deck.id, queryClient]);
 
   const handleCardUpdated = useCallback((card: CardPartial) => {
     setCards((prev) =>
       prev.map((c) => (c.id === card.id ? { ...c, ...card } : c))
     );
     setEditingCard(null);
-  }, []);
+    queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
+    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+  }, [deck.id, queryClient]);
 
   const handleCardDeleted = useCallback((cardId: number) => {
     setCards((prev) => prev.filter((c) => c.id !== cardId));
-  }, []);
+    queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
+    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+  }, [deck.id, queryClient]);
 
-  const handleDeleteDeck = useCallback(async () => {
+  const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string }>) => {
+    setCards((prev) => [
+      ...newCards.map((card) => ({ ...card, nextReview: null, tags: [] } as CardData)),
+      ...prev,
+    ]);
+    queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
+    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+  }, [deck.id, queryClient]);
+
+  const handleDeleteDeck = useCallback(() => {
     if (!confirm("Delete this deck and all its cards?")) return;
-
-    await fetch(`/api/decks/${deck.id}`, { method: "DELETE" });
-    router.push("/");
-    router.refresh();
-  }, [deck.id, router]);
+    deleteDeckMutation.mutate();
+  }, [deleteDeckMutation]);
 
   const toggleNotes = useCallback((cardId: number) => {
     setExpandedNotes((prev) => {
@@ -145,48 +201,18 @@ export function DeckDetailClient({ deck }: Props) {
     });
   }, []);
 
-  const handleCreateTag = async () => {
+  const handleCreateTag = () => {
     if (!newTagName.trim()) return;
-    
-    try {
-      const res = await fetch(`/api/decks/${deck.id}/tags`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newTagName.trim() }),
-      });
-      
-      if (res.ok) {
-        const newTag = await res.json();
-        setTags((prev) => [...prev, newTag]);
-        setNewTagName("");
-      }
-    } catch {
-      // silently fail
-    }
+    createTagMutation.mutate(newTagName.trim(), {
+      onSuccess: () => setNewTagName(""),
+    });
   };
 
-  const handleDeleteTag = async (tagId: number) => {
+  const handleDeleteTag = (tagId: number) => {
     if (!confirm("Delete this tag?")) return;
-    
-    try {
-      await fetch(`/api/decks/${deck.id}/tags/${tagId}`, {
-        method: "DELETE",
-      });
-      
-      setTags((prev) => prev.filter((t) => t.id !== tagId));
-      if (selectedTagFilter === tagId) {
-        setSelectedTagFilter(null);
-      }
-      
-      // Remove tag from cards
-      setCards((prev) =>
-        prev.map((card) => ({
-          ...card,
-          tags: card.tags?.filter((t) => t.id !== tagId),
-        }))
-      );
-    } catch {
-      // silently fail
+    deleteTagMutation.mutate(tagId);
+    if (selectedTagFilter === tagId) {
+      setSelectedTagFilter(null);
     }
   };
 
@@ -308,7 +334,6 @@ export function DeckDetailClient({ deck }: Props) {
               size="sm"
               onClick={() => setShowGenerateModal(true)}
             >
-              <Sparkles size={14} />
               Generate
             </Button>
             <Button
