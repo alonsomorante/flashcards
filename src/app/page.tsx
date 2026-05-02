@@ -1,25 +1,50 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Layers } from "lucide-react";
-import { getDecks } from "@/lib/data";
+import { Layers, Loader2 } from "lucide-react";
 import { LinkButton } from "@/components/ui/button";
 
-export const dynamic = "force-dynamic";
+interface Deck {
+  id: number;
+  name: string;
+  description: string | null;
+}
 
-export default async function Home() {
-  const allDecks = await getDecks();
+export default function Home() {
+  const [decks, setDecks] = useState<Deck[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/decks")
+      .then((res) => res.json())
+      .then((data: Deck[]) => {
+        setDecks(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={20} className="animate-spin text-zinc-400" />
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">Decks</h1>
-        {allDecks.length > 0 ? (
+        {decks.length > 0 ? (
           <LinkButton href="/decks/new" size="sm" variant="secondary">
             + New
           </LinkButton>
         ) : null}
       </div>
 
-      {allDecks.length === 0 ? (
+      {decks.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24">
           <Layers
             size={40}
@@ -35,7 +60,7 @@ export default async function Home() {
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {allDecks.map((deck) => (
+          {decks.map((deck) => (
             <Link
               key={deck.id}
               href={`/decks/${deck.id}`}
