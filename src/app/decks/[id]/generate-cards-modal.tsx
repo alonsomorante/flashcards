@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Trash2, Save, Sparkles, Wand2 } from "lucide-react";
+import { Loader2, Trash2, Save, Sparkles, Wand2, FileText, ArrowRight } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -26,23 +26,53 @@ export function GenerateCardsModal({
   onCardsCreated,
 }: GenerateCardsModalProps) {
   const [images, setImages] = useState<string[]>([]);
+  const [extractedText, setExtractedText] = useState("");
   const [generatedCards, setGeneratedCards] = useState<GeneratedCard[]>([]);
+  const [extracting, setExtracting] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [step, setStep] = useState<"upload" | "review">("upload");
+  const [step, setStep] = useState<"upload" | "text" | "review">("upload");
 
-  const handleGenerate = async () => {
+  const handleExtractText = async () => {
     if (images.length === 0) return;
+    
+    setExtracting(true);
+    setError("");
+    
+    try {
+      const res = await fetch(`/api/decks/${deckId}/extract-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ images }),
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to extract text");
+      }
+      
+      setExtractedText(data.text);
+      setStep("text");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to extract text");
+    } finally {
+      setExtracting(false);
+    }
+  };
+
+  const handleGenerateCards = async () => {
+    if (!extractedText.trim()) return;
     
     setGenerating(true);
     setError("");
     
     try {
-      const res = await fetch(`/api/decks/${deckId}/generate-cards`, {
+      const res = await fetch(`/api/decks/${deckId}/generate-from-text`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ images }),
+        body: JSON.stringify({ text: extractedText }),
       });
       
       const data = await res.json();
@@ -90,6 +120,7 @@ export function GenerateCardsModal({
 
   const handleClose = () => {
     setImages([]);
+    setExtractedText("");
     setGeneratedCards([]);
     setError("");
     setStep("upload");
@@ -106,22 +137,30 @@ export function GenerateCardsModal({
     setGeneratedCards((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const getStepTitle = () => {
+    switch (step) {
+      case "upload": return "Upload Book Pages";
+      case "text": return "Review Extracted Text";
+      case "review": return "Review Generated Cards";
+    }
+  };
+
   return (
     <Modal
       open={open}
       onClose={handleClose}
-      title={step === "upload" ? "Generate from Images" : "Review Generated Cards"}
+      title={getStepTitle()}
     >
+      {/* Step 1: Upload Images */}
       {step === "upload" ? (
         <div className="space-y-4">
           <div className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400">
             <p className="flex items-center gap-1.5 font-medium">
               <Wand2 size={12} />
-              AI-powered flashcard extraction
+              AI-powered text extraction & card generation
             </p>
             <p className="mt-1">
-              Upload up to 5 pages and GPT-4o will extract atomic, high-quality flashcards.
-              You can review and edit them before saving.
+              Upload up to 5 pages. We will extract the text, then generate high-quality flashcards.
             </p>
           </div>
           
@@ -137,8 +176,58 @@ export function GenerateCardsModal({
             </Button>
             <Button
               size="sm"
-              onClick={handleGenerate}
-              disabled={images.length === 0 || generating}
+              onClick={handleExtractText}
+              disabled={images.length === 0 || extracting}
+            >
+              {extracting ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  Extracting...
+                </>
+              ) : (
+                <>
+                  <FileText size={14} />
+                  Extract Text
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* Step 2: Review Extracted Text */}
+      {step === "text" ? (
+        <div className="space-y-4">
+          <div className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-600 dark:bg-zinc-950 dark:text-zinc-400">
+            <p className="flex items-center gap-1.5 font-medium">
+              <FileText size={12} />
+              Text extracted successfully
+            </p>
+            <p className="mt-1">
+              {extractedText.split(/\s+/).length} words · {extractedText.split("\n").length} lines
+            </p>
+          </div>
+          
+          <div className="max-h-[50vh] overflow-y-auto">
+            <textarea
+              value={extractedText}
+              readOnly
+              className="h-64 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs leading-relaxed text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
+            />
+          </div>
+          
+          {error ? (
+            <p className="text-sm text-red-500">{error}</p>
+          ) : null}
+          
+          <div className="flex justify-between gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setStep("upload")}>
+              Back
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleGenerateCards}
+              disabled={!extractedText.trim() || generating}
             >
               {generating ? (
                 <>
@@ -149,12 +238,16 @@ export function GenerateCardsModal({
                 <>
                   <Sparkles size={14} />
                   Generate Cards
+                  <ArrowRight size={14} />
                 </>
               )}
             </Button>
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {/* Step 3: Review Generated Cards */}
+      {step === "review" ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -163,14 +256,14 @@ export function GenerateCardsModal({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setStep("upload")}
+              onClick={() => setStep("text")}
               disabled={saving}
             >
               Back
             </Button>
           </div>
           
-          <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-1">
+          <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
             {generatedCards.map((card, index) => (
               <div
                 key={index}
@@ -250,7 +343,7 @@ export function GenerateCardsModal({
             </Button>
           </div>
         </div>
-      )}
+      ) : null}
     </Modal>
   );
 }
