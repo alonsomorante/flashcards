@@ -64,7 +64,7 @@ export async function POST(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3-pro-image",
+          model: "google/gemini-2.0-flash",
           messages: [
             { role: "user", content },
           ],
