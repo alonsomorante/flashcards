@@ -12,13 +12,20 @@ export async function GET(
     const { deckId } = await params;
     const { searchParams } = new URL(request.url);
     const all = searchParams.get("all") === "true";
+    const groupId = searchParams.get("groupId");
 
     const now = new Date().toISOString();
+
+    let conditions = eq(cards.deckId, Number(deckId));
+    
+    if (groupId) {
+      conditions = sql`${conditions} AND ${cards.groupId} = ${Number(groupId)}`;
+    }
 
     const baseQuery = db
       .select()
       .from(cards)
-      .where(eq(cards.deckId, Number(deckId)))
+      .where(conditions)
       .$dynamic();
 
     if (!all) {
@@ -78,6 +85,7 @@ export async function POST(
         easeFactor: result.easeFactor,
         nextReview: result.nextReview,
         lastReviewed: now,
+        lastRating: quality,
         updatedAt: now,
       })
       .where(eq(cards.id, Number(cardId)))

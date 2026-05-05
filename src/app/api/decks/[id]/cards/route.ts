@@ -29,7 +29,7 @@ export async function POST(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { front, back, notes } = body;
+    const { front, back, notes, groupId } = body;
 
     if (!front || typeof front !== "string" || front.trim().length === 0) {
       return NextResponse.json(
@@ -45,10 +45,18 @@ export async function POST(
       );
     }
 
+    if (!groupId || typeof groupId !== "number") {
+      return NextResponse.json(
+        { error: "Group is required" },
+        { status: 400 }
+      );
+    }
+
     const [card] = await db
       .insert(cards)
       .values({
         deckId: Number(id),
+        groupId,
         front: front.trim(),
         back: back.trim(),
         notes: notes?.trim() ?? "",

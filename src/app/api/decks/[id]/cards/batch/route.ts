@@ -9,6 +9,7 @@ const BatchCardSchema = z.object({
       front: z.string().min(1),
       back: z.string().min(1),
       notes: z.string().optional(),
+      groupId: z.number().optional(),
     })
   ).min(1),
 });
@@ -32,6 +33,7 @@ export async function POST(
     const deckId = Number(id);
     const cardValues = parsed.data.cards.map((card) => ({
       deckId,
+      groupId: card.groupId ?? null,
       front: card.front.trim(),
       back: card.back.trim(),
       notes: card.notes?.trim() ?? "",

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { decks, cards } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { decks, cards, groups } from "@/db/schema";
+import { eq, asc } from "drizzle-orm";
 
 export async function GET(
   _request: NextRequest,
@@ -11,8 +11,9 @@ export async function GET(
     const { id } = await params;
     const deckId = Number(id);
 
-    const [deckResult, cardsResult] = await Promise.all([
+    const [deckResult, groupsResult, cardsResult] = await Promise.all([
       db.select().from(decks).where(eq(decks.id, deckId)),
+      db.select().from(groups).where(eq(groups.deckId, deckId)).orderBy(asc(groups.displayOrder)),
       db.select().from(cards).where(eq(cards.deckId, deckId)),
     ]);
 
@@ -21,7 +22,29 @@ export async function GET(
       return NextResponse.json({ error: "Deck not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ ...deck, cards: cardsResult });
+    // Group cards by their groupId
+    const cardsByGroup = new Map<number | null, typeof cardsResult>();
+    cardsByGroup.set(null, []); // Cards without group
+    
+    for (const card of cardsResult) {
+      const groupId = card.groupId ?? null;
+      if (!cardsByGroup.has(groupId)) {
+        cardsByGroup.set(groupId, []);
+      }
+      cardsByGroup.get(groupId)!.push(card);
+    }
+
+    // Build groups with their cards
+    const groupsWithCards = groupsResult.map(group => ({
+      ...group,
+      cards: cardsByGroup.get(group.id) || [],
+    }));
+
+    return NextResponse.json({
+      ...deck,
+      groups: groupsWithCards,
+      ungroupedCards: cardsByGroup.get(null) || [],
+    });
   } catch {
     return NextResponse.json({ error: "Failed to fetch deck" }, { status: 500 });
   }
