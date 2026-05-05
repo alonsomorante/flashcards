@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, RotateCcw, ThumbsDown, ThumbsUp, Zap } from "lucide-react";
+import { ArrowLeft, RotateCcw, Zap } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 
 interface Card {
@@ -13,8 +13,11 @@ interface Card {
   notes?: string | null;
 }
 
-async function fetchStudyCards(deckId: string, all: boolean = false): Promise<Card[]> {
-  const url = `/api/study/${deckId}${all ? "?all=true" : ""}`;
+async function fetchStudyCards(deckId: string, all: boolean = false, groupId?: string): Promise<Card[]> {
+  let url = `/api/study/${deckId}${all ? "?all=true" : ""}`;
+  if (groupId) {
+    url += all ? `&groupId=${groupId}` : `?groupId=${groupId}`;
+  }
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch cards");
   return res.json();
@@ -29,7 +32,9 @@ async function fetchDeckName(deckId: string): Promise<string> {
 
 export default function StudyPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const deckId = params.id as string;
+  const groupId = searchParams.get("groupId") || undefined;
   const queryClient = useQueryClient();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,8 +44,8 @@ export default function StudyPage() {
   const [shuffledOrder, setShuffledOrder] = useState<number[]>([]);
 
   const { data: fetchedCards = [], isLoading } = useQuery({
-    queryKey: ["study-cards", deckId, studyAll],
-    queryFn: () => fetchStudyCards(deckId, studyAll),
+    queryKey: ["study-cards", deckId, studyAll, groupId],
+    queryFn: () => fetchStudyCards(deckId, studyAll, groupId),
   });
 
   const cards = useMemo(() => {
@@ -231,24 +236,23 @@ export default function StudyPage() {
             variant="secondary"
             size="md"
             onClick={() => rateCard(2)}
+            className="border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300 dark:hover:bg-red-900"
           >
-            <ThumbsDown size={14} />
-            Hard
+            Difícil
           </Button>
           <Button
             size="md"
             onClick={() => rateCard(3)}
+            className="bg-blue-500 text-white hover:bg-blue-600"
           >
-            <ThumbsUp size={14} />
-            Good
+            Normal
           </Button>
           <Button
             size="md"
             onClick={() => rateCard(5)}
-            className="bg-zinc-900 text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="bg-emerald-500 text-white hover:bg-emerald-600"
           >
-            <Zap size={14} />
-            Easy
+            Fácil
           </Button>
         </div>
       ) : null}
