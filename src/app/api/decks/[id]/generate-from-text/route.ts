@@ -51,6 +51,11 @@ export async function POST(
     console.log("[generate-from-text] Using model: google/gemini-2.5-pro");
     console.log("[generate-from-text] Text length:", text.length);
     
+    // Truncate text if too long for the model
+    const maxTextLength = 15000;
+    const truncatedText = text.length > maxTextLength ? text.substring(0, maxTextLength) + "..." : text;
+    console.log("[generate-from-text] Text length after truncation:", truncatedText.length);
+
     const res = await fetch(
       "https://ai-gateway.vercel.sh/v1/chat/completions",
       {
@@ -65,7 +70,7 @@ export async function POST(
             { role: "system", content: SYSTEM_PROMPT },
             { 
               role: "user", 
-              content: `Analiza el siguiente texto y extrae flashcards atómicas de alta calidad:\n\n${text}` 
+              content: `Analiza el siguiente texto y extrae flashcards atómicas de alta calidad:\n\n${truncatedText}` 
             },
           ],
           max_tokens: 4000,
@@ -84,11 +89,17 @@ export async function POST(
     }
 
     const data = await res.json();
+    console.log("[generate-from-text] AI response structure:", Object.keys(data));
+    console.log("[generate-from-text] AI response:", JSON.stringify(data).substring(0, 500));
+    
     const rawContent = data.choices?.[0]?.message?.content ?? "";
+    console.log("[generate-from-text] Raw content length:", rawContent.length);
+    console.log("[generate-from-text] Raw content preview:", rawContent.substring(0, 200));
 
     // Extract JSON from the response
     const jsonMatch = rawContent.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
+      console.error("[generate-from-text] No JSON array found in response");
       return NextResponse.json(
         { error: "Failed to parse generated cards from AI response" },
         { status: 500 }
