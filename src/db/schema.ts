@@ -35,6 +35,9 @@ export const cards = sqliteTable("cards", {
   front: text("front").notNull(),
   back: text("back").notNull(),
   notes: text("notes").default(""),
+  state: text("state").default("new"), // 'new' | 'learning' | 'review' | 'relearning'
+  learningStep: integer("learning_step").default(0),
+  dueMinutes: integer("due_minutes"),
   repetitions: integer("repetitions").default(0),
   interval: real("interval").default(0),
   easeFactor: real("ease_factor").default(2.5),

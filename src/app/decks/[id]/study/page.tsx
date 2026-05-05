@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, RotateCcw, Zap } from "lucide-react";
@@ -11,6 +11,11 @@ interface Card {
   front: string;
   back: string;
   notes?: string | null;
+  state?: string;
+  learningStep?: number;
+  dueMinutes?: number | null;
+  interval?: number;
+  easeFactor?: number;
 }
 
 async function fetchStudyCards(deckId: string, all: boolean = false, groupId?: string): Promise<Card[]> {
@@ -30,6 +35,59 @@ async function fetchDeckName(deckId: string): Promise<string> {
   return data.name;
 }
 
+function getButtonLabel(quality: number): string {
+  switch (quality) {
+    case 1: return "Again";
+    case 2: return "Hard";
+    case 3: return "Good";
+    case 5: return "Easy";
+    default: return "";
+  }
+}
+
+function getButtonColor(quality: number): string {
+  switch (quality) {
+    case 1: return "bg-red-600 hover:bg-red-700 text-white";
+    case 2: return "bg-orange-500 hover:bg-orange-600 text-white";
+    case 3: return "bg-blue-500 hover:bg-blue-600 text-white";
+    case 5: return "bg-emerald-500 hover:bg-emerald-600 text-white";
+    default: return "";
+  }
+}
+
+function getIntervalText(card: Card, quality: number): string {
+  const state = card.state ?? "new";
+  
+  if (state === "new") {
+    switch (quality) {
+      case 1: return "< 1m";
+      case 2: return "< 6m";
+      case 3: return "< 10m";
+      case 5: return "1d";
+    }
+  }
+  
+  if (state === "learning" || state === "relearning") {
+    switch (quality) {
+      case 1: return "< 1m";
+      case 2: return "< 6m";
+      case 3: return state === "learning" && (card.learningStep ?? 0) >= 2 ? "1d" : "< 10m";
+      case 5: return "1d";
+    }
+  }
+  
+  if (state === "review") {
+    switch (quality) {
+      case 1: return "< 1m";
+      case 2: return `${Math.round((card.interval ?? 0) * 1.2)}d`;
+      case 3: return `${Math.round((card.interval ?? 0) * (card.easeFactor ?? 2.5))}d`;
+      case 5: return `${Math.round((card.interval ?? 0) * (card.easeFactor ?? 2.5) * 1.3)}d`;
+    }
+  }
+  
+  return "";
+}
+
 export default function StudyPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -41,19 +99,11 @@ export default function StudyPage() {
   const [flipped, setFlipped] = useState(false);
   const [finished, setFinished] = useState(false);
   const [studyAll, setStudyAll] = useState(false);
-  const [shuffledOrder, setShuffledOrder] = useState<number[]>([]);
 
-  const { data: fetchedCards = [], isLoading } = useQuery({
+  const { data: cards = [], isLoading, refetch } = useQuery({
     queryKey: ["study-cards", deckId, studyAll, groupId],
     queryFn: () => fetchStudyCards(deckId, studyAll, groupId),
   });
-
-  const cards = useMemo(() => {
-    if (shuffledOrder.length === fetchedCards.length) {
-      return shuffledOrder.map((i) => fetchedCards[i]);
-    }
-    return fetchedCards;
-  }, [fetchedCards, shuffledOrder]);
 
   const { data: deckName = "" } = useQuery({
     queryKey: ["deck-name", deckId],
@@ -70,13 +120,20 @@ export default function StudyPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
-      queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", Number(deckId)] });
     },
   });
 
   useEffect(() => {
     setFlipped(false);
   }, [currentIndex]);
+
+  // Reset finished state when cards are refetched
+  useEffect(() => {
+    if (cards.length > 0 && finished) {
+      setFinished(false);
+      setCurrentIndex(0);
+    }
+  }, [cards.length, finished]);
 
   const currentCard = cards[currentIndex];
 
@@ -86,13 +143,31 @@ export default function StudyPage() {
 
       rateCardMutation.mutate({ cardId: currentCard.id, quality });
 
-      if (currentIndex + 1 < cards.length) {
-        setCurrentIndex((prev) => prev + 1);
+      // Check if card should be reinserted (learning state with Again/Hard)
+      const shouldReinsert = 
+        (currentCard.state === "learning" || currentCard.state === "relearning" || currentCard.state === "new") &&
+        (quality === 1 || quality === 2);
+
+      if (shouldReinsert) {
+        // Refetch to get updated cards including reinserted ones
+        setTimeout(() => {
+          refetch();
+        }, 500);
+        
+        if (currentIndex + 1 < cards.length) {
+          setCurrentIndex((prev) => prev + 1);
+        } else {
+          setFinished(true);
+        }
       } else {
-        setFinished(true);
+        if (currentIndex + 1 < cards.length) {
+          setCurrentIndex((prev) => prev + 1);
+        } else {
+          setFinished(true);
+        }
       }
     },
-    [currentCard, currentIndex, cards.length, rateCardMutation]
+    [currentCard, currentIndex, cards.length, rateCardMutation, refetch]
   );
 
   const handleFlip = useCallback(() => {
@@ -100,14 +175,11 @@ export default function StudyPage() {
   }, []);
 
   const handleRestart = useCallback(() => {
-    setShuffledOrder((prev) => {
-      const order = prev.length > 0 ? [...prev] : cards.map((_, i) => i);
-      return order.sort(() => Math.random() - 0.5);
-    });
     setCurrentIndex(0);
     setFlipped(false);
     setFinished(false);
-  }, [cards]);
+    refetch();
+  }, [refetch]);
 
   const handleStudyAll = useCallback(() => {
     setStudyAll(true);
@@ -144,8 +216,9 @@ export default function StudyPage() {
             No cards are due for review right now
           </p>
           <div className="mt-6 flex gap-3">
-            <Button variant="secondary" size="sm" onClick={handleStudyAll}>
-              Study anyway
+            <Button variant="secondary" size="sm" onClick={handleRestart}>
+              <RotateCcw size={14} />
+              Study Again
             </Button>
             <LinkButton
               href={`/decks/${deckId}`}
@@ -230,30 +303,20 @@ export default function StudyPage() {
         </div>
       ) : null}
 
-      {flipped ? (
-        <div className="flex justify-center gap-2">
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => rateCard(2)}
-            className="border-red-200 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300 dark:hover:bg-red-900"
-          >
-            Difícil
-          </Button>
-          <Button
-            size="md"
-            onClick={() => rateCard(3)}
-            className="bg-blue-500 text-white hover:bg-blue-600"
-          >
-            Normal
-          </Button>
-          <Button
-            size="md"
-            onClick={() => rateCard(5)}
-            className="bg-emerald-500 text-white hover:bg-emerald-600"
-          >
-            Fácil
-          </Button>
+      {flipped && currentCard ? (
+        <div className="grid grid-cols-4 gap-2">
+          {[1, 2, 3, 5].map((quality) => (
+            <button
+              key={quality}
+              onClick={() => rateCard(quality)}
+              className={`flex flex-col items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors ${getButtonColor(quality)}`}
+            >
+              <span>{getButtonLabel(quality)}</span>
+              <span className="mt-1 text-xs opacity-70">
+                {getIntervalText(currentCard, quality)}
+              </span>
+            </button>
+          ))}
         </div>
       ) : null}
 
