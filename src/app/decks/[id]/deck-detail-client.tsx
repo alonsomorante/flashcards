@@ -2,9 +2,10 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Trash2, BookOpen, Plus, FolderOpen } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ArrowLeft, Trash2, BookOpen, Plus, FolderOpen, X } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { CardForm } from "./card-form";
 import { CardItem } from "./card-item";
 import { GenerateCardsModal } from "./generate-cards-modal";
@@ -60,6 +61,11 @@ export function DeckDetailClient({ deck }: Props) {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [newGroupName, setNewGroupName] = useState("");
 
+  // Confirmation modal states
+  const [showDeleteDeckModal, setShowDeleteDeckModal] = useState(false);
+  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<number | null>(null);
+
   // Use deck.groups directly from props (managed by React Query in parent)
   const groups = deck.groups;
 
@@ -79,8 +85,50 @@ export function DeckDetailClient({ deck }: Props) {
       if (!res.ok) throw new Error("Failed to create group");
       return res.json();
     },
+    onMutate: async (name) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["deck", String(deck.id)] });
+      
+      // Snapshot the previous value
+      const previousDeck = queryClient.getQueryData<DeckData>(["deck", String(deck.id)]);
+      
+      // Optimistically update to the new value
+      if (previousDeck) {
+        const optimisticGroup: Group = {
+          id: Date.now(), // Temporary ID
+          name: name.trim(),
+          displayOrder: previousDeck.groups.length,
+          cards: [],
+        };
+        
+        queryClient.setQueryData(["deck", String(deck.id)], {
+          ...previousDeck,
+          groups: [...previousDeck.groups, optimisticGroup],
+        });
+      }
+      
+      return { previousDeck };
+    },
+    onError: (_err, _name, context) => {
+      // Rollback on error
+      if (context?.previousDeck) {
+        queryClient.setQueryData(["deck", String(deck.id)], context.previousDeck);
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
+    },
+  });
+
+  const deleteGroupMutation = useMutation({
+    mutationFn: async (groupId: number) => {
+      const res = await fetch(`/api/decks/${deck.id}/groups/${groupId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete group");
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck-groups", deck.id] });
       queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
     },
   });
@@ -115,9 +163,12 @@ export function DeckDetailClient({ deck }: Props) {
   }, [deck.id, queryClient]);
 
   const handleDeleteDeck = useCallback(() => {
-    if (!confirm("Delete this deck and all its cards?")) return;
     deleteDeckMutation.mutate();
   }, [deleteDeckMutation]);
+
+  const handleDeleteGroup = useCallback((groupId: number) => {
+    deleteGroupMutation.mutate(groupId);
+  }, [deleteGroupMutation]);
 
   const toggleNotes = useCallback((cardId: number) => {
     setExpandedNotes((prev) => {
@@ -175,7 +226,7 @@ export function DeckDetailClient({ deck }: Props) {
           >
             Edit
           </LinkButton>
-          <Button variant="danger" size="sm" onClick={handleDeleteDeck}>
+          <Button variant="danger" size="sm" onClick={() => setShowDeleteDeckModal(true)}>
             <Trash2 size={14} />
           </Button>
         </div>
@@ -200,9 +251,14 @@ export function DeckDetailClient({ deck }: Props) {
               }
             }}
           />
-          <Button type="button" size="sm" onClick={handleCreateGroup}>
+          <Button 
+            type="button" 
+            size="sm" 
+            onClick={handleCreateGroup}
+            disabled={createGroupMutation.isPending}
+          >
             <Plus size={14} />
-            Add Group
+            {createGroupMutation.isPending ? "Creating..." : "Add Group"}
           </Button>
         </div>
       </div>
@@ -239,7 +295,7 @@ export function DeckDetailClient({ deck }: Props) {
                       {groupDue > 0 ? ` · ${groupDue} due` : null}
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-2">
                     <LinkButton
                       href={`/decks/${deck.id}/study?groupId=${group.id}`}
                       size="sm"
@@ -259,6 +315,16 @@ export function DeckDetailClient({ deck }: Props) {
                       <Plus size={12} />
                       Add Card
                     </Button>
+                    <button
+                      onClick={() => {
+                        setGroupToDelete(group.id);
+                        setShowDeleteGroupModal(true);
+                      }}
+                      className="rounded-md p-1.5 text-zinc-300 hover:bg-red-50 hover:text-red-500 dark:text-zinc-700 dark:hover:bg-red-950 dark:hover:text-red-400"
+                      title="Delete group"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
                 </div>
 
@@ -327,6 +393,35 @@ export function DeckDetailClient({ deck }: Props) {
         deckId={deck.id}
         groups={groups}
         onCardsCreated={handleCardsGenerated}
+      />
+
+      {/* Delete Deck Confirmation */}
+      <ConfirmModal
+        open={showDeleteDeckModal}
+        onClose={() => setShowDeleteDeckModal(false)}
+        onConfirm={handleDeleteDeck}
+        title="Delete Deck"
+        message={`Are you sure you want to delete "${deck.name}"? This will permanently delete the deck and all ${totalCards} cards inside it. This action cannot be undone.`}
+        confirmText="Delete Deck"
+        variant="danger"
+      />
+
+      {/* Delete Group Confirmation */}
+      <ConfirmModal
+        open={showDeleteGroupModal}
+        onClose={() => {
+          setShowDeleteGroupModal(false);
+          setGroupToDelete(null);
+        }}
+        onConfirm={() => {
+          if (groupToDelete) {
+            handleDeleteGroup(groupToDelete);
+          }
+        }}
+        title="Delete Group"
+        message="Are you sure you want to delete this group? The cards in this group will become ungrouped (they won't be deleted)."
+        confirmText="Delete Group"
+        variant="warning"
       />
     </div>
   );
