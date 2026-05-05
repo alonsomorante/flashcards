@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Trash2, BookOpen, FolderOpen, ChevronRight } from "lucide-react";
+import { ArrowLeft, Trash2, BookOpen, FolderOpen, Plus } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { useState } from "react";
@@ -118,37 +118,56 @@ export function DeckDetailClient({ deck }: Props) {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {deck.groups.map((group) => {
             const groupDue = group.cards.filter(
               (c) => !c.nextReview || new Date(c.nextReview) <= new Date()
             ).length;
 
             return (
-              <LinkButton
+              <div
                 key={group.id}
-                href={`/decks/${deck.id}/groups/${group.id}`}
-                variant="ghost"
-                className="flex w-full items-center justify-between rounded-xl border border-zinc-200 bg-white px-4 py-4 text-left no-underline transition-all hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-950"
+                className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
               >
-                <div className="flex items-center gap-3">
-                  <FolderOpen size={20} className="text-zinc-400" />
-                  <div>
+                <LinkButton
+                  href={`/decks/${deck.id}/groups/${group.id}`}
+                  variant="ghost"
+                  className="mb-4 flex flex-col items-start gap-1 p-0 no-underline hover:bg-transparent"
+                >
+                  <div className="flex items-center gap-2">
+                    <FolderOpen size={18} className="text-zinc-400" />
                     <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
                       {group.name}
                     </h3>
-                    <p className="mt-0.5 text-xs text-zinc-400">
-                      {group.cards.length}{" "}
-                      {group.cards.length === 1 ? "card" : "cards"}
-                      {groupDue > 0 ? ` · ${groupDue} due` : null}
-                    </p>
                   </div>
+                  <p className="text-xs text-zinc-400">
+                    {group.cards.length}{" "}
+                    {group.cards.length === 1 ? "card" : "cards"}
+                    {groupDue > 0 ? ` · ${groupDue} due` : null}
+                  </p>
+                </LinkButton>
+
+                <div className="mt-auto flex gap-2">
+                  <LinkButton
+                    href={`/decks/${deck.id}/study?groupId=${group.id}`}
+                    size="sm"
+                    variant="secondary"
+                    className="flex-1"
+                  >
+                    <BookOpen size={12} />
+                    Study
+                  </LinkButton>
+                  <LinkButton
+                    href={`/decks/${deck.id}/groups/${group.id}?action=add`}
+                    size="sm"
+                    variant="ghost"
+                    className="flex-1"
+                  >
+                    <Plus size={12} />
+                    Add
+                  </LinkButton>
                 </div>
-                <ChevronRight
-                  size={18}
-                  className="text-zinc-300 dark:text-zinc-600"
-                />
-              </LinkButton>
+              </div>
             );
           })}
         </div>
