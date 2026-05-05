@@ -44,17 +44,10 @@ type CardPartial = {
   notes?: string;
 };
 
-async function fetchGroups(deckId: number): Promise<Group[]> {
-  const res = await fetch(`/api/decks/${deckId}/groups`);
-  if (!res.ok) throw new Error("Failed to fetch groups");
-  return res.json();
-}
-
 export function DeckDetailClient({ deck }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   
-  const [groups, setGroups] = useState<Group[]>(deck.groups);
   const [showCardForm, setShowCardForm] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingCard, setEditingCard] = useState<{
@@ -67,19 +60,8 @@ export function DeckDetailClient({ deck }: Props) {
   const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
   const [newGroupName, setNewGroupName] = useState("");
 
-  // Query for groups
-  const { data: fetchedGroups = [] } = useQuery({
-    queryKey: ["deck-groups", deck.id],
-    queryFn: () => fetchGroups(deck.id),
-  });
-
-  // Sync fetched groups with local state
-  if (fetchedGroups.length > 0 && JSON.stringify(fetchedGroups) !== JSON.stringify(groups)) {
-    setGroups(fetchedGroups.map(g => ({
-      ...g,
-      cards: deck.groups.find(dg => dg.id === g.id)?.cards || []
-    })));
-  }
+  // Use deck.groups directly from props (managed by React Query in parent)
+  const groups = deck.groups;
 
   const totalCards = groups.reduce((sum, g) => sum + g.cards.length, 0);
   const totalDue = groups.reduce((sum, g) => 
@@ -114,57 +96,21 @@ export function DeckDetailClient({ deck }: Props) {
   });
 
   const handleCardCreated = useCallback((card: CardPartial & { groupId?: number }) => {
-    if (!card.groupId) return;
-    setGroups((prev) =>
-      prev.map((group) =>
-        group.id === card.groupId
-          ? { ...group, cards: [{ ...card, nextReview: null, lastRating: null } as CardData, ...group.cards] }
-          : group
-      )
-    );
     setShowCardForm(false);
     setSelectedGroupId(null);
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
   }, [deck.id, queryClient]);
 
   const handleCardUpdated = useCallback((card: CardPartial) => {
-    setGroups((prev) =>
-      prev.map((group) => ({
-        ...group,
-        cards: group.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
-      }))
-    );
     setEditingCard(null);
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
   }, [deck.id, queryClient]);
 
   const handleCardDeleted = useCallback((cardId: number) => {
-    setGroups((prev) =>
-      prev.map((group) => ({
-        ...group,
-        cards: group.cards.filter((c) => c.id !== cardId),
-      }))
-    );
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
   }, [deck.id, queryClient]);
 
   const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string; groupId?: number }>) => {
-    setGroups((prev) => {
-      const updated = [...prev];
-      newCards.forEach((card) => {
-        const groupId = card.groupId || prev[0]?.id;
-        if (groupId) {
-          const groupIndex = updated.findIndex((g) => g.id === groupId);
-          if (groupIndex >= 0) {
-            updated[groupIndex] = {
-              ...updated[groupIndex],
-              cards: [{ ...card, nextReview: null, lastRating: null } as CardData, ...updated[groupIndex].cards],
-            };
-          }
-        }
-      });
-      return updated;
-    });
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
   }, [deck.id, queryClient]);
 
