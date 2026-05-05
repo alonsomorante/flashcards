@@ -3,6 +3,7 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { ArrowLeft, Trash2, BookOpen, FolderOpen, Plus } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -129,23 +130,22 @@ export function DeckDetailClient({ deck }: Props) {
                 key={group.id}
                 className="flex flex-col rounded-xl border border-zinc-200 bg-white p-5 transition-all hover:border-zinc-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700"
               >
-                <LinkButton
-                  href={`/decks/${deck.id}/groups/${group.id}`}
-                  variant="ghost"
-                  className="mb-4 flex flex-col items-start gap-1 p-0 no-underline hover:bg-transparent"
-                >
-                  <div className="flex items-center gap-2">
+                <div className="mb-4 flex flex-col gap-1">
+                  <Link
+                    href={`/decks/${deck.id}/groups/${group.id}`}
+                    className="group flex items-center gap-2 no-underline"
+                  >
                     <FolderOpen size={18} className="text-zinc-400" />
-                    <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+                    <h3 className="font-medium text-zinc-900 group-hover:underline dark:text-zinc-100">
                       {group.name}
                     </h3>
-                  </div>
+                  </Link>
                   <p className="text-xs text-zinc-400">
                     {group.cards.length}{" "}
                     {group.cards.length === 1 ? "card" : "cards"}
                     {groupDue > 0 ? ` · ${groupDue} due` : null}
                   </p>
-                </LinkButton>
+                </div>
 
                 <div className="mt-auto flex gap-2">
                   <LinkButton
