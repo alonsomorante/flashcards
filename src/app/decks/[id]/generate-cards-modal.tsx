@@ -12,17 +12,24 @@ interface GeneratedCard {
   notes?: string;
 }
 
+interface Group {
+  id: number;
+  name: string;
+}
+
 interface GenerateCardsModalProps {
   open: boolean;
   onClose: () => void;
   deckId: number;
-  onCardsCreated: (cards: Array<{ id: number; front: string; back: string; notes?: string }>) => void;
+  groups?: Group[];
+  onCardsCreated: (cards: Array<{ id: number; front: string; back: string; notes?: string; groupId?: number }>) => void;
 }
 
 export function GenerateCardsModal({
   open,
   onClose,
   deckId,
+  groups = [],
   onCardsCreated,
 }: GenerateCardsModalProps) {
   const [images, setImages] = useState<string[]>([]);
@@ -33,6 +40,7 @@ export function GenerateCardsModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [step, setStep] = useState<"upload" | "text" | "review">("upload");
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(groups[0]?.id ?? null);
 
   const handleExtractText = async () => {
     if (images.length === 0) return;
@@ -97,10 +105,15 @@ export function GenerateCardsModal({
     setError("");
     
     try {
+      const cardsWithGroup = generatedCards.map(card => ({
+        ...card,
+        groupId: selectedGroupId,
+      }));
+
       const res = await fetch(`/api/decks/${deckId}/cards/batch`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cards: generatedCards }),
+        body: JSON.stringify({ cards: cardsWithGroup }),
       });
       
       const data = await res.json();
@@ -262,6 +275,30 @@ export function GenerateCardsModal({
               Back
             </Button>
           </div>
+
+          {/* Group Selector */}
+          {groups.length > 0 ? (
+            <div className="flex items-center gap-2">
+              <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                Assign to group:
+              </label>
+              <select
+                value={selectedGroupId ?? ""}
+                onChange={(e) => setSelectedGroupId(Number(e.target.value))}
+                className="h-8 rounded-lg border border-zinc-200 bg-white px-2 text-sm text-zinc-900 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+              >
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              No groups available. Create a group first.
+            </p>
+          )}
           
           <div className="max-h-[50vh] space-y-3 overflow-y-auto pr-1">
             {generatedCards.map((card, index) => (

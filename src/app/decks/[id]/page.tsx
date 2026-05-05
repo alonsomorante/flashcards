@@ -5,16 +5,32 @@ import { useParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { DeckDetailClient } from "./deck-detail-client";
 
-interface DeckData {
+interface Group {
   id: number;
   name: string;
-  description: string | null;
+  displayOrder: number;
   cards: Array<{
     id: number;
     front: string;
     back: string;
     notes?: string | null;
     nextReview?: string | null;
+    lastRating?: number | null;
+  }>;
+}
+
+interface DeckData {
+  id: number;
+  name: string;
+  description: string | null;
+  groups: Group[];
+  ungroupedCards: Array<{
+    id: number;
+    front: string;
+    back: string;
+    notes?: string | null;
+    nextReview?: string | null;
+    lastRating?: number | null;
   }>;
 }
 

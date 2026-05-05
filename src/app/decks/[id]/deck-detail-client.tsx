@@ -1,18 +1,13 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Trash2, Tag, X } from "lucide-react";
+import { ArrowLeft, Trash2, BookOpen, Plus, FolderOpen } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { CardForm } from "./card-form";
 import { CardItem } from "./card-item";
 import { GenerateCardsModal } from "./generate-cards-modal";
-
-interface Tag {
-  id: number;
-  name: string;
-}
 
 interface CardData {
   id: number;
@@ -20,14 +15,22 @@ interface CardData {
   back: string;
   notes?: string | null;
   nextReview?: string | null;
-  tags?: Tag[];
+  lastRating?: number | null;
+}
+
+interface Group {
+  id: number;
+  name: string;
+  displayOrder: number;
+  cards: CardData[];
 }
 
 interface DeckData {
   id: number;
   name: string;
   description: string | null;
-  cards: CardData[];
+  groups: Group[];
+  ungroupedCards: CardData[];
 }
 
 interface Props {
@@ -41,15 +44,9 @@ type CardPartial = {
   notes?: string;
 };
 
-async function fetchTags(deckId: number): Promise<Tag[]> {
-  const res = await fetch(`/api/decks/${deckId}/tags`);
-  if (!res.ok) throw new Error("Failed to fetch tags");
-  return res.json();
-}
-
-async function fetchCardTags(deckId: number, cardId: number): Promise<{ tagId: number; tagName: string }[]> {
-  const res = await fetch(`/api/decks/${deckId}/cards/${cardId}/tags`);
-  if (!res.ok) throw new Error("Failed to fetch card tags");
+async function fetchGroups(deckId: number): Promise<Group[]> {
+  const res = await fetch(`/api/decks/${deckId}/groups`);
+  if (!res.ok) throw new Error("Failed to fetch groups");
   return res.json();
 }
 
@@ -57,7 +54,7 @@ export function DeckDetailClient({ deck }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   
-  const [cards, setCards] = useState<CardData[]>(deck.cards);
+  const [groups, setGroups] = useState<Group[]>(deck.groups);
   const [showCardForm, setShowCardForm] = useState(false);
   const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingCard, setEditingCard] = useState<{
@@ -67,76 +64,42 @@ export function DeckDetailClient({ deck }: Props) {
     notes?: string | null;
   } | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
-  const [selectedTagFilter, setSelectedTagFilter] = useState<number | null>(null);
-  const [newTagName, setNewTagName] = useState("");
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [newGroupName, setNewGroupName] = useState("");
 
-  // Query for tags
-  const { data: tags = [] } = useQuery({
-    queryKey: ["deck-tags", deck.id],
-    queryFn: () => fetchTags(deck.id),
+  // Query for groups
+  const { data: fetchedGroups = [] } = useQuery({
+    queryKey: ["deck-groups", deck.id],
+    queryFn: () => fetchGroups(deck.id),
   });
 
-  // Load card tags using React Query
-  useQuery({
-    queryKey: ["deck-cards-with-tags", deck.id],
-    queryFn: async () => {
-      const cardsWithTags = await Promise.all(
-        deck.cards.map(async (card) => {
-          try {
-            const cardTags = await fetchCardTags(deck.id, card.id);
-            return { 
-              ...card, 
-              tags: cardTags.map((t) => ({ id: t.tagId, name: t.tagName })) 
-            };
-          } catch {
-            return card;
-          }
-        })
-      );
-      setCards(cardsWithTags);
-      return cardsWithTags;
-    },
-    enabled: deck.cards.length > 0,
-  });
+  // Sync fetched groups with local state
+  if (fetchedGroups.length > 0 && JSON.stringify(fetchedGroups) !== JSON.stringify(groups)) {
+    setGroups(fetchedGroups.map(g => ({
+      ...g,
+      cards: deck.groups.find(dg => dg.id === g.id)?.cards || []
+    })));
+  }
 
-  const dueCount = useMemo(
-    () =>
-      cards.filter(
-        (c) => !c.nextReview || new Date(c.nextReview) <= new Date()
-      ).length,
-    [cards]
+  const totalCards = groups.reduce((sum, g) => sum + g.cards.length, 0);
+  const totalDue = groups.reduce((sum, g) => 
+    sum + g.cards.filter(c => !c.nextReview || new Date(c.nextReview) <= new Date()).length, 0
   );
 
-  const filteredCards = useMemo(() => {
-    if (!selectedTagFilter) return cards;
-    return cards.filter((card) =>
-      card.tags?.some((tag) => tag.id === selectedTagFilter)
-    );
-  }, [cards, selectedTagFilter]);
-
   // Mutations
-  const createTagMutation = useMutation({
+  const createGroupMutation = useMutation({
     mutationFn: async (name: string) => {
-      const res = await fetch(`/api/decks/${deck.id}/tags`, {
+      const res = await fetch(`/api/decks/${deck.id}/groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim() }),
       });
-      if (!res.ok) throw new Error("Failed to create tag");
+      if (!res.ok) throw new Error("Failed to create group");
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck-tags", deck.id] });
-    },
-  });
-
-  const deleteTagMutation = useMutation({
-    mutationFn: async (tagId: number) => {
-      await fetch(`/api/decks/${deck.id}/tags/${tagId}`, { method: "DELETE" });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck-tags", deck.id] });
-      queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
+      queryClient.invalidateQueries({ queryKey: ["deck-groups", deck.id] });
+      queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
     },
   });
 
@@ -150,38 +113,59 @@ export function DeckDetailClient({ deck }: Props) {
     },
   });
 
-  const handleCardCreated = useCallback((card: CardPartial) => {
-    setCards((prev) => [
-      { ...card, nextReview: null, tags: [] } as CardData,
-      ...prev,
-    ]);
+  const handleCardCreated = useCallback((card: CardPartial & { groupId?: number }) => {
+    if (!card.groupId) return;
+    setGroups((prev) =>
+      prev.map((group) =>
+        group.id === card.groupId
+          ? { ...group, cards: [{ ...card, nextReview: null, lastRating: null } as CardData, ...group.cards] }
+          : group
+      )
+    );
     setShowCardForm(false);
+    setSelectedGroupId(null);
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
-    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
   }, [deck.id, queryClient]);
 
   const handleCardUpdated = useCallback((card: CardPartial) => {
-    setCards((prev) =>
-      prev.map((c) => (c.id === card.id ? { ...c, ...card } : c))
+    setGroups((prev) =>
+      prev.map((group) => ({
+        ...group,
+        cards: group.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
+      }))
     );
     setEditingCard(null);
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
-    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
   }, [deck.id, queryClient]);
 
   const handleCardDeleted = useCallback((cardId: number) => {
-    setCards((prev) => prev.filter((c) => c.id !== cardId));
+    setGroups((prev) =>
+      prev.map((group) => ({
+        ...group,
+        cards: group.cards.filter((c) => c.id !== cardId),
+      }))
+    );
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
-    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
   }, [deck.id, queryClient]);
 
-  const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string }>) => {
-    setCards((prev) => [
-      ...newCards.map((card) => ({ ...card, nextReview: null, tags: [] } as CardData)),
-      ...prev,
-    ]);
+  const handleCardsGenerated = useCallback((newCards: Array<{ id: number; front: string; back: string; notes?: string; groupId?: number }>) => {
+    setGroups((prev) => {
+      const updated = [...prev];
+      newCards.forEach((card) => {
+        const groupId = card.groupId || prev[0]?.id;
+        if (groupId) {
+          const groupIndex = updated.findIndex((g) => g.id === groupId);
+          if (groupIndex >= 0) {
+            updated[groupIndex] = {
+              ...updated[groupIndex],
+              cards: [{ ...card, nextReview: null, lastRating: null } as CardData, ...updated[groupIndex].cards],
+            };
+          }
+        }
+      });
+      return updated;
+    });
     queryClient.invalidateQueries({ queryKey: ["deck", String(deck.id)] });
-    queryClient.invalidateQueries({ queryKey: ["deck-cards-with-tags", deck.id] });
   }, [deck.id, queryClient]);
 
   const handleDeleteDeck = useCallback(() => {
@@ -201,19 +185,11 @@ export function DeckDetailClient({ deck }: Props) {
     });
   }, []);
 
-  const handleCreateTag = () => {
-    if (!newTagName.trim()) return;
-    createTagMutation.mutate(newTagName.trim(), {
-      onSuccess: () => setNewTagName(""),
+  const handleCreateGroup = () => {
+    if (!newGroupName.trim()) return;
+    createGroupMutation.mutate(newGroupName.trim(), {
+      onSuccess: () => setNewGroupName(""),
     });
-  };
-
-  const handleDeleteTag = (tagId: number) => {
-    if (!confirm("Delete this tag?")) return;
-    deleteTagMutation.mutate(tagId);
-    if (selectedTagFilter === tagId) {
-      setSelectedTagFilter(null);
-    }
   };
 
   return (
@@ -236,13 +212,15 @@ export function DeckDetailClient({ deck }: Props) {
             </p>
           ) : null}
           <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
-            {cards.length} {cards.length === 1 ? "card" : "cards"}
-            {cards.length > 0 ? ` · ${dueCount} due` : null}
+            {totalCards} {totalCards === 1 ? "card" : "cards"}
+            {totalDue > 0 ? ` · ${totalDue} due` : null}
+            {groups.length > 0 ? ` · ${groups.length} groups` : null}
           </p>
         </div>
         <div className="flex shrink-0 gap-2">
           <LinkButton href={`/decks/${deck.id}/study`} size="sm">
-            Study
+            <BookOpen size={14} />
+            Study All
           </LinkButton>
           <LinkButton
             href={`/decks/${deck.id}/edit`}
@@ -257,95 +235,136 @@ export function DeckDetailClient({ deck }: Props) {
         </div>
       </div>
 
-      {/* Tags Section */}
-      <div className="mb-6">
-        <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            Tags
-          </h2>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newTagName}
-              onChange={(e) => setNewTagName(e.target.value)}
-              placeholder="New tag..."
-              className="h-7 rounded-lg border border-zinc-200 bg-white px-2 text-xs text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleCreateTag();
-                }
-              }}
-            />
-            <Button type="button" size="sm" variant="secondary" onClick={handleCreateTag}>
-              <Tag size={12} />
-            </Button>
-          </div>
+      {/* Create Group Section */}
+      <div className="mb-6 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+        <h2 className="mb-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Chapters / Groups
+        </h2>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+            placeholder="e.g., Chapter 1: Introduction"
+            className="h-9 flex-1 rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleCreateGroup();
+              }
+            }}
+          />
+          <Button type="button" size="sm" onClick={handleCreateGroup}>
+            <Plus size={14} />
+            Add Group
+          </Button>
         </div>
-        
-        {tags.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            <button
-              onClick={() => setSelectedTagFilter(null)}
-              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                selectedTagFilter === null
-                  ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                  : "border border-zinc-200 text-zinc-500 hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700"
-              }`}
-            >
-              All
-            </button>
-            {tags.map((tag) => (
-              <div key={tag.id} className="group relative inline-flex items-center">
-                <button
-                  onClick={() => setSelectedTagFilter(tag.id)}
-                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                    selectedTagFilter === tag.id
-                      ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-900"
-                      : "border border-zinc-200 text-zinc-500 hover:border-zinc-300 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-700"
-                  }`}
-                >
-                  {tag.name}
-                </button>
-                <button
-                  onClick={() => handleDeleteTag(tag.id)}
-                  className="ml-0.5 rounded-full p-0.5 text-zinc-300 opacity-0 transition-opacity hover:text-red-500 group-hover:opacity-100 dark:text-zinc-600"
-                >
-                  <X size={10} />
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-zinc-400 dark:text-zinc-500">
-            No tags yet. Create one to organize your cards.
-          </p>
-        )}
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-          Cards {selectedTagFilter ? `· ${filteredCards.length} shown` : null}
-        </h2>
-        {showCardForm ? null : (
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowGenerateModal(true)}
-            >
-              Generate
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowCardForm(true)}
-            >
-              + Add Card
-            </Button>
-          </div>
-        )}
-      </div>
+      {/* Groups with Cards */}
+      {groups.length === 0 ? (
+        <div className="py-16 text-center">
+          <FolderOpen size={32} className="mx-auto mb-3 text-zinc-300 dark:text-zinc-700" />
+          <p className="text-sm text-zinc-400 dark:text-zinc-500">
+            No groups yet. Create a group to start adding cards.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {groups.map((group) => {
+            const groupDue = group.cards.filter(
+              (c) => !c.nextReview || new Date(c.nextReview) <= new Date()
+            ).length;
+
+            return (
+              <div
+                key={group.id}
+                className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+              >
+                {/* Group Header */}
+                <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
+                  <div className="flex items-center gap-2">
+                    <FolderOpen size={16} className="text-zinc-400" />
+                    <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+                      {group.name}
+                    </h3>
+                    <span className="text-xs text-zinc-400">
+                      {group.cards.length} cards
+                      {groupDue > 0 ? ` · ${groupDue} due` : null}
+                    </span>
+                  </div>
+                  <div className="flex gap-2">
+                    <LinkButton
+                      href={`/decks/${deck.id}/study?groupId=${group.id}`}
+                      size="sm"
+                      variant="secondary"
+                    >
+                      <BookOpen size={12} />
+                      Study
+                    </LinkButton>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedGroupId(group.id);
+                        setShowCardForm(true);
+                      }}
+                    >
+                      <Plus size={12} />
+                      Add Card
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Group Cards */}
+                <div className="p-4">
+                  {group.cards.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-zinc-400 dark:text-zinc-500">
+                      No cards in this group yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      {group.cards.map((card) => (
+                        <CardItem
+                          key={card.id}
+                          card={card}
+                          onEdit={() =>
+                            setEditingCard({
+                              id: card.id,
+                              front: card.front,
+                              back: card.back,
+                              notes: card.notes,
+                            })
+                          }
+                          onDelete={() => handleCardDeleted(card.id)}
+                          deckId={deck.id}
+                          showNotes={expandedNotes.has(card.id)}
+                          onToggleNotes={() => toggleNotes(card.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Card Form Modal */}
+      {showCardForm && selectedGroupId ? (
+        <div className="mb-4">
+          <CardForm
+            deckId={deck.id}
+            groupId={selectedGroupId}
+            onSaved={handleCardCreated}
+            onCancel={() => {
+              setShowCardForm(false);
+              setSelectedGroupId(null);
+            }}
+          />
+        </div>
+      ) : null}
 
       {editingCard ? (
         <CardForm
@@ -356,49 +375,11 @@ export function DeckDetailClient({ deck }: Props) {
         />
       ) : null}
 
-      {showCardForm ? (
-        <CardForm
-          deckId={deck.id}
-          onSaved={handleCardCreated}
-          onCancel={() => setShowCardForm(false)}
-        />
-      ) : null}
-
-      <div className="space-y-2">
-        {filteredCards.length === 0 && !showCardForm ? (
-          <div className="py-16 text-center">
-            <p className="text-sm text-zinc-400 dark:text-zinc-500">
-              {selectedTagFilter
-                ? "No cards with this tag."
-                : "No cards yet. Add one to get started."}
-            </p>
-          </div>
-        ) : null}
-
-        {filteredCards.map((card) => (
-          <CardItem
-            key={card.id}
-            card={card}
-            onEdit={() =>
-              setEditingCard({
-                id: card.id,
-                front: card.front,
-                back: card.back,
-                notes: card.notes,
-              })
-            }
-            onDelete={() => handleCardDeleted(card.id)}
-            deckId={deck.id}
-            showNotes={expandedNotes.has(card.id)}
-            onToggleNotes={() => toggleNotes(card.id)}
-          />
-        ))}
-      </div>
-
       <GenerateCardsModal
         open={showGenerateModal}
         onClose={() => setShowGenerateModal(false)}
         deckId={deck.id}
+        groups={groups}
         onCardsCreated={handleCardsGenerated}
       />
     </div>

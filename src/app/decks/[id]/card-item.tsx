@@ -1,12 +1,7 @@
 "use client";
 
 import { memo, useMemo } from "react";
-import { Pencil, Trash2, ChevronUp, StickyNote, Tag } from "lucide-react";
-
-interface Tag {
-  id: number;
-  name: string;
-}
+import { Pencil, Trash2, ChevronUp, StickyNote } from "lucide-react";
 
 interface CardItemProps {
   card: {
@@ -14,13 +9,41 @@ interface CardItemProps {
     front: string;
     back: string;
     notes?: string | null;
-    tags?: Tag[];
+    lastRating?: number | null;
   };
   deckId: number;
   onEdit: () => void;
   onDelete: () => void;
   showNotes: boolean;
   onToggleNotes: () => void;
+}
+
+function getRatingColor(rating: number | null | undefined): string {
+  if (!rating) return "";
+  switch (rating) {
+    case 2:
+      return "bg-red-500";
+    case 3:
+      return "bg-blue-500";
+    case 5:
+      return "bg-emerald-500";
+    default:
+      return "";
+  }
+}
+
+function getRatingLabel(rating: number | null | undefined): string {
+  if (!rating) return "";
+  switch (rating) {
+    case 2:
+      return "Difícil";
+    case 3:
+      return "Normal";
+    case 5:
+      return "Fácil";
+    default:
+      return "";
+  }
 }
 
 export const CardItem = memo(function CardItem({
@@ -46,10 +69,23 @@ export const CardItem = memo(function CardItem({
     [card.notes]
   );
 
-  const hasTags = card.tags && card.tags.length > 0;
+  const ratingColor = getRatingColor(card.lastRating);
+  const ratingLabel = getRatingLabel(card.lastRating);
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="relative rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+      {/* Rating indicator */}
+      {ratingColor ? (
+        <div
+          className={`absolute right-0 top-0 rounded-bl-lg rounded-tr-lg ${ratingColor} px-2 py-0.5`}
+          title={`Last rating: ${ratingLabel}`}
+        >
+          <span className="text-[9px] font-bold text-white uppercase">
+            {ratingLabel}
+          </span>
+        </div>
+      ) : null}
+
       <div className="flex items-center gap-4 p-4">
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -58,20 +94,6 @@ export const CardItem = memo(function CardItem({
           <p className="mt-0.5 text-sm text-zinc-400 dark:text-zinc-500">
             {card.back}
           </p>
-          
-          {hasTags ? (
-            <div className="mt-2 flex flex-wrap gap-1">
-              {card.tags?.map((tag) => (
-                <span
-                  key={tag.id}
-                  className="inline-flex items-center gap-0.5 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                >
-                  <Tag size={8} />
-                  {tag.name}
-                </span>
-              ))}
-            </div>
-          ) : null}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {hasNotes ? (
