@@ -48,6 +48,9 @@ export async function POST(
 
     const { text } = parsed.data;
 
+    console.log("[generate-from-text] Using model: google/gemini-2.5-pro");
+    console.log("[generate-from-text] Text length:", text.length);
+    
     const res = await fetch(
       "https://ai-gateway.vercel.sh/v1/chat/completions",
       {
@@ -73,6 +76,7 @@ export async function POST(
 
     if (!res.ok) {
       const err = await res.text();
+      console.error("[generate-from-text] AI Gateway error:", err);
       return NextResponse.json(
         { error: `AI Gateway error: ${err}` },
         { status: res.status }
@@ -120,7 +124,8 @@ export async function POST(
       cards: validatedCards,
       deckId: Number(id),
     });
-  } catch {
+  } catch (err) {
+    console.error("[generate-from-text] Unhandled error:", err);
     return NextResponse.json(
       { error: "Failed to generate cards" },
       { status: 500 }
