@@ -18,11 +18,17 @@ REGLAS DE EXTRACCIÓN:
 8. SIN AMBIGÜEDAD: Si un hecho requiere clarificación, inclúyela en notes.
 
 FORMATO OUTPUT:
-Devuelve SOLO un array JSON válido. Sin markdown, sin explicaciones, sin bloques de código.
+Devuelve SOLO un array JSON válido COMPLETO Y SIN TRUNCAR. Asegúrate de cerrar todos los corchetes y llaves.
+Sin markdown, sin explicaciones, sin bloques de código.
 Cada objeto debe tener exactamente estos campos:
 - "front": string (pregunta/prompt)
 - "back": string (respuesta)
 - "notes": string (contexto opcional)
+
+REGLAS DE FORMATO:
+- El JSON debe estar COMPLETO, con todos los corchetes de cierre ]
+- No trunques la respuesta por falta de espacio
+- Si hay muchos hechos, prioriza los más importantes pero mantén el JSON válido
 
 Ejemplo:
 [
@@ -69,7 +75,7 @@ export async function POST(
               content: `Analiza el siguiente texto y extrae flashcards atómicas de alta calidad:\n\n${truncatedText}` 
             },
           ],
-          max_tokens: 4000,
+          max_tokens: 8000,
           temperature: 0.2,
         }),
       }
@@ -93,25 +99,57 @@ export async function POST(
       .replace(/```\s*$/i, "")
       .trim();
 
-    // Extract JSON from the response
-    const jsonMatch = cleanedContent.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      console.error("[generate-from-text] No JSON array found in response");
-      console.error("[generate-from-text] Cleaned content:", cleanedContent.substring(0, 500));
-      return NextResponse.json(
-        { error: "Failed to parse generated cards from AI response" },
-        { status: 500 }
-      );
-    }
-
+    // Try to parse JSON directly first
     let generatedCards: Array<{ front: string; back: string; notes?: string }>;
+    
     try {
-      generatedCards = JSON.parse(jsonMatch[0]);
+      generatedCards = JSON.parse(cleanedContent);
     } catch {
-      return NextResponse.json(
-        { error: "Invalid JSON in AI response" },
-        { status: 500 }
-      );
+      // If direct parsing fails, try to find the JSON array
+      const jsonMatch = cleanedContent.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        console.error("[generate-from-text] No JSON array found in response");
+        console.error("[generate-from-text] Cleaned content:", cleanedContent.substring(0, 500));
+        return NextResponse.json(
+          { error: "Failed to parse generated cards from AI response" },
+          { status: 500 }
+        );
+      }
+
+      try {
+        generatedCards = JSON.parse(jsonMatch[0]);
+      } catch {
+        // Try to fix truncated JSON by adding missing closing brackets
+        let fixedJson = jsonMatch[0];
+        
+        // Count opening and closing brackets
+        const openBrackets = (fixedJson.match(/\{/g) || []).length;
+        const closeBrackets = (fixedJson.match(/\}/g) || []).length;
+        const openArrays = (fixedJson.match(/\[/g) || []).length;
+        const closeArrays = (fixedJson.match(/\]/g) || []).length;
+        
+        // Add missing closing brackets
+        for (let i = 0; i < openBrackets - closeBrackets; i++) {
+          fixedJson += '}';
+        }
+        // Add missing closing arrays
+        for (let i = 0; i < openArrays - closeArrays; i++) {
+          fixedJson += ']';
+        }
+        
+        // Remove trailing commas before closing brackets
+        fixedJson = fixedJson.replace(/,\s*([}\]])/g, '$1');
+        
+        try {
+          generatedCards = JSON.parse(fixedJson);
+        } catch {
+          console.error("[generate-from-text] Could not fix truncated JSON");
+          return NextResponse.json(
+            { error: "Invalid JSON in AI response" },
+            { status: 500 }
+          );
+        }
+      }
     }
 
     // Validate structure
