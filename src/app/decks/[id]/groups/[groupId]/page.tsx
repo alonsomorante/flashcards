@@ -114,9 +114,9 @@ export default function GroupPage() {
 
   const handleCardCreated = (card: { id: number; front: string; back: string; notes?: string }) => {
     setShowCardForm(false);
-    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+    queryClient.setQueryData<GroupPageData>(["group", deckId, groupId], (old) => {
       if (!old) return old;
-      return { ...old, cards: [card, ...old.cards] };
+      return { ...old, group: { ...old.group, cards: [card, ...old.group.cards] } };
     });
     queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
       if (!old) return old;
@@ -131,11 +131,14 @@ export default function GroupPage() {
 
   const handleCardUpdated = (card: { id: number; front: string; back: string; notes?: string }) => {
     setEditingCard(null);
-    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+    queryClient.setQueryData<GroupPageData>(["group", deckId, groupId], (old) => {
       if (!old) return old;
       return {
         ...old,
-        cards: old.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
+        group: {
+          ...old.group,
+          cards: old.group.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
+        },
       };
     });
     queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
@@ -155,9 +158,9 @@ export default function GroupPage() {
   };
 
   const handleCardDeleted = (cardId: number) => {
-    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+    queryClient.setQueryData<GroupPageData>(["group", deckId, groupId], (old) => {
       if (!old) return old;
-      return { ...old, cards: old.cards.filter((c) => c.id !== cardId) };
+      return { ...old, group: { ...old.group, cards: old.group.cards.filter((c) => c.id !== cardId) } };
     });
     queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
       if (!old) return old;
@@ -176,9 +179,9 @@ export default function GroupPage() {
     const cardsForThisGroup = cards.filter((c) => c.groupId === Number(groupId));
     if (cardsForThisGroup.length === 0) return;
 
-    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+    queryClient.setQueryData<GroupPageData>(["group", deckId, groupId], (old) => {
       if (!old) return old;
-      return { ...old, cards: [...cardsForThisGroup, ...old.cards] };
+      return { ...old, group: { ...old.group, cards: [...cardsForThisGroup, ...old.group.cards] } };
     });
     queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
       if (!old) return old;
