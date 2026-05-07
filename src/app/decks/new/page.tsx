@@ -2,17 +2,61 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+interface Deck {
+  id: number;
+  name: string;
+  description: string | null;
+}
+
 export default function NewDeckPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const createDeckMutation = useMutation({
+    mutationFn: async ({ name, description }: { name: string; description: string }) => {
+      const res = await fetch("/api/decks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
+      });
+      if (!res.ok) throw new Error("Failed to create deck");
+      return res.json() as Promise<Deck>;
+    },
+    onMutate: async ({ name, description }) => {
+      await queryClient.cancelQueries({ queryKey: ["decks"] });
+      const previousDecks = queryClient.getQueryData<Deck[]>(["decks"]);
+      queryClient.setQueryData<Deck[]>(["decks"], (old) => {
+        if (!old) return old;
+        const optimisticDeck: Deck = {
+          id: Date.now(),
+          name,
+          description: description || null,
+        };
+        return [optimisticDeck, ...old];
+      });
+      return { previousDecks };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previousDecks) {
+        queryClient.setQueryData(["decks"], context.previousDecks);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["decks"] });
+    },
+    onSuccess: (deck) => {
+      router.push(`/decks/${deck.id}`);
+    },
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,23 +67,7 @@ export default function NewDeckPage() {
       return;
     }
 
-    setSaving(true);
-    try {
-      const res = await fetch("/api/decks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), description: description.trim() }),
-      });
-
-      if (!res.ok) throw new Error("Failed to create deck");
-
-      const deck = await res.json();
-      router.push(`/decks/${deck.id}`);
-    } catch {
-      setError("Failed to create deck. Please try again.");
-    } finally {
-      setSaving(false);
-    }
+    createDeckMutation.mutate({ name, description });
   };
 
   return (
@@ -73,10 +101,13 @@ export default function NewDeckPage() {
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
+          {createDeckMutation.isError && (
+            <p className="text-sm text-red-500">Failed to create deck. Please try again.</p>
+          )}
 
           <div className="flex gap-3">
-            <Button type="submit" disabled={saving}>
-              {saving ? "Creating..." : "Create Deck"}
+            <Button type="submit" disabled={createDeckMutation.isPending}>
+              {createDeckMutation.isPending ? "Creating..." : "Create Deck"}
             </Button>
             <Button
               type="button"

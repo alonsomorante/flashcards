@@ -13,7 +13,7 @@ interface CardItemProps {
   };
   deckId: number;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete: (cardId: number) => void;
   showNotes: boolean;
   onToggleNotes: () => void;
 }
@@ -61,7 +61,7 @@ export const CardItem = memo(function CardItem({
       method: "DELETE",
     });
 
-    onDelete();
+    onDelete(card.id);
   };
 
   const hasNotes = useMemo(

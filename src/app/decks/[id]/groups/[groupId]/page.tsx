@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, BookOpen, Plus, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, BookOpen, Plus, Trash2, Pencil, Sparkles } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 import { CardForm } from "../../card-form";
 import { CardItem } from "../../card-item";
+import { GenerateCardsModal } from "../../generate-cards-modal";
 
 interface CardData {
   id: number;
@@ -25,8 +26,32 @@ interface GroupData {
   cards: CardData[];
 }
 
-async function fetchGroup(deckId: string, groupId: string): Promise<GroupData> {
-  // For now, fetch the deck and extract the group
+interface DeckGroup {
+  id: number;
+  name: string;
+  displayOrder: number;
+  cards: CardData[];
+}
+
+interface DeckData {
+  id: number;
+  name: string;
+  description: string | null;
+  groups: DeckGroup[];
+  ungroupedCards: CardData[];
+}
+
+interface GroupSummary {
+  id: number;
+  name: string;
+}
+
+interface GroupPageData {
+  group: GroupData;
+  allGroups: GroupSummary[];
+}
+
+async function fetchGroup(deckId: string, groupId: string): Promise<GroupPageData> {
   const res = await fetch(`/api/decks/${deckId}`);
   if (!res.ok) throw new Error("Failed to fetch deck");
   const deck = await res.json();
@@ -35,8 +60,11 @@ async function fetchGroup(deckId: string, groupId: string): Promise<GroupData> {
   if (!group) throw new Error("Group not found");
   
   return {
-    ...group,
-    deckId: Number(deckId),
+    group: {
+      ...group,
+      deckId: Number(deckId),
+    },
+    allGroups: deck.groups.map((g: DeckGroup) => ({ id: g.id, name: g.name })),
   };
 }
 
@@ -47,11 +75,14 @@ export default function GroupPage() {
   const deckId = params.id as string;
   const groupId = params.groupId as string;
 
-  const { data: group, isLoading } = useQuery({
+  const { data: pageData, isLoading } = useQuery({
     queryKey: ["group", deckId, groupId],
     queryFn: () => fetchGroup(deckId, groupId),
     enabled: !!deckId && !!groupId,
   });
+
+  const group = pageData?.group;
+  const allGroups = pageData?.allGroups ?? [];
 
   const [showCardForm, setShowCardForm] = useState(false);
   const [editingCard, setEditingCard] = useState<{
@@ -62,6 +93,7 @@ export default function GroupPage() {
   } | null>(null);
   const [expandedNotes, setExpandedNotes] = useState<Set<number>>(new Set());
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
 
   const deleteGroupMutation = useMutation({
     mutationFn: async () => {
@@ -82,19 +114,83 @@ export default function GroupPage() {
 
   const handleCardCreated = (card: { id: number; front: string; back: string; notes?: string }) => {
     setShowCardForm(false);
-    queryClient.invalidateQueries({ queryKey: ["group", deckId, groupId] });
-    queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+      if (!old) return old;
+      return { ...old, cards: [card, ...old.cards] };
+    });
+    queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        groups: old.groups.map((g) =>
+          g.id === Number(groupId) ? { ...g, cards: [card, ...g.cards] } : g
+        ),
+      };
+    });
   };
 
   const handleCardUpdated = (card: { id: number; front: string; back: string; notes?: string }) => {
     setEditingCard(null);
-    queryClient.invalidateQueries({ queryKey: ["group", deckId, groupId] });
-    queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        cards: old.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
+      };
+    });
+    queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        groups: old.groups.map((g) =>
+          g.id === Number(groupId)
+            ? {
+                ...g,
+                cards: g.cards.map((c) => (c.id === card.id ? { ...c, ...card } : c)),
+              }
+            : g
+        ),
+      };
+    });
   };
 
-  const handleCardDeleted = () => {
-    queryClient.invalidateQueries({ queryKey: ["group", deckId, groupId] });
-    queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+  const handleCardDeleted = (cardId: number) => {
+    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+      if (!old) return old;
+      return { ...old, cards: old.cards.filter((c) => c.id !== cardId) };
+    });
+    queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        groups: old.groups.map((g) =>
+          g.id === Number(groupId)
+            ? { ...g, cards: g.cards.filter((c) => c.id !== cardId) }
+            : g
+        ),
+      };
+    });
+  };
+
+  const handleCardsGenerated = (cards: Array<{ id: number; front: string; back: string; notes?: string; groupId?: number }>) => {
+    const cardsForThisGroup = cards.filter((c) => c.groupId === Number(groupId));
+    if (cardsForThisGroup.length === 0) return;
+
+    queryClient.setQueryData<GroupData>(["group", deckId, groupId], (old) => {
+      if (!old) return old;
+      return { ...old, cards: [...cardsForThisGroup, ...old.cards] };
+    });
+    queryClient.setQueryData<DeckData>(["deck", deckId], (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        groups: old.groups.map((g) =>
+          g.id === Number(groupId)
+            ? { ...g, cards: [...cardsForThisGroup, ...g.cards] }
+            : g
+        ),
+      };
+    });
   };
 
   const toggleNotes = (cardId: number) => {
@@ -167,6 +263,10 @@ export default function GroupPage() {
           <Plus size={14} />
           Add Card
         </Button>
+        <Button variant="ghost" size="sm" onClick={() => setShowGenerateModal(true)}>
+          <Sparkles size={14} />
+          Generate with AI
+        </Button>
       </div>
 
       {showCardForm ? (
@@ -217,6 +317,14 @@ export default function GroupPage() {
           ))
         )}
       </div>
+
+      <GenerateCardsModal
+        open={showGenerateModal}
+        onClose={() => setShowGenerateModal(false)}
+        deckId={Number(deckId)}
+        groups={allGroups}
+        onCardsCreated={handleCardsGenerated}
+      />
 
       <ConfirmModal
         open={showDeleteModal}
