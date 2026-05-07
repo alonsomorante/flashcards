@@ -1,7 +1,8 @@
 "use client";
 
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { Pencil, Trash2, ChevronUp, StickyNote } from "lucide-react";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 interface CardItemProps {
   card: {
@@ -54,14 +55,20 @@ export const CardItem = memo(function CardItem({
   showNotes,
   onToggleNotes,
 }: CardItemProps) {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDelete = async () => {
-    if (!confirm("Delete this card?")) return;
-
-    await fetch(`/api/decks/${deckId}/cards/${card.id}`, {
-      method: "DELETE",
-    });
-
-    onDelete(card.id);
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/decks/${deckId}/cards/${card.id}`, {
+        method: "DELETE",
+      });
+      onDelete(card.id);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
   };
 
   const hasNotes = useMemo(
@@ -116,7 +123,7 @@ export const CardItem = memo(function CardItem({
             <Pencil size={14} />
           </button>
           <button
-            onClick={handleDelete}
+            onClick={() => setShowDeleteModal(true)}
             className="rounded-md p-1.5 text-zinc-300 hover:bg-red-50 hover:text-red-500 dark:text-zinc-700 dark:hover:bg-red-950 dark:hover:text-red-400"
           >
             <Trash2 size={14} />
@@ -131,6 +138,16 @@ export const CardItem = memo(function CardItem({
           </p>
         </div>
       ) : null}
+
+      <ConfirmModal
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+        title="Delete Card"
+        message={`Are you sure you want to delete this card?\n\nFront: "${card.front}"\nBack: "${card.back}"`}
+        confirmText="Delete Card"
+        variant="danger"
+      />
     </div>
   );
 });

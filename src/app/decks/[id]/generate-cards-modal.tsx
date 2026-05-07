@@ -224,8 +224,8 @@ export function GenerateCardsModal({
           <div className="max-h-[50vh] overflow-y-auto">
             <textarea
               value={extractedText}
-              readOnly
-              className="h-64 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-xs leading-relaxed text-zinc-700 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300"
+              onChange={(e) => setExtractedText(e.target.value)}
+              className="h-64 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-700 focus:border-zinc-400 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:focus:border-zinc-600"
             />
           </div>
           

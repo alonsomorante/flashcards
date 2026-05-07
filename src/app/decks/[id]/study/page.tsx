@@ -103,6 +103,9 @@ export default function StudyPage() {
   const { data: cards = [], isLoading, refetch } = useQuery({
     queryKey: ["study-cards", deckId, studyAll, groupId],
     queryFn: () => fetchStudyCards(deckId, studyAll, groupId),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
   });
 
   const { data: deckName = "" } = useQuery({
