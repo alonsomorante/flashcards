@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, RotateCcw, Zap } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 
@@ -11,28 +11,35 @@ interface Card {
   front: string;
   back: string;
   notes?: string | null;
-  state?: string;
-  learningStep?: number;
+  state?: string | null;
+  learningStep?: number | null;
   dueMinutes?: number | null;
-  interval?: number;
-  easeFactor?: number;
+  interval?: number | null;
+  easeFactor?: number | null;
+  nextReview?: string | null;
+  lastRating?: number | null;
+  lastReviewed?: string | null;
 }
 
-async function fetchStudyCards(deckId: string, all: boolean = false, groupId?: string): Promise<Card[]> {
-  let url = `/api/study/${deckId}${all ? "?all=true" : ""}`;
-  if (groupId) {
-    url += all ? `&groupId=${groupId}` : `?groupId=${groupId}`;
-  }
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch cards");
-  return res.json();
+interface DeckGroup {
+  id: number;
+  name: string;
+  displayOrder: number;
+  cards: Card[];
 }
 
-async function fetchDeckName(deckId: string): Promise<string> {
-  const res = await fetch(`/api/decks/${deckId}`);
+interface DeckData {
+  id: number;
+  name: string;
+  description: string | null;
+  groups: DeckGroup[];
+  ungroupedCards: Card[];
+}
+
+async function fetchDeck(id: string): Promise<DeckData> {
+  const res = await fetch(`/api/decks/${id}`);
   if (!res.ok) throw new Error("Failed to fetch deck");
-  const data = await res.json();
-  return data.name;
+  return res.json();
 }
 
 export default function StudyPage() {
@@ -40,28 +47,35 @@ export default function StudyPage() {
   const searchParams = useSearchParams();
   const deckId = params.id as string;
   const groupId = searchParams.get("groupId") || undefined;
+  const queryClient = useQueryClient();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [studyAll, setStudyAll] = useState(false);
   const [studyQueue, setStudyQueue] = useState<Card[]>([]);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [sessionKey, setSessionKey] = useState(0);
 
-  const { data: cards = [], isLoading, refetch } = useQuery({
-    queryKey: ["study-cards", deckId, studyAll, groupId],
-    queryFn: () => fetchStudyCards(deckId, studyAll, groupId),
+  // Read from cache first — instant if coming from deck/group page
+  const cachedDeck = queryClient.getQueryData<DeckData>(["deck", deckId]);
+
+  const { data: deckData, isLoading } = useQuery({
+    queryKey: ["deck", deckId],
+    queryFn: () => fetchDeck(deckId),
+    enabled: !!deckId,
+    initialData: cachedDeck,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     staleTime: Infinity,
   });
 
-  const { data: deckName = "" } = useQuery({
-    queryKey: ["deck-name", deckId],
-    queryFn: () => fetchDeckName(deckId),
-  });
+  // Derive cards directly from the already-loaded deck data
+  const cards = groupId
+    ? deckData?.groups?.find((g) => g.id === Number(groupId))?.cards ?? []
+    : deckData?.groups?.flatMap((g) => g.cards) ?? [];
 
-  // Initialize study queue when cards are loaded
+  const deckName = deckData?.name ?? "";
+
+  // Initialize study queue when cards are available
   useEffect(() => {
     if (cards.length > 0 && !hasInitialized) {
       setStudyQueue(cards);
@@ -118,19 +132,9 @@ export default function StudyPage() {
     setStudyQueue([]);
     setHasInitialized(false);
     setSessionKey((k) => k + 1);
-    refetch();
-  }, [refetch]);
-
-  const handleStudyAll = useCallback(() => {
-    setStudyAll(true);
-    setCurrentIndex(0);
-    setFlipped(false);
-    setStudyQueue([]);
-    setHasInitialized(false);
-    setSessionKey((k) => k + 1);
   }, []);
 
-  if (isLoading) {
+  if (isLoading && !cachedDeck) {
     return (
       <div className="flex items-center justify-center py-20">
         <p className="text-sm text-zinc-400">Loading...</p>
@@ -155,7 +159,7 @@ export default function StudyPage() {
             All caught up
           </p>
           <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
-            No cards are due for review right now
+            No cards in this group
           </p>
           <div className="mt-6 flex gap-3">
             <Button variant="secondary" size="sm" onClick={handleRestart}>
