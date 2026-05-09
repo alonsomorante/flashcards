@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Navbar } from "@/components/navbar";
 import { QueryProvider } from "@/components/providers/query-provider";
-import { PageTransition } from "@/components/page-transition";
 
 export const metadata: Metadata = {
   title: "Flashcards",
@@ -19,9 +18,7 @@ export default function RootLayout({
       <body className="min-h-full bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         <QueryProvider>
           <Navbar />
-          <main className="mx-auto max-w-4xl px-4 py-8">
-            <PageTransition>{children}</PageTransition>
-          </main>
+          <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
         </QueryProvider>
       </body>
     </html>
