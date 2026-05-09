@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, RotateCcw, Zap } from "lucide-react";
 import { Button, LinkButton } from "@/components/ui/button";
 
@@ -35,70 +35,18 @@ async function fetchDeckName(deckId: string): Promise<string> {
   return data.name;
 }
 
-function getButtonLabel(quality: number): string {
-  switch (quality) {
-    case 1: return "Again";
-    case 2: return "Hard";
-    case 3: return "Good";
-    case 5: return "Easy";
-    default: return "";
-  }
-}
-
-function getButtonColor(quality: number): string {
-  switch (quality) {
-    case 1: return "bg-red-600 hover:bg-red-700 text-white";
-    case 2: return "bg-orange-500 hover:bg-orange-600 text-white";
-    case 3: return "bg-blue-500 hover:bg-blue-600 text-white";
-    case 5: return "bg-emerald-500 hover:bg-emerald-600 text-white";
-    default: return "";
-  }
-}
-
-function getIntervalText(card: Card, quality: number): string {
-  const state = card.state ?? "new";
-  
-  if (state === "new") {
-    switch (quality) {
-      case 1: return "< 1m";
-      case 2: return "< 6m";
-      case 3: return "< 10m";
-      case 5: return "1d";
-    }
-  }
-  
-  if (state === "learning" || state === "relearning") {
-    switch (quality) {
-      case 1: return "< 1m";
-      case 2: return "< 6m";
-      case 3: return state === "learning" && (card.learningStep ?? 0) >= 2 ? "1d" : "< 10m";
-      case 5: return "1d";
-    }
-  }
-  
-  if (state === "review") {
-    switch (quality) {
-      case 1: return "< 1m";
-      case 2: return `${Math.round((card.interval ?? 0) * 1.2)}d`;
-      case 3: return `${Math.round((card.interval ?? 0) * (card.easeFactor ?? 2.5))}d`;
-      case 5: return `${Math.round((card.interval ?? 0) * (card.easeFactor ?? 2.5) * 1.3)}d`;
-    }
-  }
-  
-  return "";
-}
-
 export default function StudyPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const deckId = params.id as string;
   const groupId = searchParams.get("groupId") || undefined;
-  const queryClient = useQueryClient();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [finished, setFinished] = useState(false);
   const [studyAll, setStudyAll] = useState(false);
+  const [studyQueue, setStudyQueue] = useState<Card[]>([]);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [sessionKey, setSessionKey] = useState(0);
 
   const { data: cards = [], isLoading, refetch } = useQuery({
     queryKey: ["study-cards", deckId, studyAll, groupId],
@@ -113,65 +61,52 @@ export default function StudyPage() {
     queryFn: () => fetchDeckName(deckId),
   });
 
-  const rateCardMutation = useMutation({
-    mutationFn: async ({ cardId, quality }: { cardId: number; quality: number }) => {
-      await fetch(`/api/study/${deckId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cardId, quality }),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
-    },
-  });
-
+  // Initialize study queue when cards are loaded
   useEffect(() => {
-    setFlipped(false);
-  }, [currentIndex]);
+    if (cards.length > 0 && !hasInitialized) {
+      setStudyQueue(cards);
+      setHasInitialized(true);
+    }
+  }, [cards, hasInitialized, sessionKey]);
 
-  // Reset finished state when cards are refetched
+  // Clamp currentIndex if it goes out of bounds
   useEffect(() => {
-    if (cards.length > 0 && finished) {
-      setFinished(false);
+    if (currentIndex >= studyQueue.length && studyQueue.length > 0) {
       setCurrentIndex(0);
     }
-  }, [cards.length, finished]);
+  }, [currentIndex, studyQueue.length]);
 
-  const currentCard = cards[currentIndex];
+  const currentCard = studyQueue[currentIndex];
+  const isFinished = hasInitialized && studyQueue.length === 0;
+  const isReady = hasInitialized && studyQueue.length > 0;
 
-  const rateCard = useCallback(
-    async (quality: number) => {
-      if (!currentCard) return;
+  const handleRepeat = useCallback(() => {
+    if (!currentCard || studyQueue.length <= 1) return;
 
-      rateCardMutation.mutate({ cardId: currentCard.id, quality });
+    setStudyQueue((prev) => {
+      const newQueue = [...prev];
+      const [card] = newQueue.splice(currentIndex, 1);
+      newQueue.push(card);
+      return newQueue;
+    });
 
-      // Check if card should be reinserted (learning state with Again/Hard)
-      const shouldReinsert = 
-        (currentCard.state === "learning" || currentCard.state === "relearning" || currentCard.state === "new") &&
-        (quality === 1 || quality === 2);
+    if (currentIndex >= studyQueue.length - 1) {
+      setCurrentIndex(0);
+    }
 
-      if (shouldReinsert) {
-        // Refetch to get updated cards including reinserted ones
-        setTimeout(() => {
-          refetch();
-        }, 500);
-        
-        if (currentIndex + 1 < cards.length) {
-          setCurrentIndex((prev) => prev + 1);
-        } else {
-          setFinished(true);
-        }
-      } else {
-        if (currentIndex + 1 < cards.length) {
-          setCurrentIndex((prev) => prev + 1);
-        } else {
-          setFinished(true);
-        }
-      }
-    },
-    [currentCard, currentIndex, cards.length, rateCardMutation, refetch]
-  );
+    setFlipped(false);
+  }, [currentCard, currentIndex, studyQueue.length]);
+
+  const handleHide = useCallback(() => {
+    if (!currentCard) return;
+
+    setStudyQueue((prev) => {
+      const newQueue = prev.filter((_, i) => i !== currentIndex);
+      return newQueue;
+    });
+
+    setFlipped(false);
+  }, [currentCard, currentIndex]);
 
   const handleFlip = useCallback(() => {
     setFlipped((prev) => !prev);
@@ -180,7 +115,9 @@ export default function StudyPage() {
   const handleRestart = useCallback(() => {
     setCurrentIndex(0);
     setFlipped(false);
-    setFinished(false);
+    setStudyQueue([]);
+    setHasInitialized(false);
+    setSessionKey((k) => k + 1);
     refetch();
   }, [refetch]);
 
@@ -188,7 +125,9 @@ export default function StudyPage() {
     setStudyAll(true);
     setCurrentIndex(0);
     setFlipped(false);
-    setFinished(false);
+    setStudyQueue([]);
+    setHasInitialized(false);
+    setSessionKey((k) => k + 1);
   }, []);
 
   if (isLoading) {
@@ -236,7 +175,7 @@ export default function StudyPage() {
     );
   }
 
-  if (finished) {
+  if (isFinished) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
         <p className="text-xl font-semibold tracking-tight">Done</p>
@@ -256,6 +195,14 @@ export default function StudyPage() {
     );
   }
 
+  if (!isReady) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-sm text-zinc-400">Preparing cards...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-xl">
       <div className="mb-6">
@@ -267,7 +214,7 @@ export default function StudyPage() {
 
       <div className="mb-4 text-center">
         <p className="text-xs font-medium text-zinc-400 dark:text-zinc-500">
-          {deckName} &middot; {currentIndex + 1}/{cards.length}
+          {deckName} &middot; {currentIndex + 1}/{studyQueue.length}
         </p>
       </div>
 
@@ -307,19 +254,25 @@ export default function StudyPage() {
       ) : null}
 
       {flipped && currentCard ? (
-        <div className="grid grid-cols-4 gap-2">
-          {[1, 2, 3, 5].map((quality) => (
-            <button
-              key={quality}
-              onClick={() => rateCard(quality)}
-              className={`flex flex-col items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors ${getButtonColor(quality)}`}
-            >
-              <span>{getButtonLabel(quality)}</span>
-              <span className="mt-1 text-xs opacity-70">
-                {getIntervalText(currentCard, quality)}
-              </span>
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={handleRepeat}
+            className="flex flex-col items-center rounded-lg bg-zinc-800 px-3 py-3 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-white"
+          >
+            <span>Repetir</span>
+            <span className="mt-1 text-xs opacity-70">
+              Al final de la lista
+            </span>
+          </button>
+          <button
+            onClick={handleHide}
+            className="flex flex-col items-center rounded-lg bg-zinc-200 px-3 py-3 text-sm font-medium text-zinc-800 transition-colors hover:bg-zinc-300 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+          >
+            <span>No mostrar</span>
+            <span className="mt-1 text-xs opacity-70">
+              Quitar de la sesión
+            </span>
+          </button>
         </div>
       ) : null}
 
@@ -334,9 +287,9 @@ export default function StudyPage() {
       </div>
 
       <div className="mt-8 flex justify-center gap-1.5">
-        {cards.map((_card: Card, i: number) => (
+        {studyQueue.map((_card: Card, i: number) => (
           <div
-            key={i}
+            key={_card.id}
             className={`h-1.5 w-1.5 rounded-full transition-colors ${
               i < currentIndex
                 ? "bg-zinc-300 dark:bg-zinc-600"

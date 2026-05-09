@@ -8,14 +8,16 @@ const GenerateFromTextSchema = z.object({
 const SYSTEM_PROMPT = `Eres un experto en crear flashcards de alta calidad para estudio académico. Analiza el texto proporcionado y extrae flashcards atómicas.
 
 REGLAS DE EXTRACCIÓN:
-1. UN HECHO POR CARD: Cada card debe evaluar exactamente un hecho, concepto o relación discreta. Nunca combines múltiples hechos.
-2. ESPECÍFICO SOBRE GENERAL: Prefiere nombres propios, fechas exactas, instituciones y eventos específicos sobre generalizaciones vagas.
-3. CONTEXTO CAUSAL: Cuando extraigas hechos, preserva las relaciones causales ("porque", "condujo a", "resultó de").
-4. NOMBRES COMPLETOS: Usa nombre + apellido, no solo apellido.
-5. FECHAS EXACTAS: Usa fechas específicas, no períodos vagos.
-6. NOTAS: Usa "notes" para referencias de página, contexto fuente o detalles aclaratorios que no deben estar en la respuesta.
-7. LENGUAJE: Crea cards en el mismo idioma que el texto fuente.
-8. SIN AMBIGÜEDAD: Si un hecho requiere clarificación, inclúyela en notes.
+1. UN HECHO POR CARD: Cada card debe evaluar exactamente UN solo hecho, concepto o relación discreta. Nunca combines múltiples ideas.
+2. LARGO MÁXIMO - FRONT: La pregunta debe ser de UNA SOLA LÍNEA, máximo 10-12 palabras. Sin comillas incrustadas ni contexto excesivo.
+3. LARGO MÁXIMO - BACK: La respuesta debe ser UNA oración corta (máximo 15 palabras) o 2-3 bullets clave. Nunca un párrafo.
+4. ESPECÍFICO SOBRE GENERAL: Prefiere nombres propios, fechas exactas e instituciones sobre generalizaciones.
+5. CONTEXTO CAUSAL: Preserva relaciones causales ("condujo a", "resultó de") pero en oraciones cortas.
+6. NOMBRES COMPLETOS: Usa nombre + apellido, no solo apellido.
+7. FECHAS EXACTAS: Usa fechas específicas, no períodos vagos.
+8. NOTAS: Usa "notes" SOLO para contexto aclaratorio (ej. "evento previo a la independencia"). NUNCA uses notes para referencias de página solas.
+9. LENGUAJE: Crea cards en el mismo idioma que el texto fuente.
+10. SIN AMBIGÜEDAD: Si un hecho requiere clarificación, inclúyela en notes, no en el back.
 
 FORMATO OUTPUT:
 Devuelve SOLO un array JSON válido COMPLETO Y SIN TRUNCAR. Asegúrate de cerrar todos los corchetes y llaves.
@@ -32,8 +34,8 @@ REGLAS DE FORMATO:
 
 Ejemplo:
 [
-  {"front": "¿Quién firmó el Tratado de Tordesillas en 1494?", "back": "Los Reyes Católicos de España y Juan II de Portugal.", "notes": "Mediación papal de Alejandro VI"},
-  {"front": "¿Qué consecuencia tuvo la epidemia de viruela en Tenochtitlán en 1520?", "back": "Debilitó la resistencia azteca durante el asedio de Cortés.", "notes": "Epidemia iniciada con la llegada de los españoles"}
+  {"front": "¿Quién firmó el Tratado de Tordesillas en 1494?", "back": "Los Reyes Católicos de España y Juan II de Portugal.", "notes": "Mediación papal"},
+  {"front": "¿Qué efecto tuvo la viruela en Tenochtitlán en 1520?", "back": "Debilitó la resistencia azteca durante el asedio.", "notes": "Iniciada con la llegada de los españoles"}
 ]`;
 
 export async function POST(
