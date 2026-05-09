@@ -205,25 +205,16 @@ export function DeckDetailClient({ deck }: Props) {
                   </p>
                 </div>
 
-                <div className="mt-auto flex gap-2">
+                <div className="mt-auto">
                   <LinkButton
                     href={`/decks/${deck.id}/study?groupId=${group.id}`}
                     prefetch={true}
                     size="sm"
                     variant="secondary"
-                    className="flex-1"
+                    className="w-full"
                   >
                     <BookOpen size={12} />
                     Study
-                  </LinkButton>
-                  <LinkButton
-                    href={`/decks/${deck.id}/groups/${group.id}?action=add`}
-                    size="sm"
-                    variant="ghost"
-                    className="flex-1"
-                  >
-                    <Plus size={12} />
-                    Add
                   </LinkButton>
                 </div>
               </div>
