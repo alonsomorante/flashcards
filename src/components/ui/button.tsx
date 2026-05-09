@@ -51,8 +51,9 @@ export function LinkButton({
   size = "md",
   className = "",
   href,
+  prefetch = true,
   ...props
-}: LinkButtonProps) {
+}: LinkButtonProps & { prefetch?: boolean }) {
   const base =
     "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none";
 
@@ -76,6 +77,7 @@ export function LinkButton({
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       className={`${base} ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     />

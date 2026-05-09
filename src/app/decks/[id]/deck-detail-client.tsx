@@ -190,6 +190,7 @@ export function DeckDetailClient({ deck }: Props) {
                 <div className="mb-4 flex flex-col gap-1">
                   <Link
                     href={`/decks/${deck.id}/groups/${group.id}`}
+                    prefetch={true}
                     className="group flex items-center gap-2 no-underline"
                   >
                     <FolderOpen size={18} className="text-zinc-400" />
@@ -207,6 +208,7 @@ export function DeckDetailClient({ deck }: Props) {
                 <div className="mt-auto flex gap-2">
                   <LinkButton
                     href={`/decks/${deck.id}/study?groupId=${group.id}`}
+                    prefetch={true}
                     size="sm"
                     variant="secondary"
                     className="flex-1"

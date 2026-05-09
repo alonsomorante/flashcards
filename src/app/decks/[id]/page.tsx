@@ -2,8 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { DeckDetailClient } from "./deck-detail-client";
+import { GroupCardSkeleton } from "@/components/ui/skeleton";
 
 interface Group {
   id: number;
@@ -52,8 +52,10 @@ export default function DeckPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={20} className="animate-spin text-zinc-400" />
+      <div>
+        <div className="mb-6 h-6 w-48 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+        <div className="mb-4 h-4 w-32 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
+        <GroupCardSkeleton count={4} />
       </div>
     );
   }
