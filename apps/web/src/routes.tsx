@@ -23,14 +23,14 @@ function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-cream">
-        <nav className="border-b border-stroke bg-paper/80 backdrop-blur-md sticky top-0 z-40">
+        <nav className="border-b border-border bg-paper/80 backdrop-blur-md sticky top-0 z-40">
           <div className="mx-auto flex h-16 max-w-5xl items-center px-5">
             <Link
               to="/"
-              className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-ink no-underline"
+              className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-dark no-underline"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              <Layers size={22} className="text-coral" />
+              <Layers size={22} className="text-primary" />
               Flashcards
             </Link>
           </div>

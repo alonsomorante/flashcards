@@ -99,7 +99,7 @@ export default function StudyPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-coral border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }
@@ -107,10 +107,10 @@ export default function StudyPage() {
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-32">
-        <p className="text-ink-muted">Failed to load cards</p>
+        <p className="text-dark-muted">Failed to load cards</p>
         <button
           onClick={handleRestart}
-          className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-5 text-sm font-medium text-white hover:bg-coral-dark"
+          className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white hover:bg-primary-dark"
         >
           <RotateCcw size={14} />
           Retry
@@ -122,24 +122,24 @@ export default function StudyPage() {
   if (dueCards?.length === 0) {
     return (
       <div className="mx-auto max-w-md py-24 text-center animate-scale-in">
-        <div className="mb-6 inline-flex rounded-full bg-amber-light p-5">
-          <Zap size={32} className="text-amber" />
+        <div className="mb-6 inline-flex rounded-full bg-accent-light p-5">
+          <Zap size={32} className="text-accent" />
         </div>
-        <h2 className="text-2xl font-semibold text-ink" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className="text-2xl font-semibold text-dark" style={{ fontFamily: "var(--font-display)" }}>
           All caught up
         </h2>
-        <p className="mt-2 text-sm text-ink-muted">No cards are due for review right now. Great job!</p>
+        <p className="mt-2 text-sm text-dark-muted">No cards are due for review right now. Great job!</p>
         <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={handleRestart}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-5 text-sm font-medium text-white transition-all hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/20"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
           >
             <RotateCcw size={14} />
             Check Again
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-stroke px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -152,61 +152,61 @@ export default function StudyPage() {
     const total = sessionStats.newCount + sessionStats.learningCount + sessionStats.reviewCount;
     return (
       <div className="mx-auto max-w-md py-16 text-center animate-scale-in">
-        <div className="mb-6 inline-flex rounded-full bg-mint-light p-5">
-          <CheckCircle2 size={32} className="text-mint" />
+        <div className="mb-6 inline-flex rounded-full bg-success-light p-5">
+          <CheckCircle2 size={32} className="text-success" />
         </div>
-        <h2 className="text-2xl font-semibold text-ink" style={{ fontFamily: "var(--font-display)" }}>
+        <h2 className="text-2xl font-semibold text-dark" style={{ fontFamily: "var(--font-display)" }}>
           Session Complete
         </h2>
-        <p className="mt-2 text-sm text-ink-muted">
+        <p className="mt-2 text-sm text-dark-muted">
           You reviewed {total} {total === 1 ? "card" : "cards"}
         </p>
 
-        <div className="mt-8 rounded-[1.25rem] border border-stroke bg-paper p-6 text-left">
-          <h3 className="mb-4 text-sm font-medium text-ink-light">Breakdown</h3>
+        <div className="mt-8 rounded-[1.25rem] border border-border bg-paper p-6 text-left">
+          <h3 className="mb-4 text-sm font-medium text-dark-light">Breakdown</h3>
           <div className="space-y-3">
             {sessionStats.newCount > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <Sparkles size={18} className="text-amber" />
-                  <span className="text-sm text-ink-light">New cards</span>
+                  <Sparkles size={18} className="text-accent" />
+                  <span className="text-sm text-dark-light">New cards</span>
                 </div>
-                <span className="text-sm font-semibold text-ink">{sessionStats.newCount}</span>
+                <span className="text-sm font-semibold text-dark">{sessionStats.newCount}</span>
               </div>
             )}
             {sessionStats.learningCount > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <Brain size={18} className="text-amber" />
-                  <span className="text-sm text-ink-light">Learning</span>
+                  <Brain size={18} className="text-accent" />
+                  <span className="text-sm text-dark-light">Learning</span>
                 </div>
-                <span className="text-sm font-semibold text-ink">{sessionStats.learningCount}</span>
+                <span className="text-sm font-semibold text-dark">{sessionStats.learningCount}</span>
               </div>
             )}
             {sessionStats.reviewCount > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <CheckCircle2 size={18} className="text-mint" />
-                  <span className="text-sm text-ink-light">Reviews</span>
+                  <CheckCircle2 size={18} className="text-success" />
+                  <span className="text-sm text-dark-light">Reviews</span>
                 </div>
-                <span className="text-sm font-semibold text-ink">{sessionStats.reviewCount}</span>
+                <span className="text-sm font-semibold text-dark">{sessionStats.reviewCount}</span>
               </div>
             )}
-            {total === 0 && <p className="text-sm text-ink-muted/60 italic">No cards rated in this session</p>}
+            {total === 0 && <p className="text-sm text-dark-muted/60 italic">No cards rated in this session</p>}
           </div>
         </div>
 
         <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={handleRestart}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-5 text-sm font-medium text-white transition-all hover:bg-coral-dark hover:shadow-lg hover:shadow-coral/20"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
           >
             <RotateCcw size={14} />
             Study Again
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-stroke px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -224,16 +224,16 @@ export default function StudyPage() {
       <div className="mb-8 flex items-center justify-between">
         <button
           onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-          className="inline-flex items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ink"
+          className="inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
         >
           <ArrowLeft size={16} />
           Back
         </button>
         <div className="flex items-center gap-3">
           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#E8E2DA]">
-            <div className="h-full rounded-full bg-coral transition-all duration-500" style={{ width: `${progress}%` }} />
+            <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
-          <span className="text-xs font-medium text-ink-muted">
+          <span className="text-xs font-medium text-dark-muted">
             {dueCards!.length - studyQueue.length + 1}/{dueCards!.length}
           </span>
         </div>
@@ -247,26 +247,26 @@ export default function StudyPage() {
           style={{ transformStyle: "preserve-3d" }}
         >
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-coral bg-paper p-10 text-center shadow-[8px_8px_0px_0px_rgba(250,103,129,0.15)] backface-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-primary bg-paper p-10 text-center shadow-[8px_8px_0px_0px_rgba(250,103,129,0.15)] backface-hidden"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-coral/60">Question</p>
-            <p className="text-2xl font-semibold leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary/60">Question</p>
+            <p className="text-2xl font-semibold leading-relaxed text-dark md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
               {currentCard?.front}
             </p>
-            <p className="mt-8 text-xs font-medium text-ink-muted/40">Tap to reveal answer</p>
+            <p className="mt-8 text-xs font-medium text-dark-muted/40">Tap to reveal answer</p>
           </div>
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-mint bg-cream-dark p-10 text-center shadow-[8px_8px_0px_0px_rgba(89,178,146,0.15)] backface-hidden rotate-y-180"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-success bg-cream-dark p-10 text-center shadow-[8px_8px_0px_0px_rgba(89,178,146,0.15)] backface-hidden rotate-y-180"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-mint/60">Answer</p>
-            <p className="text-2xl font-semibold leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-success/60">Answer</p>
+            <p className="text-2xl font-semibold leading-relaxed text-dark md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
               {currentCard?.back}
             </p>
             {currentCard?.notes ? (
-              <div className="mx-auto mt-8 max-w-md border-t-2 border-stroke pt-5">
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink-muted/70">{currentCard.notes}</p>
+              <div className="mx-auto mt-8 max-w-md border-t-2 border-border pt-5">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-dark-muted/70">{currentCard.notes}</p>
               </div>
             ) : null}
           </div>
@@ -277,7 +277,7 @@ export default function StudyPage() {
         <div className="flex justify-center">
           <button
             onClick={handleFlip}
-            className="inline-flex h-12 items-center gap-2 rounded-xl bg-ink px-8 text-sm font-medium text-white transition-all hover:bg-ink-light hover:shadow-lg"
+            className="inline-flex h-12 items-center gap-2 rounded-xl bg-dark px-8 text-sm font-medium text-white transition-all hover:bg-dark-light hover:shadow-lg"
           >
             Show Answer
           </button>
@@ -287,7 +287,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(1)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-rose-light px-2 py-4 text-sm font-semibold text-rose transition-all hover:bg-rose/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-danger-light px-2 py-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Again</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">&lt; 1 min</span>
@@ -295,7 +295,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(2)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-amber-light px-2 py-4 text-sm font-semibold text-amber transition-all hover:bg-amber/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-accent-light px-2 py-4 text-sm font-semibold text-accent transition-all hover:bg-accent/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Hard</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">&lt; 6 min</span>
@@ -303,7 +303,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(3)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-mint-light px-2 py-4 text-sm font-semibold text-mint transition-all hover:bg-mint/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-success-light px-2 py-4 text-sm font-semibold text-success transition-all hover:bg-success/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Good</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">1 day</span>
@@ -311,7 +311,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(4)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-coral/10 px-2 py-4 text-sm font-semibold text-coral transition-all hover:bg-coral/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-primary/10 px-2 py-4 text-sm font-semibold text-primary transition-all hover:bg-primary/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Easy</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">4 days</span>
@@ -323,7 +323,7 @@ export default function StudyPage() {
         <button
           onClick={handleRestart}
           disabled={isSubmitting}
-          className="text-xs text-ink-muted/40 transition-colors hover:text-ink-muted"
+          className="text-xs text-dark-muted/40 transition-colors hover:text-dark-muted"
         >
           <RotateCcw size={12} className="mr-1 inline" />
           Restart Session

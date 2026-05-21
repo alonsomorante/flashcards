@@ -1,39 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Fredoka", "Comic Sans MS", cursive;
-  --font-body: "Quicksand", "Segoe UI", sans-serif;
+  --font-display: "Poppins", system-ui, sans-serif;
+  --font-body: "Poppins", system-ui, sans-serif;
 
-  /* User's Palette */
-  --color-cream: #FAE7CB;
-  --color-cream-dark: #F0D9B5;
+  /* Elegant Palette around #810B38 */
+  --color-cream: #FFF5F0;
+  --color-cream-dark: #F7E6DE;
 
-  --color-coral: #FA6781;
-  --color-coral-dark: #E05A73;
-  --color-coral-light: #FFE4E8;
+  --color-primary: #810B38;
+  --color-primary-dark: #66082D;
+  --color-primary-light: #FCE8EF;
 
-  --color-mint: #59B292;
-  --color-mint-dark: #4A9E82;
-  --color-mint-light: #D5F0E6;
+  --color-accent: #F4A261;
+  --color-accent-dark: #E08B47;
+  --color-accent-light: #FDEDD9;
 
-  --color-amber: #FFC94D;
-  --color-amber-dark: #E5B23D;
-  --color-amber-light: #FFF3D6;
+  --color-success: #2A9D8F;
+  --color-success-dark: #1F7A6F;
+  --color-success-light: #D5F0EB;
 
-  --color-ink: #3D2B1F;
-  --color-ink-light: #5C4A3D;
-  --color-ink-muted: #9E8E7E;
+  --color-dark: #2A0A18;
+  --color-dark-light: #5C3A48;
+  --color-dark-muted: #A08A92;
 
   --color-paper: #FFFFFF;
 
-  --color-rose: #FA6781;
-  --color-rose-light: #FFE4E8;
+  --color-danger: #E05A73;
+  --color-danger-light: #FCE8EF;
 
-  --color-gold: #FFC94D;
-  --color-gold-light: #FFF3D6;
-
-  --color-stroke: #E8D5B7;
-  --color-stroke-light: #F0E0CC;
+  --color-border: #E8C4C4;
+  --color-border-light: #F2DEDE;
 
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
@@ -42,7 +39,7 @@
 body {
   font-family: var(--font-body);
   background-color: var(--color-cream);
-  color: var(--color-ink);
+  color: var(--color-dark);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -76,11 +73,11 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4C5B0;
+  background: #D4B8C0;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B5A48E;
+  background: #B89AA4;
 }
 
 /* Animation utilities */
@@ -136,7 +133,7 @@ h1, h2, h3, h4, h5, h6 {
 .stagger-5 { animation-delay: 0.25s; opacity: 0; }
 .stagger-6 { animation-delay: 0.3s; opacity: 0; }
 
-/* Subtle dot pattern on cream background */
+/* Subtle dot pattern */
 body::before {
   content: "";
   position: fixed;
@@ -144,7 +141,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(#E8D5B7 1px, transparent 1px);
+  background-image: radial-gradient(#E8C4C4 1px, transparent 1px);
   background-size: 24px 24px;
   pointer-events: none;
   z-index: -1;

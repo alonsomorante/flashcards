@@ -167,14 +167,14 @@ export function GenerateCardsModal({
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h2
-            className="text-lg font-semibold text-ink"
+            className="text-lg font-semibold text-dark"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {getStepTitle()}
           </h2>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-ink-muted transition-colors hover:bg-cream-dark"
+            className="rounded-lg p-1.5 text-dark-muted transition-colors hover:bg-cream-dark"
           >
             <X size={18} />
           </button>
@@ -185,9 +185,9 @@ export function GenerateCardsModal({
           {/* Step 1: Upload Images */}
           {step === "upload" ? (
             <div className="space-y-4">
-              <div className="rounded-xl bg-cream-dark p-3 text-xs text-ink-muted">
-                <p className="flex items-center gap-1.5 font-medium text-ink-light">
-                  <Wand2 size={12} className="text-coral" />
+              <div className="rounded-xl bg-cream-dark p-3 text-xs text-dark-muted">
+                <p className="flex items-center gap-1.5 font-medium text-dark-light">
+                  <Wand2 size={12} className="text-primary" />
                   AI-powered text extraction & card generation
                 </p>
                 <p className="mt-1">
@@ -203,20 +203,20 @@ export function GenerateCardsModal({
               />
 
               {error ? (
-                <p className="text-sm text-rose">{error}</p>
+                <p className="text-sm text-danger">{error}</p>
               ) : null}
 
               <div className="flex justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-cream-dark"
+                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleExtractText}
                   disabled={images.length === 0 || extracting}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-medium text-white transition-all hover:bg-coral-dark disabled:opacity-50"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {extracting ? (
                     <>
@@ -237,9 +237,9 @@ export function GenerateCardsModal({
           {/* Step 2: Review Extracted Text */}
           {step === "text" ? (
             <div className="space-y-4">
-              <div className="rounded-xl bg-cream-dark p-3 text-xs text-ink-muted">
-                <p className="flex items-center gap-1.5 font-medium text-ink-light">
-                  <FileText size={12} className="text-coral" />
+              <div className="rounded-xl bg-cream-dark p-3 text-xs text-dark-muted">
+                <p className="flex items-center gap-1.5 font-medium text-dark-light">
+                  <FileText size={12} className="text-primary" />
                   Text extracted successfully
                 </p>
                 <p className="mt-1">
@@ -251,24 +251,24 @@ export function GenerateCardsModal({
               <textarea
                 value={extractedText}
                 onChange={(e) => setExtractedText(e.target.value)}
-                className="h-64 w-full resize-none rounded-xl border border-stroke bg-cream px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-64 w-full resize-none rounded-xl border border-border bg-cream px-4 py-3 text-sm leading-relaxed text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
 
               {error ? (
-                <p className="text-sm text-rose">{error}</p>
+                <p className="text-sm text-danger">{error}</p>
               ) : null}
 
               <div className="flex justify-between gap-2">
                 <button
                   onClick={() => setStep("upload")}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-cream-dark"
+                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleGenerateCards}
                   disabled={!extractedText.trim() || generating}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-medium text-white transition-all hover:bg-coral-dark disabled:opacity-50"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {generating ? (
                     <>
@@ -291,14 +291,14 @@ export function GenerateCardsModal({
           {step === "review" ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm text-ink-muted">
+                <p className="text-sm text-dark-muted">
                   {generatedCards.length} card
                   {generatedCards.length !== 1 ? "s" : ""} generated
                 </p>
                 <button
                   onClick={() => setStep("text")}
                   disabled={saving}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-ink-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
                 >
                   Back
                 </button>
@@ -307,7 +307,7 @@ export function GenerateCardsModal({
               {/* Group Selector */}
               {groups.length > 0 ? (
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-medium text-ink-muted">
+                  <label className="text-xs font-medium text-dark-muted">
                     Assign to group:
                   </label>
                   <select
@@ -315,7 +315,7 @@ export function GenerateCardsModal({
                     onChange={(e) =>
                       setSelectedGroupId(Number(e.target.value))
                     }
-                    className="h-8 rounded-lg border border-stroke bg-cream px-2 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                    className="h-8 rounded-lg border border-border bg-cream px-2 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   >
                     {groups.map((group) => (
                       <option key={group.id} value={group.id}>
@@ -325,7 +325,7 @@ export function GenerateCardsModal({
                   </select>
                 </div>
               ) : (
-                <p className="text-xs text-amber-dark">
+                <p className="text-xs text-accent-dark">
                   No groups available. Create a group first.
                 </p>
               )}
@@ -334,15 +334,15 @@ export function GenerateCardsModal({
                 {generatedCards.map((card, index) => (
                   <div
                     key={index}
-                    className="rounded-[1.25rem] border border-stroke bg-cream p-4"
+                    className="rounded-[1.25rem] border border-border bg-cream p-4"
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="text-xs font-medium text-ink-muted/60">
+                      <span className="text-xs font-medium text-dark-muted/60">
                         Card {index + 1}
                       </span>
                       <button
                         onClick={() => removeCard(index)}
-                        className="rounded-lg p-1.5 text-ink-muted/40 transition-colors hover:bg-rose-light hover:text-rose"
+                        className="rounded-lg p-1.5 text-dark-muted/40 transition-colors hover:bg-danger-light hover:text-danger"
                       >
                         <Trash2 size={12} />
                       </button>
@@ -350,7 +350,7 @@ export function GenerateCardsModal({
 
                     <div className="space-y-2">
                       <div>
-                        <label className="mb-1 block text-xs font-medium text-ink-muted">
+                        <label className="mb-1 block text-xs font-medium text-dark-muted">
                           Front
                         </label>
                         <input
@@ -358,12 +358,12 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "front", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-medium text-ink-muted">
+                        <label className="mb-1 block text-xs font-medium text-dark-muted">
                           Back
                         </label>
                         <input
@@ -371,12 +371,12 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "back", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
 
                       <div>
-                        <label className="mb-1 block text-xs font-medium text-ink-muted/60">
+                        <label className="mb-1 block text-xs font-medium text-dark-muted/60">
                           Notes
                         </label>
                         <input
@@ -385,7 +385,7 @@ export function GenerateCardsModal({
                             updateCard(index, "notes", e.target.value)
                           }
                           placeholder="Optional context..."
-                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink placeholder:text-ink-muted/30 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark placeholder:text-dark-muted/30 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
                     </div>
@@ -394,21 +394,21 @@ export function GenerateCardsModal({
               </div>
 
               {error ? (
-                <p className="text-sm text-rose">{error}</p>
+                <p className="text-sm text-danger">{error}</p>
               ) : null}
 
               <div className="flex justify-end gap-2">
                 <button
                   onClick={handleClose}
                   disabled={saving}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-ink-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
+                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={generatedCards.length === 0 || saving}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-medium text-white transition-all hover:bg-coral-dark disabled:opacity-50"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {saving ? (
                     <>

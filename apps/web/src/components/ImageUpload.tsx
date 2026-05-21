@@ -100,8 +100,8 @@ export function ImageUpload({
         }}
         className={`flex cursor-pointer flex-col items-center justify-center rounded-[1.25rem] border-2 border-dashed p-6 transition-colors ${
           isDragging
-            ? "border-coral/40 bg-coral/5"
-            : "border-stroke hover:border-coral/30 hover:bg-cream-dark"
+            ? "border-primary/40 bg-primary/5"
+            : "border-border hover:border-primary/30 hover:bg-cream-dark"
         }`}
       >
         <input
@@ -112,11 +112,11 @@ export function ImageUpload({
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        <Upload size={24} className="mb-2 text-ink-muted/50" />
-        <p className="text-sm text-ink-muted">
+        <Upload size={24} className="mb-2 text-dark-muted/50" />
+        <p className="text-sm text-dark-muted">
           Click to upload or drag images here
         </p>
-        <p className="mt-1 text-xs text-ink-muted/60">
+        <p className="mt-1 text-xs text-dark-muted/60">
           Max {maxImages} images · JPEG/PNG
         </p>
       </div>
@@ -126,7 +126,7 @@ export function ImageUpload({
           {images.map((src, index) => (
             <div
               key={index}
-              className="group relative aspect-square overflow-hidden rounded-xl border border-stroke"
+              className="group relative aspect-square overflow-hidden rounded-xl border border-border"
             >
               <img
                 src={src}

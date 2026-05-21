@@ -100,7 +100,7 @@ export default function GroupPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-coral border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
       </div>
     );
   }
@@ -108,7 +108,7 @@ export default function GroupPage() {
   if (!group) {
     return (
       <div className="py-20 text-center">
-        <p className="text-ink-muted">Group not found</p>
+        <p className="text-dark-muted">Group not found</p>
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function GroupPage() {
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-          className="inline-flex items-center gap-1.5 text-sm text-ink-muted transition-colors hover:text-ink"
+          className="inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
         >
           <ArrowLeft size={16} />
           Back to Deck
@@ -126,10 +126,10 @@ export default function GroupPage() {
       </div>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight text-ink" style={{ fontFamily: "var(--font-display)" }}>
+        <h1 className="text-3xl font-semibold tracking-tight text-dark" style={{ fontFamily: "var(--font-display)" }}>
           {group.name}
         </h1>
-        <p className="mt-1.5 text-sm text-ink-muted">
+        <p className="mt-1.5 text-sm text-dark-muted">
           {group.cards.length} {group.cards.length === 1 ? "card" : "cards"}
         </p>
       </div>
@@ -137,21 +137,21 @@ export default function GroupPage() {
       <div className="mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => navigate({ to: "/decks/$id/study", params: { id: deckId }, search: { groupId } })}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-coral px-5 text-sm font-bold text-white transition-all hover:bg-coral-dark hover:shadow-[4px_4px_0px_0px_rgba(250,103,129,0.3)] hover:-translate-y-0.5"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-all hover:bg-primary-dark hover:shadow-[4px_4px_0px_0px_rgba(250,103,129,0.3)] hover:-translate-y-0.5"
         >
           <BookOpen size={14} />
           Study Group
         </button>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex h-11 items-center gap-2 rounded-full border-[2.5px] border-stroke bg-paper px-5 text-sm font-bold text-ink-light transition-all hover:bg-cream-dark hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
+          className="inline-flex h-11 items-center gap-2 rounded-full border-[2.5px] border-border bg-paper px-5 text-sm font-bold text-dark-light transition-all hover:bg-cream-dark hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
         >
           <Plus size={14} />
           Add Card
         </button>
         <button
           onClick={() => setShowGenerateModal(true)}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-amber px-5 text-sm font-bold text-ink transition-all hover:bg-amber-dark hover:shadow-[4px_4px_0px_0px_rgba(255,201,77,0.4)] hover:-translate-y-0.5"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-bold text-dark transition-all hover:bg-accent-dark hover:shadow-[4px_4px_0px_0px_rgba(255,201,77,0.4)] hover:-translate-y-0.5"
         >
           <Sparkles size={14} />
           Generate with AI
@@ -159,49 +159,49 @@ export default function GroupPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 rounded-[1.25rem] border border-stroke bg-paper p-5 animate-scale-in">
+        <form onSubmit={handleSubmit} className="mb-6 rounded-[1.25rem] border border-border bg-paper p-5 animate-scale-in">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-ink-light">Front</label>
+              <label className="mb-1.5 block text-xs font-medium text-dark-light">Front</label>
               <input
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Question or term"
                 autoFocus
-                className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-ink-light">Back</label>
+              <label className="mb-1.5 block text-xs font-medium text-dark-light">Back</label>
               <input
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
                 placeholder="Answer or definition"
-                className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>
           <div className="mt-3">
-            <label className="mb-1.5 block text-xs font-medium text-ink-muted">Notes</label>
+            <label className="mb-1.5 block text-xs font-medium text-dark-muted">Notes</label>
             <input
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Context, references..."
-              className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+              className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div className="mt-4 flex gap-2">
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="inline-flex h-10 items-center rounded-xl bg-coral px-5 text-sm font-medium text-white transition-all hover:bg-coral-dark disabled:opacity-50"
+              className="inline-flex h-10 items-center rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
             >
               {createMutation.isPending || updateMutation.isPending ? "Saving..." : editingCard ? "Update Card" : "Add Card"}
             </button>
             <button
               type="button"
               onClick={cancelForm}
-              className="inline-flex h-10 items-center rounded-xl px-5 text-sm font-medium text-ink-muted transition-colors hover:bg-cream-dark"
+              className="inline-flex h-10 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
             >
               Cancel
             </button>
@@ -212,11 +212,11 @@ export default function GroupPage() {
       <div className="space-y-3">
         {group.cards.length === 0 ? (
           <div className="py-16 text-center">
-            <p className="text-sm text-ink-muted">No cards in this group yet. Add your first card to get started.</p>
+            <p className="text-sm text-dark-muted">No cards in this group yet. Add your first card to get started.</p>
           </div>
         ) : (
           group.cards.map((card: CardData, i: number) => {
-            const stickerColors = ['border-coral', 'border-amber', 'border-mint'];
+            const stickerColors = ['border-primary', 'border-accent', 'border-success'];
             const colorIndex = i % 3;
             return (
             <div
@@ -225,20 +225,20 @@ export default function GroupPage() {
             >
               <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-ink">{card.front}</p>
-                  <p className="mt-1 text-sm text-ink-muted">{card.back}</p>
-                  {card.notes ? <p className="mt-2 text-xs text-ink-muted/60 italic">{card.notes}</p> : null}
+                  <p className="text-sm font-medium text-dark">{card.front}</p>
+                  <p className="mt-1 text-sm text-dark-muted">{card.back}</p>
+                  {card.notes ? <p className="mt-2 text-xs text-dark-muted/60 italic">{card.notes}</p> : null}
                 </div>
                 <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => startEdit(card)}
-                    className="rounded-lg p-2 text-ink-muted/50 transition-colors hover:bg-cream-dark hover:text-ink"
+                    className="rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-cream-dark hover:text-dark"
                   >
                     <Pencil size={14} />
                   </button>
                   <button
                     onClick={() => deleteMutation.mutate(card.id)}
-                    className="rounded-lg p-2 text-ink-muted/50 transition-colors hover:bg-rose-light hover:text-rose"
+                    className="rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-danger-light hover:text-danger"
                   >
                     <Trash2 size={14} />
                   </button>
