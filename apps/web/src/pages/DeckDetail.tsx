@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, BookOpen, FolderOpen, Plus, Pencil } from "lucide-react";
-import { fetchDeck, createGroup } from "@/lib/api";
+import { ArrowLeft, BookOpen, FolderOpen, Plus, Pencil, Trash2 } from "lucide-react";
+import { fetchDeck, createGroup, deleteGroup } from "@/lib/api";
 
 interface GroupData {
   id: number;
@@ -40,6 +40,13 @@ export default function DeckDetailPage() {
       queryClient.invalidateQueries({ queryKey: ["deck", id] });
       setNewGroupName("");
       setShowCreateModal(false);
+    },
+  });
+
+  const deleteGroupMutation = useMutation({
+    mutationFn: (groupId: number) => deleteGroup(id, String(groupId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["deck", id] });
     },
   });
 
@@ -134,13 +141,28 @@ export default function DeckDetailPage() {
                 className="cursor-pointer flex flex-col rounded-[1.5rem] border-[3px] border-primary bg-paper p-6 transition-all duration-300 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1"
               >
                 <div className="mb-4 flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <div className="rounded-full p-1.5 bg-primary-light text-primary">
-                      <FolderOpen size={16} />
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="rounded-full p-1.5 bg-primary-light text-primary">
+                        <FolderOpen size={16} />
+                      </div>
+                      <h3 className="text-lg font-semibold text-dark" style={{ fontFamily: "var(--font-display)" }}>
+                        {group.name}
+                      </h3>
                     </div>
-                    <h3 className="text-lg font-semibold text-dark" style={{ fontFamily: "var(--font-display)" }}>
-                      {group.name}
-                    </h3>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete group "${group.name}" and all its cards?`)) {
+                          deleteGroupMutation.mutate(group.id);
+                        }
+                      }}
+                      disabled={deleteGroupMutation.isPending}
+                      className="cursor-pointer rounded-lg p-1.5 text-dark-muted/40 transition-colors hover:bg-danger-light hover:text-danger"
+                      title="Delete group"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                   <p className="cursor-pointer text-xs font-medium text-dark-muted">
                     {group.cards.length} {group.cards.length === 1 ? "card" : "cards"}
