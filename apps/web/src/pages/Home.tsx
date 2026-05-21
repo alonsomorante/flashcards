@@ -42,7 +42,7 @@ export default function HomePage() {
         <p className="mb-8 text-sm text-dark-muted">Create your first deck to start studying</p>
         <Link
           to="/decks/new"
-          className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
+          className="cursor-pointer inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
         >
           <Plus size={16} />
           Create Deck
@@ -64,7 +64,7 @@ export default function HomePage() {
         </div>
         <Link
           to="/decks/new"
-          className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-md hover:shadow-primary/20"
+          className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-md hover:shadow-primary/20"
         >
           <Plus size={16} />
           New Deck
@@ -72,16 +72,12 @@ export default function HomePage() {
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {decks.map((deck, i) => {
-          const stickerColors = ['border-primary', 'border-accent', 'border-success'];
-          const shadowColors = ['hover:shadow-primary/20', 'hover:shadow-accent/20', 'hover:shadow-success/20'];
-          const colorIndex = i % 3;
-          return (
+        {decks.map((deck, i) => (
             <Link
               key={deck.id}
               to="/decks/$id"
               params={{ id: String(deck.id) }}
-              className={`group relative block rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-6 no-underline transition-all duration-300 ${shadowColors[colorIndex]} hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
+              className={`group relative block rounded-[1.5rem] border-[3px] border-primary bg-paper p-6 no-underline transition-all duration-300 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
             >
               <div className="mb-3 flex items-start justify-between">
                 <h2 className="text-xl font-semibold text-dark transition-colors group-hover:text-primary" style={{ fontFamily: "var(--font-display)" }}>
@@ -101,8 +97,7 @@ export default function HomePage() {
                 <span>Ready to study</span>
               </div>
             </Link>
-          );
-        })}
+        ))}
       </div>
     </div>
   );

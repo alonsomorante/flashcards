@@ -51,7 +51,7 @@ export default function NewDeckPage() {
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., Spanish Verbs, Biology 101"
             autoFocus
-            className="h-12 w-full rounded-xl border border-border bg-paper px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="cursor-pointer h-12 w-full rounded-xl border border-border bg-paper px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
         </div>
         <div>
@@ -61,7 +61,7 @@ export default function NewDeckPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Brief description of this deck"
             rows={3}
-            className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="cursor-pointer w-full rounded-xl border border-border bg-paper px-4 py-3 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
         </div>
         {error && <p className="text-sm text-danger">{error}</p>}
@@ -70,7 +70,7 @@ export default function NewDeckPage() {
           <button
             type="submit"
             disabled={createMutation.isPending}
-            className="inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20 disabled:opacity-50"
+            className="cursor-pointer inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20 disabled:opacity-50"
           >
             <Plus size={16} />
             {createMutation.isPending ? "Creating..." : "Create Deck"}
@@ -78,7 +78,7 @@ export default function NewDeckPage() {
           <button
             type="button"
             onClick={() => navigate({ to: "/" })}
-            className="inline-flex h-11 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark hover:text-dark"
+            className="cursor-pointer inline-flex h-11 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark hover:text-dark"
           >
             Cancel
           </button>

@@ -174,7 +174,7 @@ export function GenerateCardsModal({
           </h2>
           <button
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-dark-muted transition-colors hover:bg-cream-dark"
+            className="cursor-pointer rounded-lg p-1.5 text-dark-muted transition-colors hover:bg-cream-dark"
           >
             <X size={18} />
           </button>
@@ -209,14 +209,14 @@ export function GenerateCardsModal({
               <div className="flex justify-end gap-2">
                 <button
                   onClick={handleClose}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
+                  className="cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleExtractText}
                   disabled={images.length === 0 || extracting}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+                  className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {extracting ? (
                     <>
@@ -261,14 +261,14 @@ export function GenerateCardsModal({
               <div className="flex justify-between gap-2">
                 <button
                   onClick={() => setStep("upload")}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
+                  className="cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleGenerateCards}
                   disabled={!extractedText.trim() || generating}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+                  className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {generating ? (
                     <>
@@ -298,7 +298,7 @@ export function GenerateCardsModal({
                 <button
                   onClick={() => setStep("text")}
                   disabled={saving}
-                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
+                  className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
                 >
                   Back
                 </button>
@@ -315,7 +315,7 @@ export function GenerateCardsModal({
                     onChange={(e) =>
                       setSelectedGroupId(Number(e.target.value))
                     }
-                    className="h-8 rounded-lg border border-border bg-cream px-2 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                    className="cursor-pointer h-8 rounded-lg border border-border bg-cream px-2 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                   >
                     {groups.map((group) => (
                       <option key={group.id} value={group.id}>
@@ -342,7 +342,7 @@ export function GenerateCardsModal({
                       </span>
                       <button
                         onClick={() => removeCard(index)}
-                        className="rounded-lg p-1.5 text-dark-muted/40 transition-colors hover:bg-danger-light hover:text-danger"
+                        className="cursor-pointer rounded-lg p-1.5 text-dark-muted/40 transition-colors hover:bg-danger-light hover:text-danger"
                       >
                         <Trash2 size={12} />
                       </button>
@@ -358,7 +358,7 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "front", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          className="cursor-pointer h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
 
@@ -371,7 +371,7 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "back", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          className="cursor-pointer h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
 
@@ -385,7 +385,7 @@ export function GenerateCardsModal({
                             updateCard(index, "notes", e.target.value)
                           }
                           placeholder="Optional context..."
-                          className="h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark placeholder:text-dark-muted/30 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                          className="cursor-pointer h-10 w-full rounded-xl border border-border bg-paper px-3 text-sm text-dark placeholder:text-dark-muted/30 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
                         />
                       </div>
                     </div>
@@ -401,14 +401,14 @@ export function GenerateCardsModal({
                 <button
                   onClick={handleClose}
                   disabled={saving}
-                  className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
+                  className="cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
                   disabled={generatedCards.length === 0 || saving}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+                  className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
                 >
                   {saving ? (
                     <>

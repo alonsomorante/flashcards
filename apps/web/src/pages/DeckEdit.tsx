@@ -75,7 +75,7 @@ export default function DeckEditPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoFocus
-            className="h-12 w-full rounded-xl border border-border bg-paper px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="cursor-pointer h-12 w-full rounded-xl border border-border bg-paper px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
         </div>
         <div>
@@ -84,7 +84,7 @@ export default function DeckEditPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+            className="cursor-pointer w-full rounded-xl border border-border bg-paper px-4 py-3 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
           />
         </div>
         {updateMutation.isError && <p className="text-sm text-danger">Failed to update deck</p>}
@@ -92,14 +92,14 @@ export default function DeckEditPage() {
           <button
             type="submit"
             disabled={updateMutation.isPending}
-            className="inline-flex h-11 items-center rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+            className="cursor-pointer inline-flex h-11 items-center rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
           >
             {updateMutation.isPending ? "Saving..." : "Save Changes"}
           </button>
           <button
             type="button"
             onClick={() => navigate({ to: "/decks/$id", params: { id } })}
-            className="inline-flex h-11 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark hover:text-dark"
+            className="cursor-pointer inline-flex h-11 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark hover:text-dark"
           >
             Cancel
           </button>

@@ -118,7 +118,7 @@ export default function GroupPage() {
       <div className="mb-6 flex items-center justify-between">
         <button
           onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-          className="inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
+          className="cursor-pointer inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
         >
           <ArrowLeft size={16} />
           Back to Deck
@@ -137,21 +137,21 @@ export default function GroupPage() {
       <div className="mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => navigate({ to: "/decks/$id/study", params: { id: deckId }, search: { groupId } })}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-all hover:bg-primary-dark hover:shadow-[4px_4px_0px_0px_rgba(250,103,129,0.3)] hover:-translate-y-0.5"
+          className="cursor-pointer inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-all hover:bg-primary-dark hover:shadow-[4px_4px_0px_0px_rgba(250,103,129,0.3)] hover:-translate-y-0.5"
         >
           <BookOpen size={14} />
           Study Group
         </button>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex h-11 items-center gap-2 rounded-full border-[2.5px] border-border bg-paper px-5 text-sm font-bold text-dark-light transition-all hover:bg-cream-dark hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
+          className="cursor-pointer inline-flex h-11 items-center gap-2 rounded-full border-[2.5px] border-border bg-paper px-5 text-sm font-bold text-dark-light transition-all hover:bg-cream-dark hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
         >
           <Plus size={14} />
           Add Card
         </button>
         <button
           onClick={() => setShowGenerateModal(true)}
-          className="inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-bold text-dark transition-all hover:bg-accent-dark hover:shadow-[4px_4px_0px_0px_rgba(255,201,77,0.4)] hover:-translate-y-0.5"
+          className="cursor-pointer inline-flex h-11 items-center gap-2 rounded-full bg-accent px-5 text-sm font-bold text-dark transition-all hover:bg-accent-dark hover:shadow-[4px_4px_0px_0px_rgba(255,201,77,0.4)] hover:-translate-y-0.5"
         >
           <Sparkles size={14} />
           Generate with AI
@@ -168,7 +168,7 @@ export default function GroupPage() {
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Question or term"
                 autoFocus
-                className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                className="cursor-pointer h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
@@ -177,7 +177,7 @@ export default function GroupPage() {
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
                 placeholder="Answer or definition"
-                className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+                className="cursor-pointer h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>
@@ -187,21 +187,21 @@ export default function GroupPage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Context, references..."
-              className="h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="cursor-pointer h-11 w-full rounded-xl border border-border bg-cream px-4 text-sm text-dark placeholder:text-dark-muted/40 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
           </div>
           <div className="mt-4 flex gap-2">
             <button
               type="submit"
               disabled={createMutation.isPending || updateMutation.isPending}
-              className="inline-flex h-10 items-center rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+              className="cursor-pointer inline-flex h-10 items-center rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
             >
               {createMutation.isPending || updateMutation.isPending ? "Saving..." : editingCard ? "Update Card" : "Add Card"}
             </button>
             <button
               type="button"
               onClick={cancelForm}
-              className="inline-flex h-10 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
+              className="cursor-pointer inline-flex h-10 items-center rounded-xl px-5 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
             >
               Cancel
             </button>
@@ -215,13 +215,10 @@ export default function GroupPage() {
             <p className="text-sm text-dark-muted">No cards in this group yet. Add your first card to get started.</p>
           </div>
         ) : (
-          group.cards.map((card: CardData, i: number) => {
-            const stickerColors = ['border-primary', 'border-accent', 'border-success'];
-            const colorIndex = i % 3;
-            return (
+          group.cards.map((card: CardData) => (
             <div
               key={card.id}
-              className={`group relative rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-5 transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-1`}
+              className="cursor-pointer group relative rounded-[1.5rem] border-[3px] border-primary bg-paper p-5 transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-1"
             >
               <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1">
@@ -232,21 +229,20 @@ export default function GroupPage() {
                 <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={() => startEdit(card)}
-                    className="rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-cream-dark hover:text-dark"
+                    className="cursor-pointer rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-cream-dark hover:text-dark"
                   >
                     <Pencil size={14} />
                   </button>
                   <button
                     onClick={() => deleteMutation.mutate(card.id)}
-                    className="rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-danger-light hover:text-danger"
+                    className="cursor-pointer rounded-lg p-2 text-dark-muted/50 transition-colors hover:bg-danger-light hover:text-danger"
                   >
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
             </div>
-          );
-        })
+          ))
       )}
       </div>
 

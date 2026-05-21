@@ -27,7 +27,7 @@ function RootLayout() {
           <div className="mx-auto flex h-16 max-w-5xl items-center px-5">
             <Link
               to="/"
-              className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-dark no-underline"
+              className="flex cursor-pointer items-center gap-2.5 text-lg font-semibold tracking-tight text-dark no-underline"
               style={{ fontFamily: "var(--font-display)" }}
             >
               <Layers size={22} className="text-primary" />

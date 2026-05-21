@@ -71,7 +71,7 @@ export default function DeckDetailPage() {
       <div className="mb-6">
         <button
           onClick={() => navigate({ to: "/" })}
-          className="inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
+          className="cursor-pointer inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
         >
           <ArrowLeft size={16} />
           Decks
@@ -98,7 +98,7 @@ export default function DeckDetailPage() {
           <Link
             to="/decks/$id/study"
             params={{ id }}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-md hover:shadow-primary/20"
+            className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-md hover:shadow-primary/20"
           >
             <BookOpen size={14} />
             Study All
@@ -106,7 +106,7 @@ export default function DeckDetailPage() {
           <Link
             to="/decks/$id/edit"
             params={{ id }}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
+            className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl border border-border px-4 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
           >
             <Pencil size={14} />
             Edit
@@ -128,25 +128,21 @@ export default function DeckDetailPage() {
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {deck.groups.map((group, i) => {
-            const stickerColors = ['border-primary', 'border-accent', 'border-success'];
-            const shadowColors = ['hover:shadow-primary/20', 'hover:shadow-accent/20', 'hover:shadow-success/20'];
-            const colorIndex = i % 3;
-            return (
+          {deck.groups.map((group) => (
               <div
                 key={group.id}
-                className={`flex flex-col rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-6 transition-all duration-300 ${shadowColors[colorIndex]} hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1`}
+                className="cursor-pointer flex flex-col rounded-[1.5rem] border-[3px] border-primary bg-paper p-6 transition-all duration-300 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1"
               >
                 <div className="mb-4 flex flex-col gap-1">
                   <div className="flex items-center gap-2">
-                    <div className={`rounded-full p-1.5 ${colorIndex === 0 ? 'bg-primary-light text-primary' : colorIndex === 1 ? 'bg-accent-light text-accent-dark' : 'bg-success-light text-success-dark'}`}>
+                    <div className="rounded-full p-1.5 bg-primary-light text-primary">
                       <FolderOpen size={16} />
                     </div>
                     <h3 className="text-lg font-semibold text-dark" style={{ fontFamily: "var(--font-display)" }}>
                       {group.name}
                     </h3>
                   </div>
-                  <p className="text-xs font-medium text-dark-muted">
+                  <p className="cursor-pointer text-xs font-medium text-dark-muted">
                     {group.cards.length} {group.cards.length === 1 ? "card" : "cards"}
                     {group.dueCount > 0 ? (
                       <span className="ml-2 inline-flex items-center rounded-full bg-primary-light px-2.5 py-0.5 text-[10px] font-bold text-primary-dark">
@@ -160,7 +156,7 @@ export default function DeckDetailPage() {
                     to="/decks/$id/study"
                     params={{ id }}
                     search={{ groupId: String(group.id) }}
-                    className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full border-[2px] border-border text-xs font-semibold text-dark-light transition-colors hover:bg-cream-dark"
+                    className="cursor-pointer flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full border-[2px] border-border text-xs font-semibold text-dark-light transition-colors hover:bg-cream-dark"
                   >
                     <BookOpen size={12} />
                     Study
@@ -168,14 +164,13 @@ export default function DeckDetailPage() {
                   <Link
                     to="/decks/$id/groups/$groupId"
                     params={{ id, groupId: String(group.id) }}
-                    className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-dark text-xs font-semibold text-white transition-colors hover:bg-dark-light"
+                    className="cursor-pointer flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-dark text-xs font-semibold text-white transition-colors hover:bg-dark-light"
                   >
                     View
                   </Link>
                 </div>
               </div>
-            );
-          })}
+          ))}
         </div>
       )}
 
@@ -195,19 +190,19 @@ export default function DeckDetailPage() {
               }}
               placeholder="e.g. Chapter 1"
               autoFocus
-              className="h-12 w-full rounded-xl border border-border bg-cream px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
+              className="cursor-pointer h-12 w-full rounded-xl border border-border bg-cream px-4 text-dark placeholder:text-dark-muted/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/10"
             />
             <div className="mt-5 flex justify-end gap-2">
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
+                className="cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
               >
                 Cancel
               </button>
               <button
                 disabled={!newGroupName.trim() || createGroupMutation.isPending}
                 onClick={() => createGroupMutation.mutate(newGroupName.trim())}
-                className="inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
+                className="cursor-pointer inline-flex h-10 items-center rounded-xl bg-primary px-4 text-sm font-medium text-white transition-all hover:bg-primary-dark disabled:opacity-50"
               >
                 {createGroupMutation.isPending ? "Creating..." : "Create"}
               </button>

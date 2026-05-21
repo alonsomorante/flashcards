@@ -132,14 +132,14 @@ export default function StudyPage() {
         <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={handleRestart}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
+            className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
           >
             <RotateCcw size={14} />
             Check Again
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
+            className="cursor-pointer inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -199,14 +199,14 @@ export default function StudyPage() {
         <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={handleRestart}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
+            className="cursor-pointer inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-medium text-white transition-all hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/20"
           >
             <RotateCcw size={14} />
             Study Again
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
+            className="cursor-pointer inline-flex h-10 items-center rounded-xl border border-border px-5 text-sm font-medium text-dark-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -224,7 +224,7 @@ export default function StudyPage() {
       <div className="mb-8 flex items-center justify-between">
         <button
           onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-          className="inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
+          className="cursor-pointer inline-flex items-center gap-1.5 text-sm text-dark-muted transition-colors hover:text-dark"
         >
           <ArrowLeft size={16} />
           Back
@@ -233,7 +233,7 @@ export default function StudyPage() {
           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#E8E2DA]">
             <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
-          <span className="text-xs font-medium text-dark-muted">
+          <span className="cursor-pointer text-xs font-medium text-dark-muted">
             {dueCards!.length - studyQueue.length + 1}/{dueCards!.length}
           </span>
         </div>
@@ -247,7 +247,7 @@ export default function StudyPage() {
           style={{ transformStyle: "preserve-3d" }}
         >
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-primary bg-paper p-10 text-center shadow-[8px_8px_0px_0px_rgba(250,103,129,0.15)] backface-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-primary bg-paper p-10 text-center shadow-[8px_8px_0px_0px_rgba(129,11,56,0.12)] backface-hidden"
             style={{ backfaceVisibility: "hidden" }}
           >
             <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary/60">Question</p>
@@ -257,10 +257,10 @@ export default function StudyPage() {
             <p className="mt-8 text-xs font-medium text-dark-muted/40">Tap to reveal answer</p>
           </div>
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-success bg-cream-dark p-10 text-center shadow-[8px_8px_0px_0px_rgba(89,178,146,0.15)] backface-hidden rotate-y-180"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-primary bg-cream-dark p-10 text-center shadow-[8px_8px_0px_0px_rgba(129,11,56,0.12)] backface-hidden rotate-y-180"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-success/60">Answer</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-primary/60">Answer</p>
             <p className="text-2xl font-semibold leading-relaxed text-dark md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
               {currentCard?.back}
             </p>
@@ -277,7 +277,7 @@ export default function StudyPage() {
         <div className="flex justify-center">
           <button
             onClick={handleFlip}
-            className="inline-flex h-12 items-center gap-2 rounded-xl bg-dark px-8 text-sm font-medium text-white transition-all hover:bg-dark-light hover:shadow-lg"
+            className="cursor-pointer inline-flex h-12 items-center gap-2 rounded-xl bg-dark px-8 text-sm font-medium text-white transition-all hover:bg-dark-light hover:shadow-lg"
           >
             Show Answer
           </button>
@@ -287,7 +287,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(1)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-danger-light px-2 py-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20 hover:scale-105 disabled:opacity-40"
+            className="cursor-pointer group flex flex-col items-center rounded-2xl bg-danger-light px-2 py-4 text-sm font-semibold text-danger transition-all hover:bg-danger/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Again</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">&lt; 1 min</span>
@@ -295,7 +295,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(2)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-accent-light px-2 py-4 text-sm font-semibold text-accent transition-all hover:bg-accent/20 hover:scale-105 disabled:opacity-40"
+            className="cursor-pointer group flex flex-col items-center rounded-2xl bg-accent-light px-2 py-4 text-sm font-semibold text-accent transition-all hover:bg-accent/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Hard</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">&lt; 6 min</span>
@@ -303,7 +303,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(3)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-success-light px-2 py-4 text-sm font-semibold text-success transition-all hover:bg-success/20 hover:scale-105 disabled:opacity-40"
+            className="cursor-pointer group flex flex-col items-center rounded-2xl bg-success-light px-2 py-4 text-sm font-semibold text-success transition-all hover:bg-success/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Good</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">1 day</span>
@@ -311,7 +311,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(4)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-primary/10 px-2 py-4 text-sm font-semibold text-primary transition-all hover:bg-primary/20 hover:scale-105 disabled:opacity-40"
+            className="cursor-pointer group flex flex-col items-center rounded-2xl bg-primary/10 px-2 py-4 text-sm font-semibold text-primary transition-all hover:bg-primary/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Easy</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">4 days</span>
@@ -323,7 +323,7 @@ export default function StudyPage() {
         <button
           onClick={handleRestart}
           disabled={isSubmitting}
-          className="text-xs text-dark-muted/40 transition-colors hover:text-dark-muted"
+          className="cursor-pointer text-xs text-dark-muted/40 transition-colors hover:text-dark-muted"
         >
           <RotateCcw size={12} className="mr-1 inline" />
           Restart Session

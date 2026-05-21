@@ -136,11 +136,11 @@ export function ImageUpload({
               <button
                 type="button"
                 onClick={() => removeImage(index)}
-                className="absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
+                className="cursor-pointer absolute right-1 top-1 rounded-full bg-black/50 p-1 text-white opacity-0 transition-opacity hover:bg-black/70 group-hover:opacity-100"
               >
                 <X size={12} />
               </button>
-              <div className="absolute bottom-1 left-1 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
+              <div className="cursor-pointer absolute bottom-1 left-1 rounded bg-black/50 px-1.5 py-0.5 text-[10px] text-white">
                 {index + 1}
               </div>
             </div>
