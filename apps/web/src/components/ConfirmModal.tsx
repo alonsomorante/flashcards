@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, AlertTriangle } from "lucide-react";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -26,29 +26,36 @@ export function ConfirmModal({
   const isDanger = variant === "danger";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-sm rounded-[1.5rem] bg-paper p-6 shadow-2xl animate-scale-in border-[3px] border-primary">
-        <div className="mb-4 flex items-center justify-between">
-          <h2
-            className="text-lg font-semibold text-dark"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            {title}
-          </h2>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-6 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-[1.5rem] bg-paper p-8 shadow-2xl animate-scale-in border-[3px] border-primary">
+        <div className="mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {isDanger && (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-danger-light">
+                <AlertTriangle size={20} className="text-danger" />
+              </div>
+            )}
+            <h2
+              className="text-xl font-bold text-dark"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {title}
+            </h2>
+          </div>
           <button
             onClick={onClose}
-            className="cursor-pointer rounded-lg p-1.5 text-dark-muted transition-colors hover:bg-cream-dark"
+            className="cursor-pointer rounded-full p-2 text-dark-muted transition-colors hover:bg-cream-dark"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
-        <p className="mb-6 text-sm leading-relaxed text-dark-light">
+        <p className="mb-8 text-base leading-relaxed text-dark-light">
           {message}
         </p>
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-dark-muted transition-colors hover:bg-cream-dark"
+            className="cursor-pointer inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-dark-muted transition-colors hover:bg-cream-dark"
           >
             {cancelText}
           </button>
@@ -57,7 +64,7 @@ export function ConfirmModal({
               onConfirm();
               onClose();
             }}
-            className={`cursor-pointer inline-flex h-10 items-center rounded-xl px-4 text-sm font-medium text-white transition-all ${
+            className={`cursor-pointer inline-flex h-11 items-center rounded-xl px-5 text-sm font-semibold text-white transition-all ${
               isDanger
                 ? "bg-danger hover:bg-danger-light hover:text-danger"
                 : "bg-primary hover:bg-primary-dark"
