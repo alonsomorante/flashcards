@@ -26,7 +26,7 @@ export function ConfirmModal({
   const isDanger = variant === "danger";
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-6 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center bg-black/40 p-6 pt-24 backdrop-blur-sm">
       <div className="w-full max-w-md rounded-[1.5rem] bg-paper p-8 shadow-2xl animate-scale-in border-[3px] border-primary">
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
