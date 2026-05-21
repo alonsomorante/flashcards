@@ -1,4 +1,4 @@
-const { app } = require("./index.cjs");
+const { app } = require("./server.cjs");
 
 module.exports = async (req, res) => {
   const url = `https://${req.headers.host}${req.url}`;
