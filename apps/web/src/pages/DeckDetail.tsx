@@ -127,48 +127,55 @@ export default function DeckDetailPage() {
           </button>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {deck.groups.map((group) => (
-            <div
-              key={group.id}
-              className="flex flex-col rounded-[1.25rem] border border-stroke bg-paper p-6 transition-all duration-300 hover:border-coral/20 hover:shadow-lg hover:shadow-coral/5 hover:-translate-y-0.5"
-            >
-              <div className="mb-4 flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <FolderOpen size={18} className="text-ink-muted/50" />
-                  <h3 className="font-medium text-ink" style={{ fontFamily: "var(--font-display)" }}>
-                    {group.name}
-                  </h3>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {deck.groups.map((group, i) => {
+            const stickerColors = ['border-coral', 'border-amber', 'border-mint'];
+            const shadowColors = ['hover:shadow-coral/20', 'hover:shadow-amber/20', 'hover:shadow-mint/20'];
+            const colorIndex = i % 3;
+            return (
+              <div
+                key={group.id}
+                className={`flex flex-col rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-6 transition-all duration-300 ${shadowColors[colorIndex]} hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1`}
+              >
+                <div className="mb-4 flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`rounded-full p-1.5 ${colorIndex === 0 ? 'bg-coral-light text-coral' : colorIndex === 1 ? 'bg-amber-light text-amber-dark' : 'bg-mint-light text-mint-dark'}`}>
+                      <FolderOpen size={16} />
+                    </div>
+                    <h3 className="text-lg font-semibold text-ink" style={{ fontFamily: "var(--font-display)" }}>
+                      {group.name}
+                    </h3>
+                  </div>
+                  <p className="text-xs font-medium text-ink-muted">
+                    {group.cards.length} {group.cards.length === 1 ? "card" : "cards"}
+                    {group.dueCount > 0 ? (
+                      <span className="ml-2 inline-flex items-center rounded-full bg-coral-light px-2.5 py-0.5 text-[10px] font-bold text-coral-dark">
+                        {group.dueCount} due
+                      </span>
+                    ) : null}
+                  </p>
                 </div>
-                <p className="text-xs text-ink-muted">
-                  {group.cards.length} {group.cards.length === 1 ? "card" : "cards"}
-                  {group.dueCount > 0 ? (
-                    <span className="ml-2 inline-flex items-center rounded-full bg-coral/10 px-2 py-0.5 text-[10px] font-semibold text-coral-dark">
-                      {group.dueCount} due
-                    </span>
-                  ) : null}
-                </p>
+                <div className="mt-auto flex gap-2">
+                  <Link
+                    to="/decks/$id/study"
+                    params={{ id }}
+                    search={{ groupId: String(group.id) }}
+                    className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full border-[2px] border-stroke text-xs font-semibold text-ink-light transition-colors hover:bg-cream-dark"
+                  >
+                    <BookOpen size={12} />
+                    Study
+                  </Link>
+                  <Link
+                    to="/decks/$id/groups/$groupId"
+                    params={{ id, groupId: String(group.id) }}
+                    className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-ink text-xs font-semibold text-white transition-colors hover:bg-ink-light"
+                  >
+                    View
+                  </Link>
+                </div>
               </div>
-              <div className="mt-auto flex gap-2">
-                <Link
-                  to="/decks/$id/study"
-                  params={{ id }}
-                  search={{ groupId: String(group.id) }}
-                  className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-stroke text-xs font-medium text-ink-light transition-colors hover:bg-cream-dark"
-                >
-                  <BookOpen size={12} />
-                  Study
-                </Link>
-                <Link
-                  to="/decks/$id/groups/$groupId"
-                  params={{ id, groupId: String(group.id) }}
-                  className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl bg-ink text-xs font-medium text-white transition-colors hover:bg-ink-light"
-                >
-                  View
-                </Link>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

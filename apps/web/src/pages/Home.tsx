@@ -71,33 +71,38 @@ export default function HomePage() {
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {decks.map((deck, i) => (
-          <Link
-            key={deck.id}
-            to="/decks/$id"
-            params={{ id: String(deck.id) }}
-            className={`group relative block rounded-[1.25rem] border border-stroke bg-paper p-6 no-underline transition-all duration-300 hover:border-coral/30 hover:shadow-xl hover:shadow-coral/5 hover:-translate-y-1 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
-          >
-            <div className="mb-3 flex items-start justify-between">
-              <h2 className="text-lg font-medium text-ink transition-colors group-hover:text-coral-dark" style={{ fontFamily: "var(--font-display)" }}>
-                {deck.name}
-              </h2>
-              <div className="rounded-lg bg-cream-dark p-2 text-ink-muted transition-colors group-hover:bg-coral/10 group-hover:text-coral">
-                <BookOpen size={18} />
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {decks.map((deck, i) => {
+          const stickerColors = ['border-coral', 'border-amber', 'border-mint'];
+          const shadowColors = ['hover:shadow-coral/20', 'hover:shadow-amber/20', 'hover:shadow-mint/20'];
+          const colorIndex = i % 3;
+          return (
+            <Link
+              key={deck.id}
+              to="/decks/$id"
+              params={{ id: String(deck.id) }}
+              className={`group relative block rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-6 no-underline transition-all duration-300 ${shadowColors[colorIndex]} hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 animate-fade-in-up stagger-${Math.min(i + 1, 6)}`}
+            >
+              <div className="mb-3 flex items-start justify-between">
+                <h2 className="text-xl font-semibold text-ink transition-colors group-hover:text-coral" style={{ fontFamily: "var(--font-display)" }}>
+                  {deck.name}
+                </h2>
+                <div className="rounded-full bg-amber-light p-2 text-amber-dark transition-colors group-hover:scale-110">
+                  <BookOpen size={18} />
+                </div>
               </div>
-            </div>
-            {deck.description ? (
-              <p className="line-clamp-2 text-sm leading-relaxed text-ink-muted">{deck.description}</p>
-            ) : (
-              <p className="text-sm text-ink-muted/60 italic">No description</p>
-            )}
-            <div className="mt-4 flex items-center gap-1.5 text-xs text-ink-muted">
-              <div className="h-1.5 w-1.5 rounded-full bg-mint" />
-              <span>Ready to study</span>
-            </div>
-          </Link>
-        ))}
+              {deck.description ? (
+                <p className="line-clamp-2 text-sm leading-relaxed text-ink-light">{deck.description}</p>
+              ) : (
+                <p className="text-sm text-ink-muted/60 italic">No description</p>
+              )}
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-medium text-mint-dark">
+                <div className="h-2 w-2 rounded-full bg-mint" />
+                <span>Ready to study</span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

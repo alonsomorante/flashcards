@@ -4,36 +4,36 @@
   --font-display: "Fredoka", "Comic Sans MS", cursive;
   --font-body: "Quicksand", "Segoe UI", sans-serif;
 
-  /* Sticker Brain Palette */
-  --color-cream: #F3E8FF;
-  --color-cream-dark: #EDE4FA;
+  /* User's Palette */
+  --color-cream: #FAE7CB;
+  --color-cream-dark: #F0D9B5;
 
-  --color-coral: #E11D8C;
-  --color-coral-dark: #C4187A;
-  --color-coral-light: #FCE7F3;
+  --color-coral: #FA6781;
+  --color-coral-dark: #E05A73;
+  --color-coral-light: #FFE4E8;
 
-  --color-mint: #14B8A6;
-  --color-mint-dark: #0D9488;
-  --color-mint-light: #D5F5F0;
+  --color-mint: #59B292;
+  --color-mint-dark: #4A9E82;
+  --color-mint-light: #D5F0E6;
 
-  --color-amber: #F59E0B;
-  --color-amber-dark: #D97706;
-  --color-amber-light: #FEF3C7;
+  --color-amber: #FFC94D;
+  --color-amber-dark: #E5B23D;
+  --color-amber-light: #FFF3D6;
 
-  --color-ink: #581C87;
-  --color-ink-light: #7C3AED;
-  --color-ink-muted: #A78BFA;
+  --color-ink: #3D2B1F;
+  --color-ink-light: #5C4A3D;
+  --color-ink-muted: #9E8E7E;
 
   --color-paper: #FFFFFF;
 
-  --color-rose: #F43F5E;
-  --color-rose-light: #FFE4E6;
+  --color-rose: #FA6781;
+  --color-rose-light: #FFE4E8;
 
-  --color-gold: #F59E0B;
-  --color-gold-light: #FEF3C7;
+  --color-gold: #FFC94D;
+  --color-gold-light: #FFF3D6;
 
-  --color-stroke: #DDD6FE;
-  --color-stroke-light: #EDE9FE;
+  --color-stroke: #E8D5B7;
+  --color-stroke-light: #F0E0CC;
 
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
@@ -76,11 +76,11 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C4B5FD;
+  background: #D4C5B0;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A78BFA;
+  background: #B5A48E;
 }
 
 /* Animation utilities */
@@ -136,7 +136,7 @@ h1, h2, h3, h4, h5, h6 {
 .stagger-5 { animation-delay: 0.25s; opacity: 0; }
 .stagger-6 { animation-delay: 0.3s; opacity: 0; }
 
-/* Sticker feel: subtle dot pattern on body */
+/* Subtle dot pattern on cream background */
 body::before {
   content: "";
   position: fixed;
@@ -144,9 +144,9 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(#E9D5FF 1px, transparent 1px);
+  background-image: radial-gradient(#E8D5B7 1px, transparent 1px);
   background-size: 24px 24px;
   pointer-events: none;
   z-index: -1;
-  opacity: 0.4;
+  opacity: 0.35;
 }

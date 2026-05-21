@@ -247,25 +247,25 @@ export default function StudyPage() {
           style={{ transformStyle: "preserve-3d" }}
         >
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-stroke bg-paper p-10 text-center shadow-xl shadow-black/5 backface-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-coral bg-paper p-10 text-center shadow-[8px_8px_0px_0px_rgba(250,103,129,0.15)] backface-hidden"
             style={{ backfaceVisibility: "hidden" }}
           >
-            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-muted/50">Question</p>
-            <p className="text-2xl font-medium leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-coral/60">Question</p>
+            <p className="text-2xl font-semibold leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
               {currentCard?.front}
             </p>
-            <p className="mt-8 text-xs text-ink-muted/40">Tap to reveal answer</p>
+            <p className="mt-8 text-xs font-medium text-ink-muted/40">Tap to reveal answer</p>
           </div>
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-stroke bg-cream-dark p-10 text-center shadow-xl shadow-black/5 backface-hidden rotate-y-180"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border-[4px] border-mint bg-cream-dark p-10 text-center shadow-[8px_8px_0px_0px_rgba(89,178,146,0.15)] backface-hidden rotate-y-180"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
-            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-muted/50">Answer</p>
-            <p className="text-2xl font-medium leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="mb-3 text-xs font-bold uppercase tracking-widest text-mint/60">Answer</p>
+            <p className="text-2xl font-semibold leading-relaxed text-ink md:text-3xl" style={{ fontFamily: "var(--font-display)" }}>
               {currentCard?.back}
             </p>
             {currentCard?.notes ? (
-              <div className="mx-auto mt-8 max-w-md border-t border-[#D4CFC8] pt-5">
+              <div className="mx-auto mt-8 max-w-md border-t-2 border-stroke pt-5">
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink-muted/70">{currentCard.notes}</p>
               </div>
             ) : null}

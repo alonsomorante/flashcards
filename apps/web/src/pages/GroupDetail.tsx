@@ -134,24 +134,24 @@ export default function GroupPage() {
         </p>
       </div>
 
-      <div className="mb-6 flex gap-2">
+      <div className="mb-6 flex flex-wrap gap-2">
         <button
           onClick={() => navigate({ to: "/decks/$id/study", params: { id: deckId }, search: { groupId } })}
-          className="inline-flex h-10 items-center gap-2 rounded-xl bg-coral px-4 text-sm font-medium text-white transition-all hover:bg-coral-dark hover:shadow-md hover:shadow-coral/20"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-coral px-5 text-sm font-bold text-white transition-all hover:bg-coral-dark hover:shadow-[4px_4px_0px_0px_rgba(250,103,129,0.3)] hover:-translate-y-0.5"
         >
           <BookOpen size={14} />
           Study Group
         </button>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-xl border border-stroke px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+          className="inline-flex h-11 items-center gap-2 rounded-full border-[2.5px] border-stroke bg-paper px-5 text-sm font-bold text-ink-light transition-all hover:bg-cream-dark hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-0.5"
         >
           <Plus size={14} />
           Add Card
         </button>
         <button
           onClick={() => setShowGenerateModal(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-light bg-amber-light px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-light"
+          className="inline-flex h-11 items-center gap-2 rounded-full bg-amber px-5 text-sm font-bold text-ink transition-all hover:bg-amber-dark hover:shadow-[4px_4px_0px_0px_rgba(255,201,77,0.4)] hover:-translate-y-0.5"
         >
           <Sparkles size={14} />
           Generate with AI
@@ -215,10 +215,13 @@ export default function GroupPage() {
             <p className="text-sm text-ink-muted">No cards in this group yet. Add your first card to get started.</p>
           </div>
         ) : (
-          group.cards.map((card: CardData) => (
+          group.cards.map((card: CardData, i: number) => {
+            const stickerColors = ['border-coral', 'border-amber', 'border-mint'];
+            const colorIndex = i % 3;
+            return (
             <div
               key={card.id}
-              className="group relative rounded-[1.25rem] border border-stroke bg-paper p-5 transition-all hover:border-coral/20 hover:shadow-md"
+              className={`group relative rounded-[1.5rem] border-[3px] ${stickerColors[colorIndex]} bg-paper p-5 transition-all hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,0.06)] hover:-translate-y-1`}
             >
               <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1">
@@ -242,8 +245,9 @@ export default function GroupPage() {
                 </div>
               </div>
             </div>
-          ))
-        )}
+          );
+        })
+      )}
       </div>
 
       <GenerateCardsModal
