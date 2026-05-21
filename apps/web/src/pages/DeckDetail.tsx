@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, BookOpen, FolderOpen, Plus, Pencil, Trash2 } from "lucide-react";
 import { fetchDeck, createGroup, deleteGroup } from "@/lib/api";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 interface GroupData {
   id: number;
@@ -33,6 +34,8 @@ export default function DeckDetailPage() {
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<GroupData | null>(null);
 
   const createGroupMutation = useMutation({
     mutationFn: (name: string) => createGroup(id, { name }),
@@ -153,9 +156,8 @@ export default function DeckDetailPage() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (confirm(`Delete group "${group.name}" and all its cards?`)) {
-                          deleteGroupMutation.mutate(group.id);
-                        }
+                        setGroupToDelete(group);
+                        setShowDeleteConfirm(true);
                       }}
                       disabled={deleteGroupMutation.isPending}
                       className="cursor-pointer rounded-lg p-1.5 text-dark-muted/40 transition-colors hover:bg-danger-light hover:text-danger"
@@ -232,6 +234,24 @@ export default function DeckDetailPage() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={showDeleteConfirm}
+        title="Delete Group"
+        message={`Are you sure you want to delete "${groupToDelete?.name}"? This will permanently delete the group and all its cards. This action cannot be undone.`}
+        confirmText="Delete Group"
+        cancelText="Cancel"
+        variant="danger"
+        onConfirm={() => {
+          if (groupToDelete) {
+            deleteGroupMutation.mutate(groupToDelete.id);
+          }
+        }}
+        onClose={() => {
+          setShowDeleteConfirm(false);
+          setGroupToDelete(null);
+        }}
+      />
     </div>
   );
 }
