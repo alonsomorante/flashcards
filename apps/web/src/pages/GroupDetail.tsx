@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, BookOpen, Plus, Trash2, Pencil } from "lucide-react";
+import { ArrowLeft, BookOpen, Plus, Trash2, Pencil, Sparkles } from "lucide-react";
 import { fetchDeck, createCard, updateCard, deleteCard } from "@/lib/api";
+import { GenerateCardsModal } from "@/components/GenerateCardsModal";
 
 interface CardData {
   id: number;
@@ -32,6 +33,7 @@ export default function GroupPage() {
 
   const group = pageData?.group;
   const [showForm, setShowForm] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
   const [editingCard, setEditingCard] = useState<CardData | null>(null);
   const [front, setFront] = useState("");
   const [back, setBack] = useState("");
@@ -147,6 +149,13 @@ export default function GroupPage() {
           <Plus size={14} />
           Add Card
         </button>
+        <button
+          onClick={() => setShowGenerateModal(true)}
+          className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+        >
+          <Sparkles size={14} />
+          Generate with AI
+        </button>
       </div>
 
       {showForm && (
@@ -236,6 +245,17 @@ export default function GroupPage() {
           ))
         )}
       </div>
+
+      <GenerateCardsModal
+        open={showGenerateModal}
+        onClose={() => setShowGenerateModal(false)}
+        deckId={deckId}
+        groups={pageData?.allGroups ?? []}
+        onCardsCreated={() => {
+          queryClient.invalidateQueries({ queryKey: ["group", deckId, groupId] });
+          queryClient.invalidateQueries({ queryKey: ["deck", deckId] });
+        }}
+      />
     </div>
   );
 }
