@@ -162,8 +162,8 @@ export function GenerateCardsModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-2xl rounded-[1.25rem] bg-paper p-6 shadow-2xl animate-scale-in max-h-[calc(100dvh-2rem)] min-h-[360px] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-16 backdrop-blur-sm">
+      <div className="w-full max-w-2xl rounded-[1.25rem] bg-paper px-6 pb-6 pt-8 shadow-2xl animate-scale-in max-h-[calc(100dvh-6rem)] min-h-[360px] flex flex-col">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
           <h2
