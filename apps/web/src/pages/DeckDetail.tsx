@@ -51,7 +51,7 @@ export default function DeckDetailPage() {
         <div className="mb-6 h-8 w-48 animate-pulse rounded-xl bg-[#F5EDE4]" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-40 animate-pulse rounded-[1.25rem] border border-[#E8E2DA] bg-[#F5EDE4]" />
+            <div key={i} className="h-40 animate-pulse rounded-[1.25rem] border border-stroke bg-[#F5EDE4]" />
           ))}
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function DeckDetailPage() {
           <Link
             to="/decks/$id/edit"
             params={{ id }}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#E8E2DA] px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-stroke px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
           >
             <Pencil size={14} />
             Edit
@@ -120,7 +120,7 @@ export default function DeckDetailPage() {
           <p className="text-sm text-ink-muted">No groups yet. Create a group to start adding cards.</p>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-[#E8E2DA] px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl border border-stroke px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
           >
             <Plus size={14} />
             New Group
@@ -131,7 +131,7 @@ export default function DeckDetailPage() {
           {deck.groups.map((group) => (
             <div
               key={group.id}
-              className="flex flex-col rounded-[1.25rem] border border-[#E8E2DA] bg-paper p-6 transition-all duration-300 hover:border-coral/20 hover:shadow-lg hover:shadow-coral/5 hover:-translate-y-0.5"
+              className="flex flex-col rounded-[1.25rem] border border-stroke bg-paper p-6 transition-all duration-300 hover:border-coral/20 hover:shadow-lg hover:shadow-coral/5 hover:-translate-y-0.5"
             >
               <div className="mb-4 flex flex-col gap-1">
                 <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export default function DeckDetailPage() {
                   to="/decks/$id/study"
                   params={{ id }}
                   search={{ groupId: String(group.id) }}
-                  className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-[#E8E2DA] text-xs font-medium text-ink-light transition-colors hover:bg-cream-dark"
+                  className="flex-1 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl border border-stroke text-xs font-medium text-ink-light transition-colors hover:bg-cream-dark"
                 >
                   <BookOpen size={12} />
                   Study
@@ -188,7 +188,7 @@ export default function DeckDetailPage() {
               }}
               placeholder="e.g. Chapter 1"
               autoFocus
-              className="h-12 w-full rounded-xl border border-[#E8E2DA] bg-cream px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+              className="h-12 w-full rounded-xl border border-stroke bg-cream px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
             />
             <div className="mt-5 flex justify-end gap-2">
               <button

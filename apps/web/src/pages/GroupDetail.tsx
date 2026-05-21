@@ -144,14 +144,14 @@ export default function GroupPage() {
         </button>
         <button
           onClick={() => setShowForm(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-xl border border-[#E8E2DA] px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+          className="inline-flex h-10 items-center gap-2 rounded-xl border border-stroke px-4 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
         >
           <Plus size={14} />
           Add Card
         </button>
         <button
           onClick={() => setShowGenerateModal(true)}
-          className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100"
+          className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-light bg-amber-light px-4 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-light"
         >
           <Sparkles size={14} />
           Generate with AI
@@ -159,7 +159,7 @@ export default function GroupPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 rounded-[1.25rem] border border-[#E8E2DA] bg-paper p-5 animate-scale-in">
+        <form onSubmit={handleSubmit} className="mb-6 rounded-[1.25rem] border border-stroke bg-paper p-5 animate-scale-in">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1.5 block text-xs font-medium text-ink-light">Front</label>
@@ -168,7 +168,7 @@ export default function GroupPage() {
                 onChange={(e) => setFront(e.target.value)}
                 placeholder="Question or term"
                 autoFocus
-                className="h-11 w-full rounded-xl border border-[#E8E2DA] bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
               />
             </div>
             <div>
@@ -177,7 +177,7 @@ export default function GroupPage() {
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
                 placeholder="Answer or definition"
-                className="h-11 w-full rounded-xl border border-[#E8E2DA] bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
               />
             </div>
           </div>
@@ -187,7 +187,7 @@ export default function GroupPage() {
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Context, references..."
-              className="h-11 w-full rounded-xl border border-[#E8E2DA] bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+              className="h-11 w-full rounded-xl border border-stroke bg-cream px-4 text-sm text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
             />
           </div>
           <div className="mt-4 flex gap-2">
@@ -218,7 +218,7 @@ export default function GroupPage() {
           group.cards.map((card: CardData) => (
             <div
               key={card.id}
-              className="group relative rounded-[1.25rem] border border-[#E8E2DA] bg-paper p-5 transition-all hover:border-coral/20 hover:shadow-md"
+              className="group relative rounded-[1.25rem] border border-stroke bg-paper p-5 transition-all hover:border-coral/20 hover:shadow-md"
             >
               <div className="flex items-start gap-4">
                 <div className="min-w-0 flex-1">

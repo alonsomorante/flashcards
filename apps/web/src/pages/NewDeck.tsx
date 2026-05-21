@@ -51,7 +51,7 @@ export default function NewDeckPage() {
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g., Spanish Verbs, Biology 101"
             autoFocus
-            className="h-12 w-full rounded-xl border border-[#E8E2DA] bg-paper px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+            className="h-12 w-full rounded-xl border border-stroke bg-paper px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
           />
         </div>
         <div>
@@ -61,7 +61,7 @@ export default function NewDeckPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Brief description of this deck"
             rows={3}
-            className="w-full rounded-xl border border-[#E8E2DA] bg-paper px-4 py-3 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+            className="w-full rounded-xl border border-stroke bg-paper px-4 py-3 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
           />
         </div>
         {error && <p className="text-sm text-rose">{error}</p>}

@@ -122,8 +122,8 @@ export default function StudyPage() {
   if (dueCards?.length === 0) {
     return (
       <div className="mx-auto max-w-md py-24 text-center animate-scale-in">
-        <div className="mb-6 inline-flex rounded-full bg-gold-light p-5">
-          <Zap size={32} className="text-gold" />
+        <div className="mb-6 inline-flex rounded-full bg-amber-light p-5">
+          <Zap size={32} className="text-amber" />
         </div>
         <h2 className="text-2xl font-semibold text-ink" style={{ fontFamily: "var(--font-display)" }}>
           All caught up
@@ -139,7 +139,7 @@ export default function StudyPage() {
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-[#E8E2DA] px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="inline-flex h-10 items-center rounded-xl border border-stroke px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -152,8 +152,8 @@ export default function StudyPage() {
     const total = sessionStats.newCount + sessionStats.learningCount + sessionStats.reviewCount;
     return (
       <div className="mx-auto max-w-md py-16 text-center animate-scale-in">
-        <div className="mb-6 inline-flex rounded-full bg-sage-light p-5">
-          <CheckCircle2 size={32} className="text-sage" />
+        <div className="mb-6 inline-flex rounded-full bg-mint-light p-5">
+          <CheckCircle2 size={32} className="text-mint" />
         </div>
         <h2 className="text-2xl font-semibold text-ink" style={{ fontFamily: "var(--font-display)" }}>
           Session Complete
@@ -162,13 +162,13 @@ export default function StudyPage() {
           You reviewed {total} {total === 1 ? "card" : "cards"}
         </p>
 
-        <div className="mt-8 rounded-[1.25rem] border border-[#E8E2DA] bg-paper p-6 text-left">
+        <div className="mt-8 rounded-[1.25rem] border border-stroke bg-paper p-6 text-left">
           <h3 className="mb-4 text-sm font-medium text-ink-light">Breakdown</h3>
           <div className="space-y-3">
             {sessionStats.newCount > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <Sparkles size={18} className="text-gold" />
+                  <Sparkles size={18} className="text-amber" />
                   <span className="text-sm text-ink-light">New cards</span>
                 </div>
                 <span className="text-sm font-semibold text-ink">{sessionStats.newCount}</span>
@@ -186,7 +186,7 @@ export default function StudyPage() {
             {sessionStats.reviewCount > 0 && (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <CheckCircle2 size={18} className="text-sage" />
+                  <CheckCircle2 size={18} className="text-mint" />
                   <span className="text-sm text-ink-light">Reviews</span>
                 </div>
                 <span className="text-sm font-semibold text-ink">{sessionStats.reviewCount}</span>
@@ -206,7 +206,7 @@ export default function StudyPage() {
           </button>
           <button
             onClick={() => navigate({ to: "/decks/$id", params: { id: deckId } })}
-            className="inline-flex h-10 items-center rounded-xl border border-[#E8E2DA] px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
+            className="inline-flex h-10 items-center rounded-xl border border-stroke px-5 text-sm font-medium text-ink-light transition-colors hover:bg-cream-dark"
           >
             Back to Deck
           </button>
@@ -247,7 +247,7 @@ export default function StudyPage() {
           style={{ transformStyle: "preserve-3d" }}
         >
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-[#E8E2DA] bg-paper p-10 text-center shadow-xl shadow-black/5 backface-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-stroke bg-paper p-10 text-center shadow-xl shadow-black/5 backface-hidden"
             style={{ backfaceVisibility: "hidden" }}
           >
             <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-muted/50">Question</p>
@@ -257,7 +257,7 @@ export default function StudyPage() {
             <p className="mt-8 text-xs text-ink-muted/40">Tap to reveal answer</p>
           </div>
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-[#E8E2DA] bg-cream-dark p-10 text-center shadow-xl shadow-black/5 backface-hidden rotate-y-180"
+            className="absolute inset-0 flex flex-col items-center justify-center rounded-[1.75rem] border border-stroke bg-cream-dark p-10 text-center shadow-xl shadow-black/5 backface-hidden rotate-y-180"
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             <p className="mb-3 text-xs font-medium uppercase tracking-widest text-ink-muted/50">Answer</p>
@@ -295,7 +295,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(2)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-gold-light px-2 py-4 text-sm font-semibold text-amber transition-all hover:bg-amber/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-amber-light px-2 py-4 text-sm font-semibold text-amber transition-all hover:bg-amber/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Hard</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">&lt; 6 min</span>
@@ -303,7 +303,7 @@ export default function StudyPage() {
           <button
             onClick={() => handleRate(3)}
             disabled={isSubmitting}
-            className="group flex flex-col items-center rounded-2xl bg-sage-light px-2 py-4 text-sm font-semibold text-sage transition-all hover:bg-sage/20 hover:scale-105 disabled:opacity-40"
+            className="group flex flex-col items-center rounded-2xl bg-mint-light px-2 py-4 text-sm font-semibold text-mint transition-all hover:bg-mint/20 hover:scale-105 disabled:opacity-40"
           >
             <span>Good</span>
             <span className="mt-1 text-[10px] font-medium opacity-60">1 day</span>

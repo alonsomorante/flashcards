@@ -101,7 +101,7 @@ export function ImageUpload({
         className={`flex cursor-pointer flex-col items-center justify-center rounded-[1.25rem] border-2 border-dashed p-6 transition-colors ${
           isDragging
             ? "border-coral/40 bg-coral/5"
-            : "border-[#E8E2DA] hover:border-coral/30 hover:bg-cream-dark"
+            : "border-stroke hover:border-coral/30 hover:bg-cream-dark"
         }`}
       >
         <input
@@ -126,7 +126,7 @@ export function ImageUpload({
           {images.map((src, index) => (
             <div
               key={index}
-              className="group relative aspect-square overflow-hidden rounded-xl border border-[#E8E2DA]"
+              className="group relative aspect-square overflow-hidden rounded-xl border border-stroke"
             >
               <img
                 src={src}

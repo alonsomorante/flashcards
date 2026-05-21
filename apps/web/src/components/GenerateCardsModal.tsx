@@ -251,7 +251,7 @@ export function GenerateCardsModal({
               <textarea
                 value={extractedText}
                 onChange={(e) => setExtractedText(e.target.value)}
-                className="h-64 w-full resize-none rounded-xl border border-[#E8E2DA] bg-cream px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                className="h-64 w-full resize-none rounded-xl border border-stroke bg-cream px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-ink-muted/40 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
               />
 
               {error ? (
@@ -315,7 +315,7 @@ export function GenerateCardsModal({
                     onChange={(e) =>
                       setSelectedGroupId(Number(e.target.value))
                     }
-                    className="h-8 rounded-lg border border-[#E8E2DA] bg-cream px-2 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                    className="h-8 rounded-lg border border-stroke bg-cream px-2 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
                   >
                     {groups.map((group) => (
                       <option key={group.id} value={group.id}>
@@ -325,7 +325,7 @@ export function GenerateCardsModal({
                   </select>
                 </div>
               ) : (
-                <p className="text-xs text-amber-600">
+                <p className="text-xs text-amber-dark">
                   No groups available. Create a group first.
                 </p>
               )}
@@ -334,7 +334,7 @@ export function GenerateCardsModal({
                 {generatedCards.map((card, index) => (
                   <div
                     key={index}
-                    className="rounded-[1.25rem] border border-[#E8E2DA] bg-cream p-4"
+                    className="rounded-[1.25rem] border border-stroke bg-cream p-4"
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-xs font-medium text-ink-muted/60">
@@ -358,7 +358,7 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "front", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-[#E8E2DA] bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
                         />
                       </div>
 
@@ -371,7 +371,7 @@ export function GenerateCardsModal({
                           onChange={(e) =>
                             updateCard(index, "back", e.target.value)
                           }
-                          className="h-10 w-full rounded-xl border border-[#E8E2DA] bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
                         />
                       </div>
 
@@ -385,7 +385,7 @@ export function GenerateCardsModal({
                             updateCard(index, "notes", e.target.value)
                           }
                           placeholder="Optional context..."
-                          className="h-10 w-full rounded-xl border border-[#E8E2DA] bg-paper px-3 text-sm text-ink placeholder:text-ink-muted/30 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+                          className="h-10 w-full rounded-xl border border-stroke bg-paper px-3 text-sm text-ink placeholder:text-ink-muted/30 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
                         />
                       </div>
                     </div>

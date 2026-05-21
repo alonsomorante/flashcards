@@ -1,27 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Playfair Display", Georgia, serif;
-  --font-body: "Newsreader", Georgia, serif;
+  --font-display: "Fredoka", "Comic Sans MS", cursive;
+  --font-body: "Quicksand", "Segoe UI", sans-serif;
 
-  --color-cream: #FDF8F3;
-  --color-cream-dark: #F5EDE4;
-  --color-coral: #E8704A;
-  --color-coral-dark: #D25A35;
-  --color-amber: #D4A017;
-  --color-ink: #2D2A26;
-  --color-ink-light: #5C5854;
-  --color-ink-muted: #8A8680;
+  /* Sticker Brain Palette */
+  --color-cream: #F3E8FF;
+  --color-cream-dark: #EDE4FA;
+
+  --color-coral: #E11D8C;
+  --color-coral-dark: #C4187A;
+  --color-coral-light: #FCE7F3;
+
+  --color-mint: #14B8A6;
+  --color-mint-dark: #0D9488;
+  --color-mint-light: #D5F5F0;
+
+  --color-amber: #F59E0B;
+  --color-amber-dark: #D97706;
+  --color-amber-light: #FEF3C7;
+
+  --color-ink: #581C87;
+  --color-ink-light: #7C3AED;
+  --color-ink-muted: #A78BFA;
+
   --color-paper: #FFFFFF;
-  --color-sage: #8B9A7D;
-  --color-sage-light: #E8EDE4;
-  --color-rose: #C4706E;
-  --color-rose-light: #F5E5E4;
-  --color-gold: #C9A96E;
-  --color-gold-light: #F5EDD8;
 
-  --radius-xl: 1.25rem;
-  --radius-2xl: 1.75rem;
+  --color-rose: #F43F5E;
+  --color-rose-light: #FFE4E6;
+
+  --color-gold: #F59E0B;
+  --color-gold-light: #FEF3C7;
+
+  --color-stroke: #DDD6FE;
+  --color-stroke-light: #EDE9FE;
+
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
 }
 
 body {
@@ -61,11 +76,11 @@ h1, h2, h3, h4, h5, h6 {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4CFC8;
+  background: #C4B5FD;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B5B0A8;
+  background: #A78BFA;
 }
 
 /* Animation utilities */
@@ -120,3 +135,18 @@ h1, h2, h3, h4, h5, h6 {
 .stagger-4 { animation-delay: 0.2s; opacity: 0; }
 .stagger-5 { animation-delay: 0.25s; opacity: 0; }
 .stagger-6 { animation-delay: 0.3s; opacity: 0; }
+
+/* Sticker feel: subtle dot pattern on body */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#E9D5FF 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.4;
+}

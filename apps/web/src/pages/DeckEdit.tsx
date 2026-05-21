@@ -75,7 +75,7 @@ export default function DeckEditPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoFocus
-            className="h-12 w-full rounded-xl border border-[#E8E2DA] bg-paper px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+            className="h-12 w-full rounded-xl border border-stroke bg-paper px-4 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
           />
         </div>
         <div>
@@ -84,7 +84,7 @@ export default function DeckEditPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
-            className="w-full rounded-xl border border-[#E8E2DA] bg-paper px-4 py-3 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
+            className="w-full rounded-xl border border-stroke bg-paper px-4 py-3 text-ink placeholder:text-ink-muted/50 focus:border-coral/50 focus:outline-none focus:ring-2 focus:ring-coral/10"
           />
         </div>
         {updateMutation.isError && <p className="text-sm text-rose">Failed to update deck</p>}
