@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Layout } from './components/Layout';
 import { BooksPage } from './routes/BooksPage';
 import { BookDetailPage } from './routes/BookDetailPage';
 import { ChapterPage } from './routes/ChapterPage';
@@ -8,7 +9,7 @@ import { StudyBookPage } from './routes/StudyBookPage';
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
+      <Layout>
         <Routes>
           <Route path="/" element={<BooksPage />} />
           <Route path="/books/:bookId" element={<BookDetailPage />} />
@@ -16,7 +17,7 @@ function App() {
           <Route path="/chapters/:chapterId" element={<ChapterPage />} />
           <Route path="/chapters/:chapterId/study" element={<StudyChapterPage />} />
         </Routes>
-      </div>
+      </Layout>
     </BrowserRouter>
   );
 }

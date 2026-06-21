@@ -17,35 +17,39 @@ export function StudySummary({
   onExit,
 }: StudySummaryProps) {
   return (
-    <div className="w-full max-w-2xl mx-auto text-center">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Sesión terminada</h2>
-      <p className="text-gray-500 mb-6">
-        Estudiaste {studiedCount} de {total} flashcards
-      </p>
+    <div className="w-full max-w-3xl mx-auto border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-8 md:p-12">
+      <div className="border-b-2 border-[var(--border)] pb-4 mb-8 text-center">
+        <h2 className="text-3xl md:text-5xl font-bold uppercase mb-2">Sesión Terminada</h2>
+        <p className="font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] tracking-widest">
+          {String(studiedCount).padStart(3, '0')} / {String(total).padStart(3, '0')} FICHAS REVISADAS
+        </p>
+      </div>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
         {([0, 1, 2, 3] as ReviewLevel[]).map((level) => (
-          <div key={level} className="border rounded-lg p-4 bg-white">
-            <div className="text-3xl font-bold text-gray-900">
-              {sessionResults[level]}
+          <div key={level} className="border-2 border-[var(--border)] bg-[var(--bg)] p-4 text-center">
+            <div className="text-4xl md:text-5xl font-bold font-[family-name:var(--font-display)] text-[var(--accent)]">
+              {String(sessionResults[level]).padStart(2, '0')}
             </div>
-            <div className="text-sm text-gray-500">{LEVEL_LABELS[level]}</div>
+            <div className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-wider mt-2">
+              {LEVEL_LABELS[level]}
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="flex gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
           onClick={onRestart}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="font-[family-name:var(--font-display)] text-sm px-8 py-3 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] transition-colors uppercase tracking-wide"
         >
-          Estudiar de nuevo
+          [ REINICIAR ]
         </button>
         <button
           onClick={onExit}
-          className="px-4 py-2 border rounded hover:bg-gray-50"
+          className="font-[family-name:var(--font-display)] text-sm px-8 py-3 border-2 border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
         >
-          Volver
+          [ SALIR ]
         </button>
       </div>
     </div>

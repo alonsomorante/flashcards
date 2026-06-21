@@ -1,6 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
+
+:root {
+  --bg: #0a0a0a;
+  --bg-elevated: #111111;
+  --text: #fafafa;
+  --text-muted: #737373;
+  --accent: #d4ff00;
+  --accent-dim: #8ca800;
+  --border: #fafafa;
+  --error: #ff3333;
+  --success: #d4ff00;
+  --grid-color: rgba(250, 250, 250, 0.04);
+
+  --font-display: 'Space Mono', monospace;
+  --font-body: 'IBM Plex Sans', sans-serif;
+
+  --border-width: 2px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+}
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-body);
+  background:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+    var(--bg);
+  background-size: 24px 24px;
+  min-height: 100vh;
+  cursor: crosshair;
+}
+
+button,
+a,
+input,
+textarea {
+  cursor: crosshair;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+input,
+textarea {
+  font-family: var(--font-body);
+}
+
+/* Brutalist scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+  border-left: var(--border-width) solid var(--border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text);
+  border: var(--border-width) solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }

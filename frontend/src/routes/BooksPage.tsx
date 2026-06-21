@@ -20,57 +20,69 @@ export function BooksPage() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8 text-gray-500">Cargando libros...</div>;
+    return (
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-16 animate-pulse">
+        CARGANDO ARCHIVO...
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8 text-red-500">
-        Error: {error.message}
+      <div className="border-2 border-[var(--error)] bg-[var(--bg-elevated)] p-6 text-center">
+        <span className="font-[family-name:var(--font-display)] text-[var(--error)]">ERROR DE CONEXIÓN</span>
+        <p className="mt-2 text-sm">{error.message}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Mis libros</h1>
+    <div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b-2 border-[var(--border)] pb-4">
+        <div>
+          <h2 className="text-3xl md:text-4xl font-bold">ÍNDICE DE LIBROS</h2>
+          <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-xs mt-1">
+            {books?.length || 0} REGISTROS ENCONTRADOS
+          </p>
+        </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="font-[family-name:var(--font-display)] text-sm px-5 py-3 border-2 border-[var(--border)] bg-[var(--bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
         >
-          {showForm ? 'Cancelar' : '+ Nuevo libro'}
+          {showForm ? '[ CANCELAR ]' : '[ + NUEVO LIBRO ]'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
+        <form onSubmit={handleSubmit} className="mb-8 border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 flex flex-col sm:flex-row gap-3">
           <input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Título del libro"
-            className="flex-1 border rounded px-3 py-2"
+            placeholder="TÍTULO DEL LIBRO"
+            className="flex-1 bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
             autoFocus
           />
           <button
             type="submit"
             disabled={createBook.isPending}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+            className="font-[family-name:var(--font-display)] text-sm px-6 py-3 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
           >
-            {createBook.isPending ? 'Creando...' : 'Crear'}
+            {createBook.isPending ? 'ARCHIVANDO...' : 'ARCHIVAR'}
           </button>
         </form>
       )}
 
       {books && books.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg mb-2">No tienes libros todavía</p>
-          <p className="text-sm">Crea tu primer libro para empezar a estudiar</p>
+        <div className="border-2 border-dashed border-[var(--text-muted)] p-12 text-center">
+          <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-sm mb-2">
+            ARCHIVO VACÍO
+          </p>
+          <p className="text-[var(--text-muted)]">Crea tu primer libro para iniciar el registro de estudio.</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {books?.map((book) => (
-            <BookCard key={book.id} book={book} chapterCount={0} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {books?.map((book, index) => (
+            <BookCard key={book.id} book={book} index={index + 1} />
           ))}
         </div>
       )}

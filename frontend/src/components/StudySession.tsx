@@ -34,25 +34,33 @@ export function StudySession({
   const isFinished = session.isFinished || (cards !== undefined && session.currentIndex >= cards.length && !session.isFinished);
 
   if (isLoading) {
-    return <div className="text-center py-8 text-gray-500">Cargando flashcards...</div>;
+    return (
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-16 animate-pulse">
+        CARGANDO FICHAS...
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <p className="text-red-500 mb-4">Error: {error.message}</p>
-        <button onClick={onBack} className="text-indigo-600 hover:underline">
-          {backLabel}
-        </button>
+      <div className="border-2 border-[var(--error)] bg-[var(--bg-elevated)] p-6 text-center">
+        <span className="font-[family-name:var(--font-display)] text-[var(--error)]">ERROR: {error.message}</span>
+        <div className="mt-4">
+          <button onClick={onBack} className="text-[var(--accent)] hover:underline font-[family-name:var(--font-display)] text-sm">
+            {backLabel}
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="text-center py-16">
-        <p className="text-gray-500 mb-4">No hay flashcards para estudiar</p>
-        <button onClick={onBack} className="text-indigo-600 hover:underline">
+      <div className="border-2 border-dashed border-[var(--text-muted)] p-12 text-center">
+        <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-sm mb-2">
+          SIN FICHAS PARA ESTUDIAR
+        </p>
+        <button onClick={onBack} className="text-[var(--accent)] hover:underline font-[family-name:var(--font-display)] text-sm">
           {backLabel}
         </button>
       </div>
@@ -61,9 +69,12 @@ export function StudySession({
 
   if (isFinished || !currentCard) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="mb-4">
-          <button onClick={onBack} className="text-sm text-gray-500 hover:text-gray-700">
+      <div>
+        <div className="mb-6">
+          <button
+            onClick={onBack}
+            className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          >
             {backLabel}
           </button>
         </div>
@@ -81,17 +92,22 @@ export function StudySession({
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-4 flex justify-between items-center">
-        <button onClick={onBack} className="text-sm text-gray-500 hover:text-gray-700">
+    <div>
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-2 border-[var(--border)] pb-4">
+        <button
+          onClick={onBack}
+          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+        >
           {backLabel}
         </button>
-        <h1 className="text-lg font-medium text-gray-700">{title}</h1>
+        <h2 className="font-[family-name:var(--font-display)] text-sm tracking-widest text-[var(--accent)]">
+          {title.toUpperCase()}
+        </h2>
         <button
           onClick={() => session.finish()}
-          className="text-sm text-gray-500 hover:text-gray-700"
+          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
         >
-          Terminar
+          [ TERMINAR ]
         </button>
       </div>
 

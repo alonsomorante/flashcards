@@ -27,74 +27,98 @@ export function BookDetailPage() {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8 text-gray-500">Cargando libro...</div>;
+    return (
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-16 animate-pulse">
+        CARGANDO REGISTRO...
+      </div>
+    );
   }
 
   if (error || !book) {
     return (
-      <div className="text-center py-8">
-        <p className="text-red-500 mb-4">Libro no encontrado</p>
-        <Link to="/" className="text-indigo-600 hover:underline">
-          Volver a libros
-        </Link>
+      <div className="border-2 border-[var(--error)] bg-[var(--bg-elevated)] p-6 text-center">
+        <span className="font-[family-name:var(--font-display)] text-[var(--error)]">REGISTRO NO ENCONTRADO</span>
+        <div className="mt-4">
+          <Link to="/" className="text-[var(--accent)] hover:underline font-[family-name:var(--font-display)] text-sm">
+            [← VOLVER AL ÍNDICE]
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-4">
-        <Link to="/" className="text-sm text-gray-500 hover:text-gray-700">
-          ← Mis libros
+    <div>
+      <div className="mb-6">
+        <Link
+          to="/"
+          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+        >
+          [← ÍNDICE]
         </Link>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{book.title}</h1>
-        <div className="flex gap-2">
+      <div className="border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-6 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 border-b-2 border-[var(--border)] pb-4 mb-4">
+          <div>
+            <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest">
+              LIBRO // {book.id.slice(0, 8).toUpperCase()}
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold mt-2 uppercase leading-none">
+              {book.title}
+            </h2>
+          </div>
+          <div className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)]">
+            {book.chapters.length} CAPÍTULOS
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => navigate(`/books/${book.id}/study`)}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            className="font-[family-name:var(--font-display)] text-sm px-6 py-3 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] transition-colors uppercase tracking-wide"
           >
-            Estudiar todo el libro
+            [ ESTUDIAR LIBRO ]
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-4 py-2 border rounded hover:bg-gray-50"
+            className="font-[family-name:var(--font-display)] text-sm px-6 py-3 border-2 border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
           >
-            {showForm ? 'Cancelar' : '+ Nuevo capítulo'}
+            {showForm ? '[ CANCELAR ]' : '[ + CAPÍTULO ]'}
           </button>
         </div>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 flex gap-2">
+        <form onSubmit={handleSubmit} className="mb-8 border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 flex flex-col sm:flex-row gap-3">
           <input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Título del capítulo"
-            className="flex-1 border rounded px-3 py-2"
+            placeholder="TÍTULO DEL CAPÍTULO"
+            className="flex-1 bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
             autoFocus
           />
           <button
             type="submit"
             disabled={createChapter.isPending}
-            className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 disabled:opacity-50"
+            className="font-[family-name:var(--font-display)] text-sm px-6 py-3 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
           >
-            {createChapter.isPending ? 'Creando...' : 'Crear'}
+            {createChapter.isPending ? 'ARCHIVANDO...' : 'ARCHIVAR'}
           </button>
         </form>
       )}
 
       {book.chapters.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
-          <p className="text-lg mb-2">No tienes capítulos todavía</p>
-          <p className="text-sm">Crea tu primer capítulo para empezar</p>
+        <div className="border-2 border-dashed border-[var(--text-muted)] p-12 text-center">
+          <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-sm mb-2">
+            SIN CAPÍTULOS
+          </p>
+          <p className="text-[var(--text-muted)]">Añade el primer capítulo para organizar tus flashcards.</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {book.chapters.map((chapter) => (
-            <ChapterCard key={chapter.id} chapter={chapter} />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {book.chapters.map((chapter, index) => (
+            <ChapterCard key={chapter.id} chapter={chapter} index={index + 1} />
           ))}
         </div>
       )}

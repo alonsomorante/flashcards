@@ -4,55 +4,58 @@ import { useDeleteChapter } from '../hooks/useChapters';
 
 interface ChapterCardProps {
   chapter: Chapter;
-  flashcardCount?: number;
+  index: number;
 }
 
-export function ChapterCard({ chapter, flashcardCount }: ChapterCardProps) {
+export function ChapterCard({ chapter, index }: ChapterCardProps) {
   const navigate = useNavigate();
   const deleteChapter = useDeleteChapter();
 
   const handleDelete = () => {
-    if (confirm(`¿Eliminar "${chapter.title}" y todas sus flashcards?`)) {
-      deleteChapter.mutate(chapter.id, {
-        onSuccess: () => navigate(-1),
-      });
+    if (confirm(`¿ELIMINAR CAPÍTULO "${chapter.title}"?`)) {
+      deleteChapter.mutate(chapter.id);
     }
   };
 
+  const paddedIndex = String(index).padStart(3, '0');
+
   return (
-    <div className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow bg-white">
-      <div className="flex justify-between items-start gap-2">
-        <button
-          onClick={() => navigate(`/chapters/${chapter.id}`)}
-          className="text-left flex-1"
-        >
-          <h3 className="font-medium text-gray-900 hover:text-indigo-600">
-            {chapter.title}
-          </h3>
-          {flashcardCount !== undefined && (
-            <p className="text-sm text-gray-500">
-              {flashcardCount} {flashcardCount === 1 ? 'flashcard' : 'flashcards'}
-            </p>
-          )}
-        </button>
+    <div className="group border-2 border-[var(--border)] bg-[var(--bg-elevated)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors duration-0">
+      <div className="border-b-2 border-[var(--border)] px-3 py-1 flex justify-between items-center bg-[var(--bg)] group-hover:bg-[var(--text)]">
+        <span className="font-[family-name:var(--font-display)] text-[10px] tracking-widest text-[var(--text-muted)] group-hover:text-[var(--bg)]">
+          CAP #{paddedIndex}
+        </span>
         <button
           onClick={handleDelete}
-          className="text-red-500 hover:text-red-700 text-sm"
+          className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] group-hover:text-[var(--bg)] hover:text-[var(--error)] transition-colors"
           aria-label="Eliminar capítulo"
         >
-          ✕
+          [X]
         </button>
       </div>
-      <div className="flex gap-2 mt-3">
+
+      <button
+        onClick={() => navigate(`/chapters/${chapter.id}`)}
+        className="w-full text-left p-5"
+      >
+        <h3 className="font-[family-name:var(--font-display)] text-base font-bold leading-tight mb-3 uppercase">
+          {chapter.title}
+        </h3>
+        <div className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] group-hover:text-[var(--bg)] uppercase tracking-wider">
+          {new Date(chapter.createdAt).toLocaleDateString('es-ES')}
+        </div>
+      </button>
+
+      <div className="border-t-2 border-[var(--border)] grid grid-cols-2">
         <button
           onClick={() => navigate(`/chapters/${chapter.id}`)}
-          className="text-sm px-3 py-1 border rounded hover:bg-gray-50"
+          className="font-[family-name:var(--font-display)] text-[10px] py-2 text-center border-r-2 border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-colors uppercase tracking-wider"
         >
-          Ver flashcards
+          Ver
         </button>
         <button
           onClick={() => navigate(`/chapters/${chapter.id}/study`)}
-          className="text-sm px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+          className="font-[family-name:var(--font-display)] text-[10px] py-2 text-center hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-colors uppercase tracking-wider"
         >
           Estudiar
         </button>

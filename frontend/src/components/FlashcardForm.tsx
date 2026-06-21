@@ -31,9 +31,9 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full border-2 border-dashed rounded-lg p-4 text-gray-500 hover:text-gray-700 hover:border-gray-400 transition-colors"
+        className="w-full border-2 border-dashed border-[var(--text-muted)] p-5 text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors font-[family-name:var(--font-display)] text-sm uppercase tracking-wide"
       >
-        + Crear flashcard
+        [ + NUEVA FICHA ]
       </button>
     );
   }
@@ -41,38 +41,42 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border rounded-lg p-4 bg-white space-y-3"
+      className="border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 space-y-3"
     >
-      <h4 className="font-medium">Nueva flashcard</h4>
+      <div className="border-b-2 border-[var(--border)] pb-2 mb-3">
+        <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest">
+          NUEVA FICHA
+        </span>
+      </div>
       <textarea
         value={front}
         onChange={(e) => setFront(e.target.value)}
-        className="w-full border rounded p-2 text-sm"
+        className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
         rows={2}
-        placeholder="Frente (pregunta)"
+        placeholder="FRENTE (PREGUNTA)"
         autoFocus
       />
       <textarea
         value={back}
         onChange={(e) => setBack(e.target.value)}
-        className="w-full border rounded p-2 text-sm"
+        className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
         rows={2}
-        placeholder="Reverso (respuesta)"
+        placeholder="REVERSO (RESPUESTA)"
       />
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={createFlashcard.isPending}
-          className="px-3 py-1 bg-indigo-600 text-white rounded text-sm hover:bg-indigo-700 disabled:opacity-50"
+          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
         >
-          {createFlashcard.isPending ? 'Creando...' : 'Crear'}
+          {createFlashcard.isPending ? 'ARCHIVANDO...' : 'ARCHIVAR'}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="px-3 py-1 border rounded text-sm hover:bg-gray-50"
+          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border-2 border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
         >
-          Cancelar
+          CANCELAR
         </button>
       </div>
     </form>
