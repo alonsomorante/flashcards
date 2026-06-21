@@ -27,43 +27,43 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   };
 
   const handleDelete = () => {
-    if (confirm('¿Eliminar esta flashcard?')) {
+    if (confirm('¿ELIMINAR FICHA?')) {
       deleteFlashcard.mutate({ id: flashcard.id, chapterId });
     }
   };
 
+  const paddedIndex = String(index).padStart(3, '0');
+
   if (isEditing) {
     return (
-      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm space-y-4">
-        <div className="flex justify-between items-center border-b border-[var(--border)] pb-3">
-          <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
-            Editando flashcard {String(index).padStart(2, '0')}
-          </span>
+      <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 space-y-3">
+        <div className="text-[var(--text-dim)] text-xs mb-2">
+          {'>'} editando_ficha --id={flashcard.id.slice(0, 8)}
         </div>
         <div>
-          <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Frente</label>
+          <span className="text-[var(--accent)] text-xs">$ frente&gt; </span>
           <textarea
             value={front}
             onChange={(e) => setFront(e.target.value)}
-            className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+            className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] focus:outline-none focus:border-[var(--text)] mt-1"
             rows={2}
           />
         </div>
         <div>
-          <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Reverso</label>
+          <span className="text-[var(--accent)] text-xs">$ reverso&gt; </span>
           <textarea
             value={back}
             onChange={(e) => setBack(e.target.value)}
-            className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+            className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] focus:outline-none focus:border-[var(--text)] mt-1"
             rows={2}
           />
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleSave}
-            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] transition-colors duration-300"
+            className="text-[var(--bg)] bg-[var(--text)] px-3 py-1 text-xs hover:bg-[var(--text-dim)] transition-colors"
           >
-            Guardar
+            [guardar]
           </button>
           <button
             onClick={() => {
@@ -71,9 +71,9 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
               setBack(flashcard.back);
               setIsEditing(false);
             }}
-            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
+            className="border border-[var(--border-dim)] px-3 py-1 text-xs hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
           >
-            Cancelar
+            [cancelar]
           </button>
         </div>
       </div>
@@ -81,43 +81,35 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   }
 
   return (
-    <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-      <div className="flex justify-between items-start mb-4 border-b border-[var(--border)] pb-3">
-        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
-          Flashcard {String(index).padStart(2, '0')}
-        </span>
-        <span className="font-[family-name:var(--font-display)] text-xs italic text-[var(--accent)]">
-          {LEVEL_LABELS[flashcard.level as ReviewLevel]}
-        </span>
+    <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 hover:border-[var(--text-dim)] transition-colors">
+      <div className="flex justify-between items-start mb-3 text-xs text-[var(--text-dim)]">
+        <span>FICHA {paddedIndex}</span>
+        <span className="text-[var(--warning)]">[{LEVEL_LABELS[flashcard.level as ReviewLevel].toUpperCase()}]</span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 mb-3">
         <div>
-          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-widest block mb-1">
-            Pregunta
-          </span>
-          <p className="font-[family-name:var(--font-display)] text-lg font-medium">{flashcard.front}</p>
+          <span className="text-[var(--accent)] text-xs">$ pregunta&gt; </span>
+          <p className="text-[var(--text)] mt-1">{flashcard.front}</p>
         </div>
         <div>
-          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-widest block mb-1">
-            Respuesta
-          </span>
-          <p className="font-[family-name:var(--font-body)] italic text-[var(--text-muted)]">{flashcard.back}</p>
+          <span className="text-[var(--accent)] text-xs">$ respuesta&gt; </span>
+          <p className="text-[var(--text-dim)] mt-1">{flashcard.back}</p>
         </div>
       </div>
 
-      <div className="flex gap-3 mt-6 pt-4 border-t border-[var(--border)]">
+      <div className="flex gap-3 border-t border-[var(--border-dim)] pt-2">
         <button
           onClick={() => setIsEditing(true)}
-          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
+          className="text-[var(--text-dim)] text-xs hover:text-[var(--text)] transition-colors"
         >
-          Editar
+          [editar]
         </button>
         <button
           onClick={handleDelete}
-          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
+          className="text-[var(--text-dim)] text-xs hover:text-[var(--accent)] transition-colors"
         >
-          Eliminar
+          [eliminar]
         </button>
       </div>
     </div>

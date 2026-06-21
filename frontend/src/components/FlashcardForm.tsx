@@ -31,9 +31,9 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full border border-dashed border-[var(--border)] rounded p-5 text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all duration-300 font-[family-name:var(--font-display)] italic"
+        className="w-full border border-dashed border-[var(--border-dim)] p-4 text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--text)] transition-colors text-sm font-[family-name:var(--font-display)]"
       >
-        + Añadir nueva flashcard
+        {'>'} touch nueva_ficha
       </button>
     );
   }
@@ -41,48 +41,46 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm space-y-4"
+      className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 space-y-3"
     >
-      <div className="border-b border-[var(--border)] pb-3 mb-3">
-        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
-          Nueva flashcard
-        </span>
+      <div className="text-[var(--text-dim)] text-xs mb-2">
+        {'>'} creando_nueva_ficha --chapter={chapterId.slice(0, 8)}
       </div>
       <div>
-        <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Frente</label>
+        <span className="text-[var(--accent)] text-xs">$ frente&gt; </span>
         <textarea
           value={front}
           onChange={(e) => setFront(e.target.value)}
-          className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--text)] mt-1"
           rows={2}
-          placeholder="Escribe la pregunta..."
+          placeholder="escriba_la_pregunta"
           autoFocus
         />
       </div>
       <div>
-        <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Reverso</label>
+        <span className="text-[var(--accent)] text-xs">$ reverso&gt; </span>
         <textarea
           value={back}
           onChange={(e) => setBack(e.target.value)}
-          className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--text)] mt-1"
           rows={2}
-          placeholder="Escribe la respuesta..."
+          placeholder="escriba_la_respuesta"
         />
       </div>
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={createFlashcard.isPending}
-          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] disabled:opacity-50 transition-colors duration-300"
+          className="text-[var(--bg)] bg-[var(--text)] px-4 py-1 text-xs hover:bg-[var(--text-dim)] disabled:opacity-50 transition-colors"
         >
-          {createFlashcard.isPending ? 'Guardando...' : 'Guardar'}
+          {createFlashcard.isPending ? '...' : '[escribir]'}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
+          className="border border-[var(--border-dim)] px-4 py-1 text-xs hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
         >
-          Cancelar
+          [cancelar]
         </button>
       </div>
     </form>

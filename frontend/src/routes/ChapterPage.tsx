@@ -10,19 +10,19 @@ export function ChapterPage() {
 
   if (isLoading) {
     return (
-      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-20 italic animate-pulse">
-        Cargando capítulo...
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-dim)] py-20 animate-pulse">
+        {'>'} cargando_capítulo...
       </div>
     );
   }
 
   if (error || !chapter) {
     return (
-      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-8 text-center rounded">
-        <span className="font-[family-name:var(--font-display)] text-[var(--accent)] italic text-lg">Capítulo no encontrado</span>
-        <div className="mt-4">
-          <Link to="/" className="text-[var(--accent)] hover:underline italic">
-            ← Volver al índice
+      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-4">
+        <span className="text-[var(--accent)]">{'>'} ERROR: CAPÍTULO NO ENCONTRADO</span>
+        <div className="mt-3">
+          <Link to="/" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
+            {'>'} cd ~
           </Link>
         </div>
       </div>
@@ -31,40 +31,42 @@ export function ChapterPage() {
 
   return (
     <div>
-      <div className="mb-8">
+      <div className="mb-4">
         <Link
           to={`/books/${chapter.bookId}`}
-          className="font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
+          className="text-[var(--text-dim)] hover:text-[var(--text)] transition-colors text-sm"
         >
-          ← Volver al libro
+          {'>'} cd ..
         </Link>
       </div>
 
-      <div className="text-center mb-12 pb-10 border-b border-[var(--border)]">
-        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase block mb-3">
-          Capítulo
-        </span>
-        <h2 className="text-3xl md:text-5xl font-medium mb-4">{chapter.title}</h2>
-        <p className="font-[family-name:var(--font-body)] italic text-[var(--text-muted)] text-lg">
-          {chapter.flashcards.length} {chapter.flashcards.length === 1 ? 'flashcard' : 'flashcards'}
-        </p>
+      <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 mb-6">
+        <div className="flex items-center gap-2 mb-2 text-xs text-[var(--text-dim)]">
+          <span>DIR:</span>
+          <span className="text-[var(--warning)]">{chapter.title.toLowerCase().replace(/\s+/g, '_')}</span>
+        </div>
+        <h2 className="text-2xl md:text-3xl text-[var(--text)] mb-2">
+          {chapter.title}
+        </h2>
+        <div className="text-[var(--text-dim)] text-sm">
+          {'>'} {chapter.flashcards.length} fichas en memoria
+        </div>
       </div>
 
-      <div className="flex justify-center mb-12">
+      <div className="mb-6">
         <button
           onClick={() => navigate(`/chapters/${chapter.id}/study`)}
           disabled={chapter.flashcards.length === 0}
-          className="font-[family-name:var(--font-display)] text-sm px-6 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] disabled:opacity-50 transition-colors duration-300"
+          className="text-[var(--bg)] bg-[var(--text)] px-4 py-2 hover:bg-[var(--text-dim)] disabled:opacity-50 transition-colors"
         >
-          Estudiar capítulo
+          [ ./estudiar_capítulo ]
         </button>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-2">
         {chapter.flashcards.length === 0 ? (
-          <div className="text-center py-16 text-[var(--text-muted)]">
-            <p className="font-[family-name:var(--font-display)] italic text-xl mb-2">Sin flashcards</p>
-            <p>Añade flashcards para comenzar a estudiar.</p>
+          <div className="text-[var(--text-muted)] py-12">
+            {'>'} no se encontraron fichas. añada una para comenzar.
           </div>
         ) : (
           chapter.flashcards.map((flashcard, index) => (

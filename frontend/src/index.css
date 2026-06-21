@@ -1,19 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --bg: #f5f1e8;
-  --bg-elevated: #fffdf7;
-  --text: #1a1a1a;
-  --text-muted: #6b6560;
-  --accent: #8b1e1e;
-  --accent-light: #b83a3a;
-  --detail: #2d4a3e;
-  --border: #d4cfc5;
-  --shadow: rgba(26, 26, 26, 0.08);
+  --bg: #0d0d0d;
+  --bg-elevated: #111111;
+  --text: #00ff41;
+  --text-dim: #00b82d;
+  --text-muted: #2a8a30;
+  --accent: #ff006e;
+  --accent-dim: #b80050;
+  --warning: #ffbe0b;
+  --border: #00ff41;
+  --border-dim: #1a5c1f;
+  --glow: rgba(0, 255, 65, 0.6);
+  --crt-vignette: rgba(0, 0, 0, 0.5);
 
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-body: 'Newsreader', Georgia, serif;
+  --font-display: 'JetBrains Mono', monospace;
+  --font-body: 'JetBrains Mono', monospace;
 }
 
 * {
@@ -28,16 +31,45 @@ html {
 body {
   margin: 0;
   font-family: var(--font-body);
-  background:
-    radial-gradient(ellipse at top left, rgba(139, 30, 30, 0.03) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom right, rgba(45, 74, 62, 0.03) 0%, transparent 50%),
-    var(--bg);
-  background-attachment: fixed;
+  background: var(--bg);
   min-height: 100vh;
+  position: relative;
+  text-shadow: 0 0 2px var(--glow);
+}
+
+/* CRT scanlines */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 65, 0.035) 0px,
+    rgba(0, 255, 65, 0.035) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  animation: scanlineMove 8s linear infinite;
+}
+
+/* CRT vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    var(--crt-vignette) 100%
+  );
+  pointer-events: none;
+  z-index: 9998;
 }
 
 ::selection {
-  background: var(--accent);
+  background: var(--text);
   color: var(--bg);
 }
 
@@ -50,6 +82,7 @@ h6 {
   font-family: var(--font-display);
   font-weight: 500;
   margin: 0;
+  text-shadow: 0 0 5px var(--glow), 0 0 10px var(--glow);
 }
 
 input,
@@ -58,32 +91,89 @@ button {
   font-family: var(--font-body);
 }
 
-/* Elegant scrollbar */
+/* Terminal scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg);
+  border-left: 1px solid var(--border-dim);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 4px;
+  background: var(--text-dim);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+  background: var(--text);
 }
 
-/* Drop cap utility */
-.drop-cap::first-letter {
-  font-family: var(--font-display);
-  float: left;
-  font-size: 3.5rem;
-  line-height: 0.8;
-  padding-right: 0.5rem;
-  padding-top: 0.2rem;
-  color: var(--accent);
-  font-weight: 500;
+/* Keyframes */
+@keyframes scanlineMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes flicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 5px var(--glow), 0 0 10px var(--glow);
+  }
+  20%, 24%, 55% {
+    opacity: 0.8;
+    text-shadow: none;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+    filter: none;
+  }
+  20% {
+    transform: translate(-2px, 2px);
+    filter: hue-rotate(90deg);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(180deg);
+  }
+  60% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(270deg);
+  }
+  80% {
+    transform: translate(2px, -2px);
+    filter: hue-rotate(360deg);
+  }
+  100% {
+    transform: translate(0);
+    filter: none;
+  }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+.animate-flicker {
+  animation: flicker 3s infinite;
+}
+
+.animate-glitch {
+  animation: glitch 0.2s ease-in-out;
 }

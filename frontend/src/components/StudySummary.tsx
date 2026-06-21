@@ -16,40 +16,46 @@ export function StudySummary({
   onRestart,
   onExit,
 }: StudySummaryProps) {
+  const renderBar = (count: number) => {
+    const percentage = total > 0 ? (count / total) * 100 : 0;
+    const filled = Math.round(percentage / 10);
+    const empty = 10 - filled;
+    return `[${'#'.repeat(filled)}${'-'.repeat(empty)}] ${Math.round(percentage)}%`;
+  };
+
   return (
-    <div className="w-full max-w-3xl mx-auto bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-lg p-10 md:p-14">
-      <div className="text-center border-b border-[var(--border)] pb-8 mb-8">
-        <h2 className="text-3xl md:text-5xl font-medium mb-3 italic">Sesión terminada</h2>
-        <p className="font-[family-name:var(--font-body)] text-[var(--text-muted)] italic text-lg">
-          {studiedCount} de {total} cartas revisadas
-        </p>
+    <div className="w-full max-w-3xl mx-auto border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-6 md:p-10">
+      <div className="border-b border-[var(--border-dim)] pb-4 mb-6">
+        <h2 className="text-2xl md:text-4xl text-[var(--text)] mb-2">
+          {'>'} sesión_finalizada
+        </h2>
+        <div className="text-[var(--text-dim)] text-sm">
+          {studiedCount} de {total} fichas procesadas
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+      <div className="space-y-3 mb-8 font-[family-name:var(--font-display)] text-sm">
         {([0, 1, 2, 3] as ReviewLevel[]).map((level) => (
-          <div key={level} className="bg-[var(--bg)] border border-[var(--border)] rounded p-5 text-center">
-            <div className="text-3xl md:text-4xl font-medium font-[family-name:var(--font-display)] text-[var(--accent)]">
-              {sessionResults[level]}
-            </div>
-            <div className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-widest mt-2">
-              {LEVEL_LABELS[level]}
-            </div>
+          <div key={level} className="flex items-center gap-4">
+            <span className="w-24 text-[var(--text-dim)]">{LEVEL_LABELS[level]}</span>
+            <span className="text-[var(--text)] flex-1">{renderBar(sessionResults[level])}</span>
+            <span className="text-[var(--warning)] w-8 text-right">{sessionResults[level]}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+      <div className="flex flex-col sm:flex-row gap-2">
         <button
           onClick={onRestart}
-          className="font-[family-name:var(--font-display)] text-sm px-8 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] transition-colors duration-300"
+          className="text-[var(--bg)] bg-[var(--text)] px-6 py-2 hover:bg-[var(--text-dim)] transition-colors"
         >
-          Estudiar de nuevo
+          [ ./reiniciar ]
         </button>
         <button
           onClick={onExit}
-          className="font-[family-name:var(--font-display)] text-sm px-8 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
+          className="border border-[var(--border-dim)] px-6 py-2 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
         >
-          Salir
+          [ cd ~ ]
         </button>
       </div>
     </div>

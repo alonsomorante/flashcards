@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import type { Flashcard, ReviewLevel } from '../types/index';
 import { LEVEL_LABELS } from '../types/index';
 
@@ -10,10 +11,10 @@ interface StudyCardViewProps {
 }
 
 const LEVEL_BUTTON_STYLES: Record<ReviewLevel, string> = {
-  0: 'text-[#8b1e1e] border-[#8b1e1e] hover:bg-[#8b1e1e] hover:text-[var(--bg)]',
-  1: 'text-[#b86a00] border-[#b86a00] hover:bg-[#b86a00] hover:text-[var(--bg)]',
-  2: 'text-[#2d4a3e] border-[#2d4a3e] hover:bg-[#2d4a3e] hover:text-[var(--bg)]',
-  3: 'text-[#1a1a1a] border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[var(--bg)]',
+  0: 'text-[var(--accent)] border-[var(--accent)] hover:bg-[var(--accent)] hover:text-[var(--bg)]',
+  1: 'text-[var(--warning)] border-[var(--warning)] hover:bg-[var(--warning)] hover:text-[var(--bg)]',
+  2: 'text-[var(--text-dim)] border-[var(--text-dim)] hover:bg-[var(--text-dim)] hover:text-[var(--bg)]',
+  3: 'text-[var(--text)] border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)]',
 };
 
 export function StudyCardView({
@@ -23,67 +24,71 @@ export function StudyCardView({
   onMarkLevel,
   position,
 }: StudyCardViewProps) {
+  const [glitch, setGlitch] = useState(false);
+
+  useEffect(() => {
+    if (isFlipped) {
+      setGlitch(true);
+      const timer = setTimeout(() => setGlitch(false), 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isFlipped]);
+
+  const progressBar = () => {
+    const filled = Math.round((position.current / position.total) * 10);
+    const empty = 10 - filled;
+    return `[${'#'.repeat(filled)}${'-'.repeat(empty)}] ${Math.round((position.current / position.total) * 100)}%`;
+  };
+
   return (
     <div className="w-full max-w-3xl mx-auto">
-      <div className="flex justify-between items-center mb-5 font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
-        <span>Carta {String(position.current).padStart(2, '0')} de {String(position.total).padStart(2, '0')}</span>
-        <span>Nivel: {LEVEL_LABELS[card.level as ReviewLevel]}</span>
+      <div className="flex justify-between items-center mb-3 font-[family-name:var(--font-display)] text-xs text-[var(--text-dim)]">
+        <span>{progressBar()}</span>
+        <span>NIVEL: {LEVEL_LABELS[card.level as ReviewLevel].toUpperCase()}</span>
       </div>
 
-      <div className="relative w-full min-h-[420px] perspective-1000">
-        <button
-          onClick={onFlip}
-          className="relative w-full h-full min-h-[420px] transition-transform duration-700 ease-out"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-          }}
-        >
-          {/* Front */}
-          <div
-            className="absolute inset-0 backface-hidden bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-lg p-10 md:p-16 flex flex-col items-center justify-center text-center"
-            style={{ backfaceVisibility: 'hidden' }}
-          >
-            <span className="absolute top-6 left-6 font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest uppercase">
-              Pregunta
-            </span>
-            <p className="font-[family-name:var(--font-display)] text-2xl md:text-4xl font-medium leading-snug max-w-xl">
+      <button
+        onClick={onFlip}
+        className={[
+          'w-full min-h-[360px] border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-8 md:p-12 flex flex-col items-start justify-center text-left relative overflow-hidden',
+          glitch ? 'animate-glitch' : '',
+        ].join(' ')}
+      >
+        <div className="absolute top-0 left-0 right-0 border-b border-[var(--border-dim)] px-4 py-2 flex justify-between text-xs text-[var(--text-dim)]">
+          <span>{isFlipped ? 'respuesta' : 'pregunta'}</span>
+          <span>ID:{card.id.slice(0, 8)}</span>
+        </div>
+
+        <div className="mt-6 w-full">
+          <span className="text-[var(--accent)] text-sm">{isFlipped ? '$ respuesta> ' : '$ pregunta> '}</span>
+          <span className="animate-blink">_</span>
+
+          {!isFlipped ? (
+            <p className="font-[family-name:var(--font-display)] text-xl md:text-3xl text-[var(--text)] mt-4 leading-snug">
               {card.front}
             </p>
-            <span className="absolute bottom-6 font-[family-name:var(--font-display)] text-xs text-[var(--accent)] italic">
-              Click para voltear →
-            </span>
-          </div>
-
-          {/* Back */}
-          <div
-            className="absolute inset-0 backface-hidden bg-[var(--bg-elevated)] border border-[var(--border)] rounded shadow-lg p-10 md:p-16 flex flex-col items-center justify-center text-center"
-            style={{
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-            }}
-          >
-            <span className="absolute top-6 left-6 font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest uppercase">
-              Respuesta
-            </span>
-            <p className="font-[family-name:var(--font-body)] text-xl md:text-2xl italic leading-relaxed max-w-xl">
+          ) : (
+            <p className="font-[family-name:var(--font-display)] text-lg md:text-2xl text-[var(--text-dim)] mt-4 leading-relaxed">
               {card.back}
             </p>
-            <span className="absolute bottom-6 font-[family-name:var(--font-display)] text-xs text-[var(--accent)] italic">
-              ← Click para volver
-            </span>
+          )}
+        </div>
+
+        {!isFlipped && (
+          <div className="mt-auto pt-8 text-xs text-[var(--text-dim)]">
+            {'>'} presione ENTER para voltear
           </div>
-        </button>
-      </div>
+        )}
+      </button>
 
       {isFlipped && (
-        <div className="grid grid-cols-2 gap-3 mt-6 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 mt-4 sm:grid-cols-4">
           {([0, 1, 2, 3] as ReviewLevel[]).map((level) => (
             <button
               key={level}
               onClick={() => onMarkLevel(level)}
               className={[
-                'py-3 border rounded font-[family-name:var(--font-display)] text-xs uppercase tracking-wider transition-all duration-300 hover:shadow-md',
+                'py-3 border font-[family-name:var(--font-display)] text-xs uppercase tracking-wider transition-colors duration-100',
                 LEVEL_BUTTON_STYLES[level],
               ].join(' ')}
             >

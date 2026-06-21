@@ -13,37 +13,47 @@ export function ChapterCard({ chapter, index }: ChapterCardProps) {
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm(`¿Eliminar "${chapter.title}"?`)) {
+    if (confirm(`¿ELIMINAR CAPÍTULO "${chapter.title}"?`)) {
       deleteChapter.mutate(chapter.id);
     }
   };
 
+  const paddedIndex = String(index).padStart(3, '0');
+
   return (
-    <button
+    <div
       onClick={() => navigate(`/chapters/${chapter.id}`)}
-      className="group text-left w-full bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-500"
+      className="group flex items-center justify-between border border-[var(--border-dim)] bg-[var(--bg-elevated)] px-4 py-3 hover:border-[var(--text)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors duration-100 cursor-pointer"
     >
-      <div className="flex justify-between items-start mb-4">
-        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
-          Capítulo {String(index).padStart(2, '0')}
+      <div className="flex items-center gap-4 overflow-hidden">
+        <span className="text-[var(--text-dim)] group-hover:text-[var(--bg)] font-[family-name:var(--font-display)] text-xs">
+          {paddedIndex}
         </span>
+        <span className="text-[var(--warning)] group-hover:text-[var(--bg)] font-[family-name:var(--font-display)] text-sm truncate">
+          {chapter.title.toLowerCase().replace(/\s+/g, '_')}
+        </span>
+        <span className="text-[var(--text-muted)] group-hover:text-[var(--bg)] text-xs hidden sm:inline">
+          dir
+        </span>
+      </div>
+
+      <div className="flex items-center gap-3 shrink-0">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/chapters/${chapter.id}/study`);
+          }}
+          className="text-[var(--text-dim)] group-hover:text-[var(--bg)] text-xs hover:underline"
+        >
+          [estudiar]
+        </button>
         <button
           onClick={handleDelete}
-          className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 text-sm"
-          aria-label="Eliminar capítulo"
+          className="text-[var(--text-dim)] group-hover:text-[var(--bg)] text-xs hover:text-[var(--accent)]"
         >
-          ✕
+          [rm]
         </button>
       </div>
-
-      <h3 className="font-[family-name:var(--font-display)] text-xl font-medium mb-3 leading-tight group-hover:text-[var(--accent)] transition-colors duration-300">
-        {chapter.title}
-      </h3>
-
-      <div className="border-t border-[var(--border)] pt-4 mt-4 flex justify-between items-center text-sm text-[var(--text-muted)] italic">
-        <span>{new Date(chapter.createdAt).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-        <span className="group-hover:translate-x-1 transition-transform duration-300">Abrir →</span>
-      </div>
-    </button>
+    </div>
   );
 }
