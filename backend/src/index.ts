@@ -27,6 +27,10 @@ app.setErrorHandler((error, _request, reply) => {
     });
   }
 
+  if (error.statusCode) {
+    return reply.status(error.statusCode).send({ error: error.message });
+  }
+
   app.log.error(error);
   return reply.status(500).send({ error: 'Internal server error' });
 });
