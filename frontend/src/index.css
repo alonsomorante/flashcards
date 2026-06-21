@@ -4,32 +4,32 @@
 :root {
   --bg: #fafafa;
   --bg-elevated: #ffffff;
-  --text: #1a1a1a;
+  --text: #111827;
   --text-muted: #6b7280;
-  --accent: #ff6b6b;
-  --accent-light: #ff8585;
-  --accent-dark: #e85555;
-  --detail: #4ecdc4;
-  --detail-light: #6eddd5;
-  --detail-dark: #3bb3ab;
+  --accent: #111827;
+  --accent-light: #374151;
+  --accent-dark: #000000;
+  --detail: #6b7280;
+  --detail-light: #9ca3af;
+  --detail-dark: #374151;
   --border: #e5e7eb;
-  --shadow: rgba(26, 26, 26, 0.06);
+  --shadow: rgba(0, 0, 0, 0.05);
 
   --font-display: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
 }
 
 [data-theme="dark"] {
-  --bg: #1a1a1a;
-  --bg-elevated: #242424;
-  --text: #fafafa;
+  --bg: #0f172a;
+  --bg-elevated: #1f2937;
+  --text: #f9fafb;
   --text-muted: #9ca3af;
-  --accent: #ff6b6b;
-  --accent-light: #ff8585;
-  --accent-dark: #e85555;
-  --detail: #4ecdc4;
-  --detail-light: #6eddd5;
-  --detail-dark: #3bb3ab;
+  --accent: #f9fafb;
+  --accent-light: #e5e7eb;
+  --accent-dark: #d1d5db;
+  --detail: #9ca3af;
+  --detail-light: #d1d5db;
+  --detail-dark: #6b7280;
   --border: #374151;
   --shadow: rgba(0, 0, 0, 0.2);
 }
@@ -41,7 +41,7 @@
 html {
   background: var(--bg);
   color: var(--text);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 body {
@@ -55,7 +55,7 @@ body {
 
 ::selection {
   background: var(--accent);
-  color: white;
+  color: var(--bg-elevated);
 }
 
 h1,
@@ -86,7 +86,7 @@ button {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -105,5 +105,5 @@ button {
 
 /* Smooth theme transition for components */
 .theme-transition {
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }

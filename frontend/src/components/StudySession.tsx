@@ -35,7 +35,7 @@ export function StudySession({
 
   if (isLoading) {
     return (
-      <div className="text-center py-20 text-[var(--text-muted)] animate-pulse">
+      <div className="text-center py-20 text-[var(--text-muted)]">
         Preparando cartas...
       </div>
     );
@@ -43,9 +43,9 @@ export function StudySession({
 
   if (error) {
     return (
-      <div className="bg-[var(--bg-elevated)] border border-[var(--accent)] rounded-xl p-6 text-center">
-        <p className="text-[var(--accent)] font-medium">{error.message}</p>
-        <button onClick={onBack} className="mt-4 text-[var(--detail)] hover:underline">
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-6 text-center">
+        <p className="text-[var(--text)] font-medium">{error.message}</p>
+        <button onClick={onBack} className="mt-4 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
           {backLabel}
         </button>
       </div>
@@ -55,8 +55,8 @@ export function StudySession({
   if (!cards || cards.length === 0) {
     return (
       <div className="text-center py-16 text-[var(--text-muted)]">
-        <p className="text-lg mb-2">No hay flashcards para estudiar</p>
-        <button onClick={onBack} className="text-[var(--detail)] hover:underline">
+        <p className="text-base mb-1">No hay flashcards para estudiar</p>
+        <button onClick={onBack} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
           {backLabel}
         </button>
       </div>
@@ -69,7 +69,7 @@ export function StudySession({
         <div className="mb-4">
           <button
             onClick={onBack}
-            className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+            className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
           >
             {backLabel}
           </button>
@@ -89,19 +89,19 @@ export function StudySession({
 
   return (
     <div>
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border)] pb-4">
+      <div className="mb-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border)] pb-4">
         <button
           onClick={onBack}
-          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
         >
           {backLabel}
         </button>
-        <h2 className="text-sm font-semibold text-[var(--detail)] uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
           {title}
         </h2>
         <button
           onClick={() => session.finish()}
-          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
         >
           Terminar
         </button>

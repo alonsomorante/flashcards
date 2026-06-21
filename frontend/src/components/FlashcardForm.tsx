@@ -31,7 +31,7 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full border-2 border-dashed border-[var(--detail)]/30 rounded-2xl p-5 text-[var(--detail)] hover:text-[var(--detail-dark)] hover:border-[var(--detail)] hover:bg-[var(--detail)]/5 transition-all duration-300 font-medium"
+        className="w-full border border-dashed border-[var(--border)] rounded-lg p-4 text-[var(--text-muted)] hover:text-[var(--text)] hover:border-[var(--accent)] hover:bg-[var(--bg-elevated)] transition-all duration-200 font-medium text-sm"
       >
         + Añadir nueva flashcard
       </button>
@@ -41,26 +41,26 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6 shadow-md space-y-4"
+      className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-5 space-y-4"
     >
       <p className="text-sm font-medium text-[var(--text-muted)]">Nueva flashcard</p>
       <div>
-        <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Frente</label>
+        <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Frente</label>
         <textarea
           value={front}
           onChange={(e) => setFront(e.target.value)}
-          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
+          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
           rows={2}
           placeholder="Escribe la pregunta..."
           autoFocus
         />
       </div>
       <div>
-        <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Reverso</label>
+        <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Reverso</label>
         <textarea
           value={back}
           onChange={(e) => setBack(e.target.value)}
-          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
+          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
           rows={2}
           placeholder="Escribe la respuesta..."
         />
@@ -69,14 +69,14 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
         <button
           type="submit"
           disabled={createFlashcard.isPending}
-          className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-dark)] disabled:opacity-50 transition-colors"
+          className="px-4 py-2 rounded-lg bg-[var(--accent)] text-[var(--bg-elevated)] font-medium hover:bg-[var(--accent-light)] disabled:opacity-50 transition-colors"
         >
           {createFlashcard.isPending ? 'Creando...' : 'Crear'}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--detail)] hover:text-[var(--detail)] transition-colors"
+          className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text)] transition-colors"
         >
           Cancelar
         </button>
