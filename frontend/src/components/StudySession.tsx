@@ -35,18 +35,18 @@ export function StudySession({
 
   if (isLoading) {
     return (
-      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-16 animate-pulse">
-        CARGANDO FICHAS...
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-20 italic animate-pulse">
+        Preparando las cartas...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="border-2 border-[var(--error)] bg-[var(--bg-elevated)] p-6 text-center">
-        <span className="font-[family-name:var(--font-display)] text-[var(--error)]">ERROR: {error.message}</span>
+      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-8 text-center rounded">
+        <span className="font-[family-name:var(--font-display)] text-[var(--accent)] italic text-lg">{error.message}</span>
         <div className="mt-4">
-          <button onClick={onBack} className="text-[var(--accent)] hover:underline font-[family-name:var(--font-display)] text-sm">
+          <button onClick={onBack} className="text-[var(--accent)] hover:underline italic">
             {backLabel}
           </button>
         </div>
@@ -56,11 +56,9 @@ export function StudySession({
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="border-2 border-dashed border-[var(--text-muted)] p-12 text-center">
-        <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-sm mb-2">
-          SIN FICHAS PARA ESTUDIAR
-        </p>
-        <button onClick={onBack} className="text-[var(--accent)] hover:underline font-[family-name:var(--font-display)] text-sm">
+      <div className="text-center py-16 text-[var(--text-muted)]">
+        <p className="font-[family-name:var(--font-display)] italic text-xl mb-2">No hay cartas para estudiar</p>
+        <button onClick={onBack} className="text-[var(--accent)] hover:underline italic">
           {backLabel}
         </button>
       </div>
@@ -73,7 +71,7 @@ export function StudySession({
         <div className="mb-6">
           <button
             onClick={onBack}
-            className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+            className="font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
           >
             {backLabel}
           </button>
@@ -93,21 +91,21 @@ export function StudySession({
 
   return (
     <div>
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b-2 border-[var(--border)] pb-4">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border)] pb-4">
         <button
           onClick={onBack}
-          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+          className="font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
         >
           {backLabel}
         </button>
-        <h2 className="font-[family-name:var(--font-display)] text-sm tracking-widest text-[var(--accent)]">
-          {title.toUpperCase()}
+        <h2 className="font-[family-name:var(--font-display)] text-sm tracking-widest text-[var(--accent)] uppercase">
+          {title}
         </h2>
         <button
           onClick={() => session.finish()}
-          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--error)] transition-colors"
+          className="font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
         >
-          [ TERMINAR ]
+          Terminar sesión
         </button>
       </div>
 

@@ -1,22 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&display=swap');
 @import "tailwindcss";
 
 :root {
-  --bg: #0a0a0a;
-  --bg-elevated: #111111;
-  --text: #fafafa;
-  --text-muted: #737373;
-  --accent: #d4ff00;
-  --accent-dim: #8ca800;
-  --border: #fafafa;
-  --error: #ff3333;
-  --success: #d4ff00;
-  --grid-color: rgba(250, 250, 250, 0.04);
+  --bg: #f5f1e8;
+  --bg-elevated: #fffdf7;
+  --text: #1a1a1a;
+  --text-muted: #6b6560;
+  --accent: #8b1e1e;
+  --accent-light: #b83a3a;
+  --detail: #2d4a3e;
+  --border: #d4cfc5;
+  --shadow: rgba(26, 26, 26, 0.08);
 
-  --font-display: 'Space Mono', monospace;
-  --font-body: 'IBM Plex Sans', sans-serif;
-
-  --border-width: 2px;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Newsreader', Georgia, serif;
 }
 
 * {
@@ -32,19 +29,11 @@ body {
   margin: 0;
   font-family: var(--font-body);
   background:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px),
+    radial-gradient(ellipse at top left, rgba(139, 30, 30, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(45, 74, 62, 0.03) 0%, transparent 50%),
     var(--bg);
-  background-size: 24px 24px;
+  background-attachment: fixed;
   min-height: 100vh;
-  cursor: crosshair;
-}
-
-button,
-a,
-input,
-textarea {
-  cursor: crosshair;
 }
 
 ::selection {
@@ -59,31 +48,42 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
+  font-weight: 500;
   margin: 0;
 }
 
 input,
-textarea {
+textarea,
+button {
   font-family: var(--font-body);
 }
 
-/* Brutalist scrollbar */
+/* Elegant scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
   background: var(--bg);
-  border-left: var(--border-width) solid var(--border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text);
-  border: var(--border-width) solid var(--bg);
+  background: var(--border);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
+  background: var(--text-muted);
+}
+
+/* Drop cap utility */
+.drop-cap::first-letter {
+  font-family: var(--font-display);
+  float: left;
+  font-size: 3.5rem;
+  line-height: 0.8;
+  padding-right: 0.5rem;
+  padding-top: 0.2rem;
+  color: var(--accent);
+  font-weight: 500;
 }

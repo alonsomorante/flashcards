@@ -21,66 +21,68 @@ export function BooksPage() {
 
   if (isLoading) {
     return (
-      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-16 animate-pulse">
-        CARGANDO ARCHIVO...
+      <div className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-center py-20 italic animate-pulse">
+        Cargando el índice...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="border-2 border-[var(--error)] bg-[var(--bg-elevated)] p-6 text-center">
-        <span className="font-[family-name:var(--font-display)] text-[var(--error)]">ERROR DE CONEXIÓN</span>
-        <p className="mt-2 text-sm">{error.message}</p>
+      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-8 text-center rounded">
+        <span className="font-[family-name:var(--font-display)] text-[var(--accent)] italic text-lg">Error de conexión</span>
+        <p className="mt-2 text-[var(--text-muted)]">{error.message}</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b-2 border-[var(--border)] pb-4">
-        <div>
-          <h2 className="text-3xl md:text-4xl font-bold">ÍNDICE DE LIBROS</h2>
-          <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-xs mt-1">
-            {books?.length || 0} REGISTROS ENCONTRADOS
-          </p>
-        </div>
+      <div className="text-center mb-12 pb-8 border-b border-[var(--border)]">
+        <h2 className="text-4xl md:text-6xl font-medium mb-3">Índice de Libros</h2>
+        <p className="font-[family-name:var(--font-body)] italic text-[var(--text-muted)] text-lg">
+          {books?.length || 0} {books?.length === 1 ? 'volumen' : 'volúmenes'} en la colección
+        </p>
+      </div>
+
+      <div className="flex justify-center mb-10">
         <button
           onClick={() => setShowForm(!showForm)}
-          className="font-[family-name:var(--font-display)] text-sm px-5 py-3 border-2 border-[var(--border)] bg-[var(--bg)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
+          className="font-[family-name:var(--font-display)] text-sm px-6 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
         >
-          {showForm ? '[ CANCELAR ]' : '[ + NUEVO LIBRO ]'}
+          {showForm ? 'Cancelar' : 'Añadir nuevo libro'}
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-8 border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 flex flex-col sm:flex-row gap-3">
+        <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-12 bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm">
+          <label className="block font-[family-name:var(--font-display)] text-sm text-[var(--text-muted)] mb-2 italic">
+            Título del libro
+          </label>
           <input
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="TÍTULO DEL LIBRO"
-            className="flex-1 bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+            placeholder="Ej: Historia del arte"
+            className="w-full bg-transparent border-b border-[var(--border)] px-0 py-2 text-[var(--text)] text-lg focus:outline-none focus:border-[var(--accent)] transition-colors placeholder:text-[var(--border)]"
             autoFocus
           />
           <button
             type="submit"
             disabled={createBook.isPending}
-            className="font-[family-name:var(--font-display)] text-sm px-6 py-3 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
+            className="mt-4 font-[family-name:var(--font-display)] text-sm px-5 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] disabled:opacity-50 transition-colors duration-300"
           >
-            {createBook.isPending ? 'ARCHIVANDO...' : 'ARCHIVAR'}
+            {createBook.isPending ? 'Guardando...' : 'Guardar'}
           </button>
         </form>
       )}
 
       {books && books.length === 0 ? (
-        <div className="border-2 border-dashed border-[var(--text-muted)] p-12 text-center">
-          <p className="font-[family-name:var(--font-display)] text-[var(--text-muted)] text-sm mb-2">
-            ARCHIVO VACÍO
-          </p>
-          <p className="text-[var(--text-muted)]">Crea tu primer libro para iniciar el registro de estudio.</p>
+        <div className="text-center py-16 text-[var(--text-muted)]">
+          <p className="font-[family-name:var(--font-display)] italic text-xl mb-2">La colección está vacía</p>
+          <p>Añade tu primer libro para comenzar a estudiar.</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {books?.map((book, index) => (
             <BookCard key={book.id} book={book} index={index + 1} />
           ))}

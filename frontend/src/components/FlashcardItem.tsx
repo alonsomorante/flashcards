@@ -27,41 +27,43 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   };
 
   const handleDelete = () => {
-    if (confirm('¿ELIMINAR ESTA FICHA?')) {
+    if (confirm('¿Eliminar esta flashcard?')) {
       deleteFlashcard.mutate({ id: flashcard.id, chapterId });
     }
   };
 
-  const paddedIndex = String(index).padStart(3, '0');
-
   if (isEditing) {
     return (
-      <div className="border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 space-y-3">
-        <div className="border-b-2 border-[var(--border)] pb-2 mb-3">
-          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest">
-            EDITAR FICHA #{paddedIndex}
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm space-y-4">
+        <div className="flex justify-between items-center border-b border-[var(--border)] pb-3">
+          <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
+            Editando flashcard {String(index).padStart(2, '0')}
           </span>
         </div>
-        <textarea
-          value={front}
-          onChange={(e) => setFront(e.target.value)}
-          className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
-          rows={2}
-          placeholder="FRENTE (PREGUNTA)"
-        />
-        <textarea
-          value={back}
-          onChange={(e) => setBack(e.target.value)}
-          className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
-          rows={2}
-          placeholder="REVERSO (RESPUESTA)"
-        />
+        <div>
+          <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Frente</label>
+          <textarea
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+            rows={2}
+          />
+        </div>
+        <div>
+          <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Reverso</label>
+          <textarea
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+            rows={2}
+          />
+        </div>
         <div className="flex gap-2">
           <button
             onClick={handleSave}
-            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] transition-colors uppercase tracking-wide"
+            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] transition-colors duration-300"
           >
-            GUARDAR
+            Guardar
           </button>
           <button
             onClick={() => {
@@ -69,9 +71,9 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
               setBack(flashcard.back);
               setIsEditing(false);
             }}
-            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border-2 border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
+            className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
           >
-            CANCELAR
+            Cancelar
           </button>
         </div>
       </div>
@@ -79,43 +81,41 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   }
 
   return (
-    <div className="border-2 border-[var(--border)] bg-[var(--bg-elevated)] hover:bg-[var(--bg)] transition-colors">
-      <div className="border-b-2 border-[var(--border)] px-3 py-1 flex justify-between items-center">
-        <span className="font-[family-name:var(--font-display)] text-[10px] tracking-widest text-[var(--text-muted)]">
-          FICHA #{paddedIndex}
+    <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+      <div className="flex justify-between items-start mb-4 border-b border-[var(--border)] pb-3">
+        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
+          Flashcard {String(index).padStart(2, '0')}
         </span>
-        <span
-          className="font-[family-name:var(--font-display)] text-[10px] px-2 py-0.5 bg-[var(--accent)] text-[var(--bg)] uppercase tracking-wider"
-        >
+        <span className="font-[family-name:var(--font-display)] text-xs italic text-[var(--accent)]">
           {LEVEL_LABELS[flashcard.level as ReviewLevel]}
         </span>
       </div>
 
-      <div className="p-5 grid md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest block mb-1">
-            FRENTE
+          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-widest block mb-1">
+            Pregunta
           </span>
-          <p className="font-medium text-lg">{flashcard.front}</p>
+          <p className="font-[family-name:var(--font-display)] text-lg font-medium">{flashcard.front}</p>
         </div>
         <div>
-          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest block mb-1">
-            REVERSO
+          <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] uppercase tracking-widest block mb-1">
+            Respuesta
           </span>
-          <p className="text-[var(--text-muted)]">{flashcard.back}</p>
+          <p className="font-[family-name:var(--font-body)] italic text-[var(--text-muted)]">{flashcard.back}</p>
         </div>
       </div>
 
-      <div className="border-t-2 border-[var(--border)] grid grid-cols-2">
+      <div className="flex gap-3 mt-6 pt-4 border-t border-[var(--border)]">
         <button
           onClick={() => setIsEditing(true)}
-          className="font-[family-name:var(--font-display)] text-[10px] py-2 text-center border-r-2 border-[var(--border)] hover:bg-[var(--accent)] hover:text-[var(--bg)] transition-colors uppercase tracking-wider"
+          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
         >
           Editar
         </button>
         <button
           onClick={handleDelete}
-          className="font-[family-name:var(--font-display)] text-[10px] py-2 text-center hover:bg-[var(--error)] hover:text-[var(--bg)] transition-colors uppercase tracking-wider"
+          className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors duration-300 italic"
         >
           Eliminar
         </button>

@@ -31,9 +31,9 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full border-2 border-dashed border-[var(--text-muted)] p-5 text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-colors font-[family-name:var(--font-display)] text-sm uppercase tracking-wide"
+        className="w-full border border-dashed border-[var(--border)] rounded p-5 text-[var(--text-muted)] hover:text-[var(--accent)] hover:border-[var(--accent)] transition-all duration-300 font-[family-name:var(--font-display)] italic"
       >
-        [ + NUEVA FICHA ]
+        + Añadir nueva flashcard
       </button>
     );
   }
@@ -41,42 +41,48 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-2 border-[var(--border)] bg-[var(--bg-elevated)] p-4 space-y-3"
+      className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded p-6 shadow-sm space-y-4"
     >
-      <div className="border-b-2 border-[var(--border)] pb-2 mb-3">
-        <span className="font-[family-name:var(--font-display)] text-[10px] text-[var(--text-muted)] tracking-widest">
-          NUEVA FICHA
+      <div className="border-b border-[var(--border)] pb-3 mb-3">
+        <span className="font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] tracking-widest uppercase">
+          Nueva flashcard
         </span>
       </div>
-      <textarea
-        value={front}
-        onChange={(e) => setFront(e.target.value)}
-        className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
-        rows={2}
-        placeholder="FRENTE (PREGUNTA)"
-        autoFocus
-      />
-      <textarea
-        value={back}
-        onChange={(e) => setBack(e.target.value)}
-        className="w-full bg-[var(--bg)] border-2 border-[var(--border)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
-        rows={2}
-        placeholder="REVERSO (RESPUESTA)"
-      />
+      <div>
+        <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Frente</label>
+        <textarea
+          value={front}
+          onChange={(e) => setFront(e.target.value)}
+          className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          rows={2}
+          placeholder="Escribe la pregunta..."
+          autoFocus
+        />
+      </div>
+      <div>
+        <label className="block font-[family-name:var(--font-display)] text-xs text-[var(--text-muted)] uppercase tracking-widest mb-1">Reverso</label>
+        <textarea
+          value={back}
+          onChange={(e) => setBack(e.target.value)}
+          className="w-full bg-transparent border border-[var(--border)] rounded p-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          rows={2}
+          placeholder="Escribe la respuesta..."
+        />
+      </div>
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={createFlashcard.isPending}
-          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] hover:bg-[var(--accent-dim)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors uppercase tracking-wide"
+          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 bg-[var(--accent)] text-[var(--bg)] rounded hover:bg-[var(--accent-light)] disabled:opacity-50 transition-colors duration-300"
         >
-          {createFlashcard.isPending ? 'ARCHIVANDO...' : 'ARCHIVAR'}
+          {createFlashcard.isPending ? 'Guardando...' : 'Guardar'}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border-2 border-[var(--border)] hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors uppercase tracking-wide"
+          className="font-[family-name:var(--font-display)] text-xs px-4 py-2 border border-[var(--text)] text-[var(--text)] rounded hover:bg-[var(--text)] hover:text-[var(--bg)] transition-all duration-300"
         >
-          CANCELAR
+          Cancelar
         </button>
       </div>
     </form>
