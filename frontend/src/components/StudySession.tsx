@@ -35,30 +35,28 @@ export function StudySession({
 
   if (isLoading) {
     return (
-      <div className="font-[family-name:var(--font-display)] text-[var(--text-dim)] py-20 animate-pulse">
-        {'>'} cargando_fichas_en_memoria...
+      <div className="text-center py-20 text-[var(--text-muted)] animate-pulse">
+        Preparando cartas...
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-4">
-        <span className="text-[var(--accent)]">{'>'} ERROR: {error.message}</span>
-        <div className="mt-3">
-          <button onClick={onBack} className="text-[var(--text)] hover:text-[var(--accent)] transition-colors text-sm">
-            {backLabel}
-          </button>
-        </div>
+      <div className="bg-[var(--bg-elevated)] border border-[var(--accent)] rounded-xl p-6 text-center">
+        <p className="text-[var(--accent)] font-medium">{error.message}</p>
+        <button onClick={onBack} className="mt-4 text-[var(--detail)] hover:underline">
+          {backLabel}
+        </button>
       </div>
     );
   }
 
   if (!cards || cards.length === 0) {
     return (
-      <div className="text-[var(--text-muted)] py-16">
-        {'>'} no hay fichas para estudiar.
-        <button onClick={onBack} className="block mt-2 text-[var(--text)] hover:text-[var(--accent)] transition-colors text-sm">
+      <div className="text-center py-16 text-[var(--text-muted)]">
+        <p className="text-lg mb-2">No hay flashcards para estudiar</p>
+        <button onClick={onBack} className="text-[var(--detail)] hover:underline">
           {backLabel}
         </button>
       </div>
@@ -71,7 +69,7 @@ export function StudySession({
         <div className="mb-4">
           <button
             onClick={onBack}
-            className="text-[var(--text-dim)] hover:text-[var(--text)] transition-colors text-sm"
+            className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
           >
             {backLabel}
           </button>
@@ -91,21 +89,21 @@ export function StudySession({
 
   return (
     <div>
-      <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border-dim)] pb-3">
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-[var(--border)] pb-4">
         <button
           onClick={onBack}
-          className="text-[var(--text-dim)] hover:text-[var(--text)] transition-colors text-sm"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
         >
           {backLabel}
         </button>
-        <h2 className="font-[family-name:var(--font-display)] text-xs text-[var(--warning)] uppercase tracking-wider">
+        <h2 className="text-sm font-semibold text-[var(--detail)] uppercase tracking-wider">
           {title}
         </h2>
         <button
           onClick={() => session.finish()}
-          className="text-[var(--text-dim)] hover:text-[var(--accent)] transition-colors text-sm"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
         >
-          [ ctrl+c ]
+          Terminar
         </button>
       </div>
 

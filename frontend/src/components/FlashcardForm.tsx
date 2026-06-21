@@ -31,9 +31,9 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full border border-dashed border-[var(--border-dim)] p-4 text-[var(--text-dim)] hover:text-[var(--text)] hover:border-[var(--text)] transition-colors text-sm font-[family-name:var(--font-display)]"
+        className="w-full border-2 border-dashed border-[var(--detail)]/30 rounded-2xl p-5 text-[var(--detail)] hover:text-[var(--detail-dark)] hover:border-[var(--detail)] hover:bg-[var(--detail)]/5 transition-all duration-300 font-medium"
       >
-        {'>'} touch nueva_ficha
+        + Añadir nueva flashcard
       </button>
     );
   }
@@ -41,46 +41,44 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 space-y-3"
+      className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6 shadow-md space-y-4"
     >
-      <div className="text-[var(--text-dim)] text-xs mb-2">
-        {'>'} creando_nueva_ficha --chapter={chapterId.slice(0, 8)}
-      </div>
+      <p className="text-sm font-medium text-[var(--text-muted)]">Nueva flashcard</p>
       <div>
-        <span className="text-[var(--accent)] text-xs">$ frente&gt; </span>
+        <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Frente</label>
         <textarea
           value={front}
           onChange={(e) => setFront(e.target.value)}
-          className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--text)] mt-1"
+          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
           rows={2}
-          placeholder="escriba_la_pregunta"
+          placeholder="Escribe la pregunta..."
           autoFocus
         />
       </div>
       <div>
-        <span className="text-[var(--accent)] text-xs">$ reverso&gt; </span>
+        <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Reverso</label>
         <textarea
           value={back}
           onChange={(e) => setBack(e.target.value)}
-          className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--text)] mt-1"
+          className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
           rows={2}
-          placeholder="escriba_la_respuesta"
+          placeholder="Escribe la respuesta..."
         />
       </div>
       <div className="flex gap-2">
         <button
           type="submit"
           disabled={createFlashcard.isPending}
-          className="text-[var(--bg)] bg-[var(--text)] px-4 py-1 text-xs hover:bg-[var(--text-dim)] disabled:opacity-50 transition-colors"
+          className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-dark)] disabled:opacity-50 transition-colors"
         >
-          {createFlashcard.isPending ? '...' : '[escribir]'}
+          {createFlashcard.isPending ? 'Creando...' : 'Crear'}
         </button>
         <button
           type="button"
           onClick={() => setIsOpen(false)}
-          className="border border-[var(--border-dim)] px-4 py-1 text-xs hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
+          className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--detail)] hover:text-[var(--detail)] transition-colors"
         >
-          [cancelar]
+          Cancelar
         </button>
       </div>
     </form>

@@ -16,46 +16,47 @@ export function StudySummary({
   onRestart,
   onExit,
 }: StudySummaryProps) {
-  const renderBar = (count: number) => {
-    const percentage = total > 0 ? (count / total) * 100 : 0;
-    const filled = Math.round(percentage / 10);
-    const empty = 10 - filled;
-    return `[${'#'.repeat(filled)}${'-'.repeat(empty)}] ${Math.round(percentage)}%`;
+  const levelColors: Record<ReviewLevel, string> = {
+    0: 'text-[var(--accent)] bg-[var(--accent)]/10',
+    1: 'text-orange-500 bg-orange-500/10',
+    2: 'text-[var(--detail-dark)] bg-[var(--detail)]/10',
+    3: 'text-green-500 bg-green-500/10',
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-6 md:p-10">
-      <div className="border-b border-[var(--border-dim)] pb-4 mb-6">
-        <h2 className="text-2xl md:text-4xl text-[var(--text)] mb-2">
-          {'>'} sesión_finalizada
-        </h2>
-        <div className="text-[var(--text-dim)] text-sm">
-          {studiedCount} de {total} fichas procesadas
-        </div>
+    <div className="w-full max-w-3xl mx-auto bg-[var(--bg-elevated)] border border-[var(--border)] rounded-3xl shadow-xl p-10 md:p-14">
+      <div className="text-center border-b border-[var(--border)] pb-6 mb-8">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-2">¡Sesión terminada!</h2>
+        <p className="text-[var(--text-muted)]">
+          Estudiaste {studiedCount} de {total} flashcards
+        </p>
       </div>
 
-      <div className="space-y-3 mb-8 font-[family-name:var(--font-display)] text-sm">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {([0, 1, 2, 3] as ReviewLevel[]).map((level) => (
-          <div key={level} className="flex items-center gap-4">
-            <span className="w-24 text-[var(--text-dim)]">{LEVEL_LABELS[level]}</span>
-            <span className="text-[var(--text)] flex-1">{renderBar(sessionResults[level])}</span>
-            <span className="text-[var(--warning)] w-8 text-right">{sessionResults[level]}</span>
+          <div key={level} className="bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-5 text-center">
+            <div className={`text-3xl font-bold mb-1 ${levelColors[level].split(' ')[0]}`}>
+              {sessionResults[level]}
+            </div>
+            <div className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
+              {LEVEL_LABELS[level]}
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <button
           onClick={onRestart}
-          className="text-[var(--bg)] bg-[var(--text)] px-6 py-2 hover:bg-[var(--text-dim)] transition-colors"
+          className="px-8 py-2.5 rounded-full bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-dark)] transition-colors duration-300 shadow-md"
         >
-          [ ./reiniciar ]
+          Estudiar de nuevo
         </button>
         <button
           onClick={onExit}
-          className="border border-[var(--border-dim)] px-6 py-2 hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
+          className="px-8 py-2.5 rounded-full border border-[var(--border)] text-[var(--text-muted)] font-medium hover:border-[var(--detail)] hover:text-[var(--detail)] transition-colors duration-300"
         >
-          [ cd ~ ]
+          Salir
         </button>
       </div>
     </div>

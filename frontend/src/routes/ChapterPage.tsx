@@ -10,63 +10,59 @@ export function ChapterPage() {
 
   if (isLoading) {
     return (
-      <div className="font-[family-name:var(--font-display)] text-[var(--text-dim)] py-20 animate-pulse">
-        {'>'} cargando_capítulo...
+      <div className="text-center py-20 text-[var(--text-muted)] animate-pulse">
+        Cargando capítulo...
       </div>
     );
   }
 
   if (error || !chapter) {
     return (
-      <div className="border border-[var(--accent)] bg-[var(--bg-elevated)] p-4">
-        <span className="text-[var(--accent)]">{'>'} ERROR: CAPÍTULO NO ENCONTRADO</span>
-        <div className="mt-3">
-          <Link to="/" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
-            {'>'} cd ~
-          </Link>
-        </div>
+      <div className="bg-[var(--bg-elevated)] border border-[var(--accent)] rounded-xl p-6 text-center">
+        <p className="text-[var(--accent)] font-medium">Capítulo no encontrado</p>
+        <Link to="/" className="mt-4 inline-block text-[var(--detail)] hover:underline">
+          Volver al inicio
+        </Link>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="mb-4">
+      <div className="mb-6">
         <Link
           to={`/books/${chapter.bookId}`}
-          className="text-[var(--text-dim)] hover:text-[var(--text)] transition-colors text-sm"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
         >
-          {'>'} cd ..
+          ← Volver al libro
         </Link>
       </div>
 
-      <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 mb-6">
-        <div className="flex items-center gap-2 mb-2 text-xs text-[var(--text-dim)]">
-          <span>DIR:</span>
-          <span className="text-[var(--warning)]">{chapter.title.toLowerCase().replace(/\s+/g, '_')}</span>
-        </div>
-        <h2 className="text-2xl md:text-3xl text-[var(--text)] mb-2">
-          {chapter.title}
-        </h2>
-        <div className="text-[var(--text-dim)] text-sm">
-          {'>'} {chapter.flashcards.length} fichas en memoria
-        </div>
+      <div className="text-center mb-10 pb-8 border-b border-[var(--border)]">
+        <span className="inline-block px-3 py-1 rounded-full bg-[var(--detail)]/10 text-[var(--detail)] text-xs font-semibold uppercase tracking-wider mb-4">
+          Capítulo
+        </span>
+        <h2 className="text-3xl md:text-4xl font-semibold mb-3">{chapter.title}</h2>
+        <p className="text-[var(--text-muted)]">
+          {chapter.flashcards.length} {chapter.flashcards.length === 1 ? 'flashcard' : 'flashcards'}
+        </p>
       </div>
 
-      <div className="mb-6">
+      <div className="flex justify-center mb-10">
         <button
           onClick={() => navigate(`/chapters/${chapter.id}/study`)}
           disabled={chapter.flashcards.length === 0}
-          className="text-[var(--bg)] bg-[var(--text)] px-4 py-2 hover:bg-[var(--text-dim)] disabled:opacity-50 transition-colors"
+          className="px-6 py-2.5 rounded-full bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-dark)] disabled:opacity-50 transition-colors duration-300 shadow-md"
         >
-          [ ./estudiar_capítulo ]
+          Estudiar capítulo
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {chapter.flashcards.length === 0 ? (
-          <div className="text-[var(--text-muted)] py-12">
-            {'>'} no se encontraron fichas. añada una para comenzar.
+          <div className="text-center py-16 text-[var(--text-muted)]">
+            <p className="text-lg mb-2">No hay flashcards todavía</p>
+            <p className="text-sm">Añade tu primera flashcard para comenzar a estudiar.</p>
           </div>
         ) : (
           chapter.flashcards.map((flashcard, index) => (

@@ -27,43 +27,46 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   };
 
   const handleDelete = () => {
-    if (confirm('¿ELIMINAR FICHA?')) {
+    if (confirm('¿Eliminar esta flashcard?')) {
       deleteFlashcard.mutate({ id: flashcard.id, chapterId });
     }
   };
 
-  const paddedIndex = String(index).padStart(3, '0');
+  const levelColors: Record<ReviewLevel, string> = {
+    0: 'bg-[var(--accent)]/10 text-[var(--accent)]',
+    1: 'bg-orange-500/10 text-orange-500',
+    2: 'bg-[var(--detail)]/10 text-[var(--detail-dark)]',
+    3: 'bg-green-500/10 text-green-500',
+  };
 
   if (isEditing) {
     return (
-      <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 space-y-3">
-        <div className="text-[var(--text-dim)] text-xs mb-2">
-          {'>'} editando_ficha --id={flashcard.id.slice(0, 8)}
-        </div>
+      <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6 shadow-md space-y-4">
+        <p className="text-sm font-medium text-[var(--text-muted)]">Editando flashcard {String(index).padStart(2, '0')}</p>
         <div>
-          <span className="text-[var(--accent)] text-xs">$ frente&gt; </span>
+          <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Frente</label>
           <textarea
             value={front}
             onChange={(e) => setFront(e.target.value)}
-            className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] focus:outline-none focus:border-[var(--text)] mt-1"
+            className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
             rows={2}
           />
         </div>
         <div>
-          <span className="text-[var(--accent)] text-xs">$ reverso&gt; </span>
+          <label className="block text-xs font-semibold text-[var(--detail)] uppercase tracking-wider mb-1">Reverso</label>
           <textarea
             value={back}
             onChange={(e) => setBack(e.target.value)}
-            className="w-full bg-[var(--bg)] border border-[var(--border-dim)] px-3 py-2 text-[var(--text)] focus:outline-none focus:border-[var(--text)] mt-1"
+            className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition-all"
             rows={2}
           />
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleSave}
-            className="text-[var(--bg)] bg-[var(--text)] px-3 py-1 text-xs hover:bg-[var(--text-dim)] transition-colors"
+            className="px-4 py-2 rounded-lg bg-[var(--accent)] text-white font-medium hover:bg-[var(--accent-dark)] transition-colors"
           >
-            [guardar]
+            Guardar
           </button>
           <button
             onClick={() => {
@@ -71,9 +74,9 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
               setBack(flashcard.back);
               setIsEditing(false);
             }}
-            className="border border-[var(--border-dim)] px-3 py-1 text-xs hover:bg-[var(--text)] hover:text-[var(--bg)] transition-colors"
+            className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--detail)] hover:text-[var(--detail)] transition-colors"
           >
-            [cancelar]
+            Cancelar
           </button>
         </div>
       </div>
@@ -81,35 +84,39 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   }
 
   return (
-    <div className="border border-[var(--border-dim)] bg-[var(--bg-elevated)] p-4 hover:border-[var(--text-dim)] transition-colors">
-      <div className="flex justify-between items-start mb-3 text-xs text-[var(--text-dim)]">
-        <span>FICHA {paddedIndex}</span>
-        <span className="text-[var(--warning)]">[{LEVEL_LABELS[flashcard.level as ReviewLevel].toUpperCase()}]</span>
+    <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6 shadow-md hover:shadow-lg hover:border-[var(--detail)]/50 transition-all duration-300">
+      <div className="flex justify-between items-start mb-4">
+        <span className="text-xs font-semibold text-[var(--detail)] uppercase tracking-wider">
+          Flashcard {String(index).padStart(2, '0')}
+        </span>
+        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${levelColors[flashcard.level as ReviewLevel]}`}>
+          {LEVEL_LABELS[flashcard.level as ReviewLevel]}
+        </span>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-3">
+      <div className="grid md:grid-cols-2 gap-6 mb-4">
         <div>
-          <span className="text-[var(--accent)] text-xs">$ pregunta&gt; </span>
-          <p className="text-[var(--text)] mt-1">{flashcard.front}</p>
+          <span className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Pregunta</span>
+          <p className="text-[var(--text)] font-medium">{flashcard.front}</p>
         </div>
         <div>
-          <span className="text-[var(--accent)] text-xs">$ respuesta&gt; </span>
-          <p className="text-[var(--text-dim)] mt-1">{flashcard.back}</p>
+          <span className="block text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Respuesta</span>
+          <p className="text-[var(--text-muted)]">{flashcard.back}</p>
         </div>
       </div>
 
-      <div className="flex gap-3 border-t border-[var(--border-dim)] pt-2">
+      <div className="flex gap-4 pt-4 border-t border-[var(--border)]">
         <button
           onClick={() => setIsEditing(true)}
-          className="text-[var(--text-dim)] text-xs hover:text-[var(--text)] transition-colors"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
         >
-          [editar]
+          Editar
         </button>
         <button
           onClick={handleDelete}
-          className="text-[var(--text-dim)] text-xs hover:text-[var(--accent)] transition-colors"
+          className="text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
         >
-          [eliminar]
+          Eliminar
         </button>
       </div>
     </div>
