@@ -6,6 +6,7 @@ interface SpeechRecognitionEvent extends Event {
 
 interface SpeechRecognitionErrorEvent extends Event {
   error: string;
+  message: string;
 }
 
 interface SpeechRecognitionInstance extends EventTarget {
@@ -32,6 +33,10 @@ export function useSpeechRecognition(lang: string, onResult: (text: string) => v
   const [isListening, setIsListening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const onResultRef = useRef(onResult);
+
+  // Keep the latest callback without recreating the recognition instance
+  onResultRef.current = onResult;
 
   useEffect(() => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -40,12 +45,22 @@ export function useSpeechRecognition(lang: string, onResult: (text: string) => v
     setIsSupported(true);
     const recognition = new SR();
     recognition.lang = lang;
-    recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.continuous = true;
+    recognition.interimResults = true;
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      onResult(transcript);
+      let finalTranscript = '';
+      let interimTranscript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        const result = event.results[i];
+        const transcript = result[0].transcript;
+        if (result.isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+      onResultRef.current(finalTranscript + interimTranscript);
     };
 
     recognition.onerror = (event) => {
@@ -66,7 +81,7 @@ export function useSpeechRecognition(lang: string, onResult: (text: string) => v
         // ignore
       }
     };
-  }, [lang, onResult]);
+  }, [lang]);
 
   const start = useCallback(() => {
     if (!recognitionRef.current) return;
