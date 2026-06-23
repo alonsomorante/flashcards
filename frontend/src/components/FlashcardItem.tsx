@@ -6,6 +6,7 @@ import { useDeleteFlashcard, useUpdateFlashcard } from '../hooks/useFlashcards';
 import { useSpellCheck } from '../hooks/useSpellCheck';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { LanguageSelect } from './LanguageSelect';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface FlashcardItemProps {
   flashcard: Flashcard;
@@ -33,6 +34,7 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   const [back, setBack] = useState(flashcard.back);
   const [frontLang, setFrontLang] = useState('es-ES');
   const [backLang, setBackLang] = useState('es-ES');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const updateFlashcard = useUpdateFlashcard();
   const deleteFlashcard = useDeleteFlashcard();
@@ -51,9 +53,12 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   };
 
   const handleDelete = () => {
-    if (confirm('¿Eliminar esta flashcard?')) {
-      deleteFlashcard.mutate({ id: flashcard.id, chapterId });
-    }
+    setShowDeleteDialog(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteFlashcard.mutate({ id: flashcard.id, chapterId });
+    setShowDeleteDialog(false);
   };
 
   const handleCorrectFront = async () => {
@@ -187,6 +192,7 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   }
 
   return (
+    <>
     <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-5 hover:border-[var(--accent)]/50 transition-colors duration-200">
       <div className="flex justify-between items-start mb-3">
         <span className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">
@@ -223,5 +229,14 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
         </button>
       </div>
     </div>
+
+    <ConfirmDialog
+      isOpen={showDeleteDialog}
+      title="Eliminar flashcard"
+      message="¿Estás seguro? Esta acción no se puede deshacer."
+      onConfirm={handleConfirmDelete}
+      onCancel={() => setShowDeleteDialog(false)}
+    />
+  </>
   );
 }
