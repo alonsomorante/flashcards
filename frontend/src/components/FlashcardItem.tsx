@@ -3,6 +3,7 @@ import type { Flashcard } from '../types/index';
 import { LEVEL_LABELS } from '../types/index';
 import type { ReviewLevel } from '../types/index';
 import { useDeleteFlashcard, useUpdateFlashcard } from '../hooks/useFlashcards';
+import { useSpellCheck } from '../hooks/useSpellCheck';
 
 interface FlashcardItemProps {
   flashcard: Flashcard;
@@ -17,6 +18,8 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
 
   const updateFlashcard = useUpdateFlashcard();
   const deleteFlashcard = useDeleteFlashcard();
+  const correctFront = useSpellCheck();
+  const correctBack = useSpellCheck();
 
   const handleSave = () => {
     if (!front.trim() || !back.trim()) return;
@@ -32,12 +35,34 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
     }
   };
 
+  const handleCorrectFront = async () => {
+    if (!front.trim()) return;
+    const corrected = await correctFront.mutateAsync(front);
+    setFront(corrected);
+  };
+
+  const handleCorrectBack = async () => {
+    if (!back.trim()) return;
+    const corrected = await correctBack.mutateAsync(back);
+    setBack(corrected);
+  };
+
   if (isEditing) {
     return (
       <div className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-lg p-5 space-y-4">
         <p className="text-sm font-medium text-[var(--text-muted)]">Editando flashcard {String(index).padStart(2, '0')}</p>
         <div>
-          <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Frente</label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Frente</label>
+            <button
+              type="button"
+              onClick={handleCorrectFront}
+              disabled={correctFront.isPending || !front.trim()}
+              className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50 transition-colors"
+            >
+              {correctFront.isPending ? 'Corrigiendo...' : 'Corregir'}
+            </button>
+          </div>
           <textarea
             value={front}
             onChange={(e) => setFront(e.target.value)}
@@ -46,7 +71,17 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Reverso</label>
+          <div className="flex justify-between items-center mb-1">
+            <label className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Reverso</label>
+            <button
+              type="button"
+              onClick={handleCorrectBack}
+              disabled={correctBack.isPending || !back.trim()}
+              className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50 transition-colors"
+            >
+              {correctBack.isPending ? 'Corrigiendo...' : 'Corregir'}
+            </button>
+          </div>
           <textarea
             value={back}
             onChange={(e) => setBack(e.target.value)}

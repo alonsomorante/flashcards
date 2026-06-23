@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useCreateFlashcard } from '../hooks/useFlashcards';
+import { useSpellCheck } from '../hooks/useSpellCheck';
 
 interface FlashcardFormProps {
   chapterId: string;
@@ -11,6 +12,8 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   const [back, setBack] = useState('');
 
   const createFlashcard = useCreateFlashcard();
+  const correctFront = useSpellCheck();
+  const correctBack = useSpellCheck();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +28,18 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
         },
       }
     );
+  };
+
+  const handleCorrectFront = async () => {
+    if (!front.trim()) return;
+    const corrected = await correctFront.mutateAsync(front);
+    setFront(corrected);
+  };
+
+  const handleCorrectBack = async () => {
+    if (!back.trim()) return;
+    const corrected = await correctBack.mutateAsync(back);
+    setBack(corrected);
   };
 
   if (!isOpen) {
@@ -45,7 +60,17 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     >
       <p className="text-sm font-medium text-[var(--text-muted)]">Nueva flashcard</p>
       <div>
-        <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Frente</label>
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Frente</label>
+          <button
+            type="button"
+            onClick={handleCorrectFront}
+            disabled={correctFront.isPending || !front.trim()}
+            className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50 transition-colors"
+          >
+            {correctFront.isPending ? 'Corrigiendo...' : 'Corregir'}
+          </button>
+        </div>
         <textarea
           value={front}
           onChange={(e) => setFront(e.target.value)}
@@ -56,7 +81,17 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Reverso</label>
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Reverso</label>
+          <button
+            type="button"
+            onClick={handleCorrectBack}
+            disabled={correctBack.isPending || !back.trim()}
+            className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50 transition-colors"
+          >
+            {correctBack.isPending ? 'Corrigiendo...' : 'Corregir'}
+          </button>
+        </div>
         <textarea
           value={back}
           onChange={(e) => setBack(e.target.value)}

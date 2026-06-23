@@ -22,6 +22,7 @@ import {
   getBookStudy,
   reviewFlashcard,
 } from '../controllers/studyController';
+import { spellCheck } from '../controllers/spellCheckController';
 
 export async function registerRoutes(app: FastifyInstance) {
   // Books
@@ -46,4 +47,7 @@ export async function registerRoutes(app: FastifyInstance) {
   app.get('/chapters/:id/study', getChapterStudy);
   app.get('/books/:id/study', getBookStudy);
   app.post('/flashcards/:id/review', reviewFlashcard);
+
+  // AI
+  app.post('/spell-check', spellCheck);
 }

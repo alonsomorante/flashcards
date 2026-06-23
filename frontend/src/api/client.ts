@@ -104,6 +104,13 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ level }),
     }).then((r) => r.data),
+
+  // AI
+  spellCheck: (text: string) =>
+    request<ApiResponse<{ corrected: string }>>(`/spell-check`, {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    }).then((r) => r.data.corrected),
 };
 
 export type {
