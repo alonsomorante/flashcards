@@ -1,12 +1,13 @@
 import { ElevenLabsClient } from 'elevenlabs';
 
-if (!process.env.ELEVENLABS_API_KEY) {
-  throw new Error('ELEVENLABS_API_KEY is required');
+function getClient(): ElevenLabsClient {
+  if (!process.env.ELEVENLABS_API_KEY) {
+    throw new Error('ELEVENLABS_API_KEY is not configured');
+  }
+  return new ElevenLabsClient({
+    apiKey: process.env.ELEVENLABS_API_KEY,
+  });
 }
-
-const client = new ElevenLabsClient({
-  apiKey: process.env.ELEVENLABS_API_KEY,
-});
 
 const MODEL_ID = 'eleven_multilingual_v2';
 const OUTPUT_FORMAT = 'mp3_44100_128' as const;
@@ -56,7 +57,7 @@ export async function synthesizeSpeech(text: string, language: string): Promise<
     return cached;
   }
 
-  const audioStream = await client.textToSpeech.convert(getVoiceId(language), {
+  const audioStream = await getClient().textToSpeech.convert(getVoiceId(language), {
     text: trimmed,
     model_id: MODEL_ID,
     output_format: OUTPUT_FORMAT,
