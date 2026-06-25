@@ -21,8 +21,8 @@ export function LanguageSelect({ value, onChange }: LanguageSelectProps) {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="text-xs bg-[var(--bg)] border border-[var(--border)] rounded px-2 py-1 text-[var(--text)] focus:outline-none focus:border-[var(--accent)]"
-      aria-label="Idioma de dictado"
-      title="Idioma de dictado"
+      aria-label="Idioma de dictado y pronunciación"
+      title="Idioma de dictado y pronunciación"
     >
       {LANGUAGES.map((lang) => (
         <option key={lang.code} value={lang.code}>

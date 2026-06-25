@@ -16,14 +16,20 @@ export const updateChapterSchema = z.object({
   title: z.string().trim().min(1).max(255),
 });
 
+export const languageCodeSchema = z.string().trim().min(2).max(10);
+
 export const createFlashcardSchema = z.object({
   front: z.string().trim().min(1),
   back: z.string().trim().min(1),
+  frontLanguage: languageCodeSchema.default('es-ES'),
+  backLanguage: languageCodeSchema.default('es-ES'),
 });
 
 export const updateFlashcardSchema = z.object({
   front: z.string().trim().min(1).optional(),
   back: z.string().trim().min(1).optional(),
+  frontLanguage: languageCodeSchema.optional(),
+  backLanguage: languageCodeSchema.optional(),
 });
 
 export const reviewFlashcardSchema = z.object({

@@ -40,7 +40,13 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
     e.preventDefault();
     if (!front.trim() || !back.trim()) return;
     createFlashcard.mutate(
-      { chapterId, front: front.trim(), back: back.trim() },
+      {
+        chapterId,
+        front: front.trim(),
+        back: back.trim(),
+        frontLanguage: frontLang,
+        backLanguage: backLang,
+      },
       {
         onSuccess: () => {
           setFront('');

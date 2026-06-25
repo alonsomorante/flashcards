@@ -1,0 +1,2 @@
+ALTER TABLE "flashcards" ADD COLUMN "front_language" varchar(10) DEFAULT 'es-ES' NOT NULL;--> statement-breakpoint
+ALTER TABLE "flashcards" ADD COLUMN "back_language" varchar(10) DEFAULT 'es-ES' NOT NULL;

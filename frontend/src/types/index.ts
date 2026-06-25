@@ -26,6 +26,8 @@ export interface Flashcard {
   chapterId: string;
   front: string;
   back: string;
+  frontLanguage: string;
+  backLanguage: string;
   level: number;
   lastReviewedAt: string | null;
   createdAt: string;

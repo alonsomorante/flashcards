@@ -32,8 +32,8 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   const [isEditing, setIsEditing] = useState(false);
   const [front, setFront] = useState(flashcard.front);
   const [back, setBack] = useState(flashcard.back);
-  const [frontLang, setFrontLang] = useState('es-ES');
-  const [backLang, setBackLang] = useState('es-ES');
+  const [frontLang, setFrontLang] = useState(flashcard.frontLanguage || 'es-ES');
+  const [backLang, setBackLang] = useState(flashcard.backLanguage || 'es-ES');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const updateFlashcard = useUpdateFlashcard();
@@ -47,7 +47,14 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   const handleSave = () => {
     if (!front.trim() || !back.trim()) return;
     updateFlashcard.mutate(
-      { id: flashcard.id, front, back, chapterId },
+      {
+        id: flashcard.id,
+        front,
+        back,
+        frontLanguage: frontLang,
+        backLanguage: backLang,
+        chapterId,
+      },
       { onSuccess: () => setIsEditing(false) }
     );
   };

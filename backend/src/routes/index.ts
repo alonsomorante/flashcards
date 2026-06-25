@@ -23,6 +23,7 @@ import {
   reviewFlashcard,
 } from '../controllers/studyController';
 import { spellCheck } from '../controllers/spellCheckController';
+import { textToSpeech } from '../controllers/ttsController';
 
 export async function registerRoutes(app: FastifyInstance) {
   // Books
@@ -47,6 +48,9 @@ export async function registerRoutes(app: FastifyInstance) {
   app.get('/chapters/:id/study', getChapterStudy);
   app.get('/books/:id/study', getBookStudy);
   app.post('/flashcards/:id/review', reviewFlashcard);
+
+  // TTS
+  app.post('/tts', textToSpeech);
 
   // AI
   app.post('/spell-check', spellCheck);

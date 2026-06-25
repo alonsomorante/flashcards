@@ -81,12 +81,21 @@ export const api = {
     request<void>(`/chapters/${id}`, { method: 'DELETE' }),
 
   // Flashcards
-  createFlashcard: (chapterId: string, front: string, back: string) =>
+  createFlashcard: (
+    chapterId: string,
+    front: string,
+    back: string,
+    frontLanguage: string,
+    backLanguage: string
+  ) =>
     request<ApiResponse<Flashcard>>(`/chapters/${chapterId}/flashcards`, {
       method: 'POST',
-      body: JSON.stringify({ front, back }),
+      body: JSON.stringify({ front, back, frontLanguage, backLanguage }),
     }).then((r) => r.data),
-  updateFlashcard: (id: string, data: { front?: string; back?: string }) =>
+  updateFlashcard: (
+    id: string,
+    data: { front?: string; back?: string; frontLanguage?: string; backLanguage?: string }
+  ) =>
     request<ApiResponse<Flashcard>>(`/flashcards/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -111,6 +120,28 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ text }),
     }).then((r) => r.data.corrected),
+
+  // TTS
+  textToSpeech: async (text: string, language: string): Promise<Blob> => {
+    const res = await fetch(`${BASE_URL}/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, language }),
+    });
+
+    if (!res.ok) {
+      let message = `HTTP ${res.status}`;
+      try {
+        const body = (await res.json()) as ApiError;
+        message = body.error || body.message || message;
+      } catch {
+        // ignore parse errors
+      }
+      throw new Error(message);
+    }
+
+    return res.blob();
+  },
 };
 
 export type {
