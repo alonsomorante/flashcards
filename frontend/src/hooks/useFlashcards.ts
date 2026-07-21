@@ -10,13 +10,26 @@ export function useCreateFlashcard() {
       back,
       frontLanguage,
       backLanguage,
+      frontPronunciation,
+      backPronunciation,
     }: {
       chapterId: string;
       front: string;
       back: string;
       frontLanguage: string;
       backLanguage: string;
-    }) => api.createFlashcard(chapterId, front, back, frontLanguage, backLanguage),
+      frontPronunciation?: string;
+      backPronunciation?: string;
+    }) =>
+      api.createFlashcard(
+        chapterId,
+        front,
+        back,
+        frontLanguage,
+        backLanguage,
+        frontPronunciation,
+        backPronunciation
+      ),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['chapter', variables.chapterId] });
     },

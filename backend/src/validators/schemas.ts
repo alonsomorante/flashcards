@@ -23,6 +23,8 @@ export const createFlashcardSchema = z.object({
   back: z.string().trim().min(1),
   frontLanguage: languageCodeSchema.default('es-ES'),
   backLanguage: languageCodeSchema.default('es-ES'),
+  frontPronunciation: z.string().trim().min(1).optional(),
+  backPronunciation: z.string().trim().min(1).optional(),
 });
 
 export const updateFlashcardSchema = z.object({

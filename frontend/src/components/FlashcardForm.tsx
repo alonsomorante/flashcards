@@ -28,6 +28,8 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
   const [back, setBack] = useState('');
   const [frontLang, setFrontLang] = useState('es-ES');
   const [backLang, setBackLang] = useState('es-ES');
+  const [frontPronunciation, setFrontPronunciation] = useState('');
+  const [backPronunciation, setBackPronunciation] = useState('');
 
   const createFlashcard = useCreateFlashcard();
   const correctFront = useSpellCheck();
@@ -46,11 +48,15 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
         back: back.trim(),
         frontLanguage: frontLang,
         backLanguage: backLang,
+        ...(frontPronunciation.trim() ? { frontPronunciation: frontPronunciation.trim() } : {}),
+        ...(backPronunciation.trim() ? { backPronunciation: backPronunciation.trim() } : {}),
       },
       {
         onSuccess: () => {
           setFront('');
           setBack('');
+          setFrontPronunciation('');
+          setBackPronunciation('');
           setIsOpen(false);
         },
       }
@@ -141,6 +147,13 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
           placeholder="Escribe la pregunta..."
           autoFocus
         />
+        <input
+          type="text"
+          value={frontPronunciation}
+          onChange={(e) => setFrontPronunciation(e.target.value)}
+          className="w-full mt-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          placeholder="Pronunciación (opcional), ej: WÓRER"
+        />
       </div>
       <div>
         <div className="flex justify-between items-center mb-1">
@@ -179,6 +192,13 @@ export function FlashcardForm({ chapterId }: FlashcardFormProps) {
           className="w-full bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-2.5 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
           rows={2}
           placeholder="Escribe la respuesta..."
+        />
+        <input
+          type="text"
+          value={backPronunciation}
+          onChange={(e) => setBackPronunciation(e.target.value)}
+          className="w-full mt-2 bg-[var(--bg)] border border-[var(--border)] rounded-lg px-4 py-2 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+          placeholder="Pronunciación (opcional), ej: WÓRER"
         />
       </div>
       <div className="flex gap-2">

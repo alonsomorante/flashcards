@@ -33,6 +33,7 @@ Aplicación personal de flashcards para estudiar. No tiene autenticación: es de
 - `ELEVENLABS_API_KEY`: API key de ElevenLabs para TTS.
 - `ELEVENLABS_DEFAULT_VOICE_ID` (opcional): voz por defecto (actual: Brian, americana).
 - `ELEVENLABS_VOICE_ID_<LANG>` (opcional): voz por idioma, ej. `ELEVENLABS_VOICE_ID_FR` para francés.
+- `AI_GATEWAY_API_KEY`: API key del AI Gateway de Vercel (requerida para spell-check y guías de pronunciación con IA). Sin ella esos endpoints devuelven 502.
 
 ### Comandos útiles
 ```bash
@@ -56,7 +57,7 @@ bun run db:studio     # Drizzle Studio
 - `POST /api/chapters` body `{ bookId, title }`
 - `DELETE /api/chapters/:id`
 - `GET /api/chapters/:id/flashcards`
-- `POST /api/flashcards` body `{ chapterId, front, back }`
+- `POST /api/flashcards` body `{ chapterId, front, back, frontPronunciation?, backPronunciation? }`
 - `PUT /api/flashcards/:id` body `{ front, back }`
 - `DELETE /api/flashcards/:id`
 - `GET /api/chapters/:id/study`

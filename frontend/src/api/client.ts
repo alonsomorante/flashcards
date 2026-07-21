@@ -86,11 +86,20 @@ export const api = {
     front: string,
     back: string,
     frontLanguage: string,
-    backLanguage: string
+    backLanguage: string,
+    frontPronunciation?: string,
+    backPronunciation?: string
   ) =>
     request<ApiResponse<Flashcard>>(`/chapters/${chapterId}/flashcards`, {
       method: 'POST',
-      body: JSON.stringify({ front, back, frontLanguage, backLanguage }),
+      body: JSON.stringify({
+        front,
+        back,
+        frontLanguage,
+        backLanguage,
+        ...(frontPronunciation ? { frontPronunciation } : {}),
+        ...(backPronunciation ? { backPronunciation } : {}),
+      }),
     }).then((r) => r.data),
   updateFlashcard: (
     id: string,
