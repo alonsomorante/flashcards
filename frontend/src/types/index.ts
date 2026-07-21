@@ -28,6 +28,8 @@ export interface Flashcard {
   back: string;
   frontLanguage: string;
   backLanguage: string;
+  frontPronunciation: string | null;
+  backPronunciation: string | null;
   level: number;
   lastReviewedAt: string | null;
   createdAt: string;

@@ -30,6 +30,9 @@ Aplicación personal de flashcards para estudiar. No tiene autenticación: es de
 - `DATABASE_URL`: connection string de PostgreSQL (Neon).
 - `PORT`: por defecto `3000`.
 - `HOST`: debe ser `0.0.0.0` para Render.
+- `ELEVENLABS_API_KEY`: API key de ElevenLabs para TTS.
+- `ELEVENLABS_DEFAULT_VOICE_ID` (opcional): voz por defecto (actual: Brian, americana).
+- `ELEVENLABS_VOICE_ID_<LANG>` (opcional): voz por idioma, ej. `ELEVENLABS_VOICE_ID_FR` para francés.
 
 ### Comandos útiles
 ```bash
@@ -57,6 +60,7 @@ bun run db:studio     # Drizzle Studio
 - `PUT /api/flashcards/:id` body `{ front, back }`
 - `DELETE /api/flashcards/:id`
 - `GET /api/chapters/:id/study`
+- `POST /api/flashcards/:id/pronunciation` (genera con IA guía de pronunciación respelling en español para lados en idioma distinto al español)
 
 ### Lógica de estudio
 - 4 niveles de dominio: 0 (Olvidado) → 3 (Dominado).

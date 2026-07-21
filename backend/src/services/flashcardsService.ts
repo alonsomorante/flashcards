@@ -13,9 +13,14 @@ export async function createFlashcard(chapterId: string, data: CreateFlashcardIn
 }
 
 export async function updateFlashcard(id: string, data: UpdateFlashcardInput) {
+  // Si el texto cambia, la pronunciación guardada queda desactualizada
+  const reset: { frontPronunciation?: null; backPronunciation?: null } = {};
+  if (data.front !== undefined) reset.frontPronunciation = null;
+  if (data.back !== undefined) reset.backPronunciation = null;
+
   const [flashcard] = await db
     .update(flashcards)
-    .set({ ...data, updatedAt: new Date() })
+    .set({ ...data, ...reset, updatedAt: new Date() })
     .where(eq(flashcards.id, id))
     .returning();
 

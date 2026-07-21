@@ -106,6 +106,11 @@ export function StudyCardView({
             <p className="text-2xl md:text-4xl font-semibold text-[var(--text)] leading-snug max-w-xl">
               {card.front}
             </p>
+            {card.frontPronunciation && (
+              <p className="mt-3 text-lg text-[var(--text-muted)] tracking-wide">
+                {card.frontPronunciation}
+              </p>
+            )}
             <span className="absolute bottom-6 text-sm text-[var(--text-muted)]">
               Click para voltear →
             </span>
@@ -132,6 +137,11 @@ export function StudyCardView({
             <p className="text-xl md:text-2xl text-[var(--text-muted)] leading-relaxed max-w-xl">
               {card.back}
             </p>
+            {card.backPronunciation && (
+              <p className="mt-3 text-lg text-[var(--text-muted)] tracking-wide">
+                {card.backPronunciation}
+              </p>
+            )}
             <span className="absolute bottom-6 text-sm text-[var(--text-muted)]">
               ← Click para volver
             </span>

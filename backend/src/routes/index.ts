@@ -24,6 +24,7 @@ import {
 } from '../controllers/studyController';
 import { spellCheck } from '../controllers/spellCheckController';
 import { textToSpeech } from '../controllers/ttsController';
+import { generateFlashcardPronunciation } from '../controllers/pronunciationController';
 
 export async function registerRoutes(app: FastifyInstance) {
   // Books
@@ -54,4 +55,5 @@ export async function registerRoutes(app: FastifyInstance) {
 
   // AI
   app.post('/spell-check', spellCheck);
+  app.post('/flashcards/:id/pronunciation', generateFlashcardPronunciation);
 }

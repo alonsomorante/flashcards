@@ -15,9 +15,15 @@ const MAX_CACHE_SIZE = 100;
 
 // Default voice used for all languages: "Brian" (American English).
 // ElevenLabs Multilingual v2 works well across languages with the same voice.
-// Override with ELEVENLABS_DEFAULT_VOICE_ID.
-function getVoiceId(_language: string): string {
-  return process.env.ELEVENLABS_DEFAULT_VOICE_ID || 'nPczCjzI2devNBz1zQrb';
+// Override globally with ELEVENLABS_DEFAULT_VOICE_ID or per language with
+// ELEVENLABS_VOICE_ID_<LANG> (ej. ELEVENLABS_VOICE_ID_FR para francés).
+function getVoiceId(language: string): string {
+  const prefix = language.toLowerCase().split('-').at(0)?.toUpperCase() ?? '';
+  return (
+    process.env[`ELEVENLABS_VOICE_ID_${prefix}`] ||
+    process.env.ELEVENLABS_DEFAULT_VOICE_ID ||
+    'nPczCjzI2devNBz1zQrb'
+  );
 }
 
 const cache = new Map<string, Buffer>();

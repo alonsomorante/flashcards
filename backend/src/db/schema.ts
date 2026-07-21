@@ -55,6 +55,8 @@ export const flashcards = pgTable(
     back: text('back').notNull(),
     frontLanguage: varchar('front_language', { length: 10 }).notNull().default('es-ES'),
     backLanguage: varchar('back_language', { length: 10 }).notNull().default('es-ES'),
+    frontPronunciation: text('front_pronunciation'),
+    backPronunciation: text('back_pronunciation'),
     level: integer('level').notNull().default(0),
     lastReviewedAt: timestamp('last_reviewed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

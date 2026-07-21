@@ -6,6 +6,7 @@ import { useDeleteFlashcard, useUpdateFlashcard } from '../hooks/useFlashcards';
 import { useSpellCheck } from '../hooks/useSpellCheck';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
+import { useGeneratePronunciation } from '../hooks/usePronunciation';
 import { LanguageSelect } from './LanguageSelect';
 import { ConfirmDialog } from './ConfirmDialog';
 
@@ -59,6 +60,13 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   const frontSpeech = useSpeechRecognition(frontLang, (text) => setFront(text));
   const backSpeech = useSpeechRecognition(backLang, (text) => setBack(text));
   const tts = useTextToSpeech();
+  const generatePronunciation = useGeneratePronunciation();
+
+  const isSpanish = (lang: string) => lang.toLowerCase().startsWith('es');
+
+  const handleGeneratePronunciation = () => {
+    generatePronunciation.mutate({ flashcardId: flashcard.id, chapterId });
+  };
 
   const handlePlayFront = () => {
     void tts.toggle(flashcard.front, flashcard.frontLanguage || 'es-ES');
@@ -255,6 +263,11 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
             </button>
           </div>
           <p className="text-[var(--text)] font-medium">{flashcard.front}</p>
+          {flashcard.frontPronunciation && (
+            <p className="text-sm text-[var(--text-muted)] mt-1 tracking-wide">
+              {flashcard.frontPronunciation}
+            </p>
+          )}
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -270,6 +283,11 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
             </button>
           </div>
           <p className="text-[var(--text-muted)]">{flashcard.back}</p>
+          {flashcard.backPronunciation && (
+            <p className="text-sm text-[var(--text-muted)] mt-1 tracking-wide">
+              {flashcard.backPronunciation}
+            </p>
+          )}
         </div>
       </div>
 
@@ -280,6 +298,15 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
         >
           Editar
         </button>
+        {(!isSpanish(flashcard.frontLanguage) || !isSpanish(flashcard.backLanguage)) && (
+          <button
+            onClick={handleGeneratePronunciation}
+            disabled={generatePronunciation.isPending}
+            className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] disabled:opacity-50 transition-colors"
+          >
+            {generatePronunciation.isPending ? 'Generando...' : 'Pronunciación'}
+          </button>
+        )}
         <button
           onClick={handleDelete}
           className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"

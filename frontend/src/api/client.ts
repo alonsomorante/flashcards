@@ -120,6 +120,10 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ text }),
     }).then((r) => r.data.corrected),
+  generatePronunciation: (flashcardId: string) =>
+    request<ApiResponse<Flashcard>>(`/flashcards/${flashcardId}/pronunciation`, {
+      method: 'POST',
+    }).then((r) => r.data),
 
   // TTS
   textToSpeech: async (text: string, language: string): Promise<Blob> => {
