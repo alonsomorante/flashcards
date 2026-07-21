@@ -5,6 +5,7 @@ import type { ReviewLevel } from '../types/index';
 import { useDeleteFlashcard, useUpdateFlashcard } from '../hooks/useFlashcards';
 import { useSpellCheck } from '../hooks/useSpellCheck';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import { LanguageSelect } from './LanguageSelect';
 import { ConfirmDialog } from './ConfirmDialog';
 
@@ -28,6 +29,20 @@ const MicIcon = () => (
   </svg>
 );
 
+const SpeakerIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+    <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+  </svg>
+);
+
+const LoadingIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin">
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+);
+
 export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [front, setFront] = useState(flashcard.front);
@@ -43,6 +58,20 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
 
   const frontSpeech = useSpeechRecognition(frontLang, (text) => setFront(text));
   const backSpeech = useSpeechRecognition(backLang, (text) => setBack(text));
+  const tts = useTextToSpeech();
+
+  const handlePlayFront = () => {
+    void tts.toggle(flashcard.front, flashcard.frontLanguage || 'es-ES');
+  };
+
+  const handlePlayBack = () => {
+    void tts.toggle(flashcard.back, flashcard.backLanguage || 'es-ES');
+  };
+
+  const handleStartEditing = () => {
+    tts.stop();
+    setIsEditing(true);
+  };
 
   const handleSave = () => {
     if (!front.trim() || !back.trim()) return;
@@ -64,6 +93,7 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
   };
 
   const handleConfirmDelete = () => {
+    tts.stop();
     deleteFlashcard.mutate({ id: flashcard.id, chapterId });
     setShowDeleteDialog(false);
   };
@@ -212,18 +242,40 @@ export function FlashcardItem({ flashcard, chapterId, index }: FlashcardItemProp
 
       <div className="grid md:grid-cols-2 gap-5 mb-4">
         <div>
-          <span className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Pregunta</span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Pregunta</span>
+            <button
+              type="button"
+              onClick={handlePlayFront}
+              className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+              aria-label="Escuchar pronunciación de la pregunta"
+              title="Escuchar pronunciación"
+            >
+              {tts.isLoading ? <LoadingIcon /> : <SpeakerIcon />}
+            </button>
+          </div>
           <p className="text-[var(--text)] font-medium">{flashcard.front}</p>
         </div>
         <div>
-          <span className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide mb-1">Respuesta</span>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="block text-xs font-medium text-[var(--text-muted)] uppercase tracking-wide">Respuesta</span>
+            <button
+              type="button"
+              onClick={handlePlayBack}
+              className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+              aria-label="Escuchar pronunciación de la respuesta"
+              title="Escuchar pronunciación"
+            >
+              {tts.isLoading ? <LoadingIcon /> : <SpeakerIcon />}
+            </button>
+          </div>
           <p className="text-[var(--text-muted)]">{flashcard.back}</p>
         </div>
       </div>
 
       <div className="flex gap-4 pt-3 border-t border-[var(--border)]">
         <button
-          onClick={() => setIsEditing(true)}
+          onClick={handleStartEditing}
           className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
         >
           Editar
