@@ -13,10 +13,11 @@ const MODEL_ID = 'eleven_multilingual_v2';
 const OUTPUT_FORMAT = 'mp3_44100_128' as const;
 const MAX_CACHE_SIZE = 100;
 
-// Default voice used for all languages. ElevenLabs Multilingual v2 works well
-// across languages with the same voice. Override with ELEVENLABS_DEFAULT_VOICE_ID.
+// Default voice used for all languages: "Brian" (American English).
+// ElevenLabs Multilingual v2 works well across languages with the same voice.
+// Override with ELEVENLABS_DEFAULT_VOICE_ID.
 function getVoiceId(_language: string): string {
-  return process.env.ELEVENLABS_DEFAULT_VOICE_ID || 'JBFqnCBsd6RMkjVDRZzb';
+  return process.env.ELEVENLABS_DEFAULT_VOICE_ID || 'nPczCjzI2devNBz1zQrb';
 }
 
 const cache = new Map<string, Buffer>();

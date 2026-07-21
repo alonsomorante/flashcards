@@ -70,6 +70,9 @@ bun run db:studio     # Drizzle Studio
 - `VITE_API_URL`: base URL del backend, ej. `https://flashcards-buph.onrender.com/api`.
 - En Vercel debe configurarse como variable de build-time.
 
+### Deploy
+- **No hay auto-deploy al pushear a GitHub**: el deploy de producción es manual vía Vercel CLI (ver comando abajo). Pushear a `main` NO actualiza el frontend en Vercel.
+
 ### Comandos útiles
 ```bash
 cd frontend
